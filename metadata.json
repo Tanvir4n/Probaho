@@ -1,0 +1,8 @@
+{
+  "name": "MassLabs Architecture & Design System",
+  "description": "Implementation-ready token-driven UI guidance, architectural marketing surface, and interactive component specification for MassLabs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

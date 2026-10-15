@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand Typography */
+  --font-family-primary: Paperlogy, Inter, "Inter Fallback", Geist, "Geist Fallback", -apple-system, "Helvetica Neue", sans-serif;
+  --font-size-base: 16px;
+  --font-weight-base: 400;
+  --font-line-height-base: 24px;
+
+  /* Typography Scale */
+  --font-size-xs: 9.6px;
+  --font-size-sm: 10.56px;
+  --font-size-md: 11.52px;
+  --font-size-lg: 12.64px;
+  --font-size-xl: 12.8px;
+  --font-size-2xl: 13.28px;
+  --font-size-3xl: 15.68px;
+  --font-size-4xl: 16px;
+
+  /* Color Palette Tokens - Default / Night Mode (Dark-base / Black & Orange) */
+  --color-text-primary: #eceae6;
+  --color-text-secondary: #8a8a86;
+  --color-text-tertiary: #555552;
+  --color-border-strong: #ffffff;
+  --color-border-subtle: rgba(255, 255, 255, 0.12);
+  --color-surface-base: #000000;
+  --color-surface-muted: #121214;
+  --color-surface-raised: #e8802e;
+  --color-surface-strong: #0e0e0f;
+
+  /* Spacing Scale Tokens */
+  --space-1: 7px;
+  --space-2: 8px;
+  --space-3: 10px;
+  --space-4: 11px;
+  --space-5: 12px;
+  --space-6: 14px;
+  --space-7: 15px;
+  --space-8: 18px;
+
+  /* Radius, Shadow & Motion */
+  --radius-xs: 2px;
+  --shadow-1: rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(232, 128, 46, 0.15) 0px 0px 30px 0px;
+  --motion-duration-instant: 150ms;
+  --motion-duration-fast: 200ms;
+  --motion-duration-normal: 220ms;
+  --motion-duration-slow: 700ms;
+}
+
+/* Day Mode Tokens (Light-base / Off-white & Cobalt Blue) - WCAG 2.2 AA / AAA Compliant */
+:root[data-theme="day"],
+.light {
+  --color-text-primary: #111113;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+  --color-border-strong: #111113;
+  --color-border-subtle: rgba(0, 0, 0, 0.12);
+  --color-surface-base: #f6f5f2;
+  --color-surface-muted: #e8e6e1;
+  --color-surface-raised: #1a56db;
+  --color-surface-strong: #ffffff;
+  --shadow-1: rgba(0, 0, 0, 0.08) 0px 14px 34px 0px, rgba(26, 86, 219, 0.14) 0px 0px 26px 0px;
+}
+
+/* Night Mode Explicit Target */
+:root[data-theme="night"],
+.dark {
+  --color-text-primary: #eceae6;
+  --color-text-secondary: #8a8a86;
+  --color-text-tertiary: #555552;
+  --color-border-strong: #ffffff;
+  --color-border-subtle: rgba(255, 255, 255, 0.12);
+  --color-surface-base: #000000;
+  --color-surface-muted: #121214;
+  --color-surface-raised: #e8802e;
+  --color-surface-strong: #0e0e0f;
+  --shadow-1: rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(232, 128, 46, 0.15) 0px 0px 30px 0px;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  background-color: var(--color-surface-base);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--font-line-height-base);
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+/* Custom utility classes reflecting MassLabs token conventions */
+.mass-bg-base { background-color: var(--color-surface-base); }
+.mass-bg-muted { background-color: var(--color-surface-muted); }
+.mass-bg-strong { background-color: var(--color-surface-strong); }
+.mass-bg-raised { background-color: var(--color-surface-raised); }
+
+.mass-text-primary { color: var(--color-text-primary); }
+.mass-text-secondary { color: var(--color-text-secondary); }
+.mass-text-tertiary { color: var(--color-text-tertiary); }
+.mass-text-raised { color: var(--color-surface-raised); }
+
+.mass-border-strong { border-color: var(--color-border-strong); }
+.mass-border-subtle { border-color: var(--color-border-subtle); }
+.mass-border-raised { border-color: var(--color-surface-raised); }
+
+.mass-radius-xs { border-radius: var(--radius-xs); }
+.mass-shadow-1 { box-shadow: var(--shadow-1); }
+
+/* Focus visible standard: 2px solid white or raised orange with offset */
+.mass-focus-visible:focus-visible {
+  outline: 2px solid var(--color-surface-raised);
+  outline-offset: 2px;
+}
+
+/* Tabular numbers for architectural telemetry & metrics */
+.mass-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* 
+  Architectural Reveal Animations:
+  Calibrated to MassLabs motion duration tokens:
+  - instant (150ms)
+  - fast (200ms)
+  - normal (220ms)
+  - slow (700ms)
+*/
+
+@keyframes massArchitecturalScan {
+  0% {
+    top: -5%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.85;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+  }
+}
+
+@keyframes massBlueprintFade {
+  0%, 100% {
+    opacity: 0.88;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.015);
+  }
+}
+
+@keyframes massCadGridDrift {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: 80px 80px;
+  }
+}
+
+@keyframes massCoordinatePulse {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes massContourSweep {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 0.2;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 0.7;
+  }
+  100% {
+    stroke-dashoffset: -1000;
+    opacity: 0.2;
+  }
+}
+
+/* Animation utility classes using motion tokens */
+.animate-mass-scan {
+  animation: massArchitecturalScan calc(var(--motion-duration-slow) * 8) cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.animate-mass-blueprint {
+  animation: massBlueprintFade calc(var(--motion-duration-slow) * 10) ease-in-out infinite;
+}
+
+.animate-mass-grid-drift {
+  animation: massCadGridDrift calc(var(--motion-duration-slow) * 60) linear infinite;
+}
+
+.animate-mass-coordinate {
+  animation: massCoordinatePulse calc(var(--motion-duration-slow) * 3) ease-in-out infinite;
+}
