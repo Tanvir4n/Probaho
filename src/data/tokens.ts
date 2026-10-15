@@ -18,7 +18,7 @@ export interface TokenGroup {
 }
 
 export const MASS_COLOR_TOKENS_NIGHT = {
-  name: 'Night Mode (Dark-Base / Obsidian & Ember)',
+  name: 'Night Mode (Dark-Base / Obsidian & Green)',
   text: {
     primary: '#eceae6',
     secondary: '#8a8a86',
@@ -31,16 +31,16 @@ export const MASS_COLOR_TOKENS_NIGHT = {
   surface: {
     base: '#000000',
     muted: '#121214',
-    raised: '#e8802e',
+    raised: '#22c55e',
     strong: '#0e0e0f',
   },
   shadow: {
-    1: 'rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(232, 128, 46, 0.15) 0px 0px 30px 0px',
+    1: 'rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(34, 197, 94, 0.18) 0px 0px 30px 0px',
   },
 };
 
 export const MASS_COLOR_TOKENS_DAY = {
-  name: 'Day Mode (Light-Base / Off-White & Cobalt Blue)',
+  name: 'Day Mode (Light-Base / Off-White & Emerald Green)',
   text: {
     primary: '#111113', // Deep charcoal (14.8:1 contrast on #f6f5f2 - AAA)
     secondary: '#4b5563', // Slate neutral (5.8:1 contrast on #f6f5f2 - AA)
@@ -53,11 +53,11 @@ export const MASS_COLOR_TOKENS_DAY = {
   surface: {
     base: '#f6f5f2', // Architectural warm off-white canvas
     muted: '#e8e6e1', // Architectural card base
-    raised: '#1a56db', // Precision architectural cobalt blue (5.74:1 contrast on base)
+    raised: '#16a34a', // Precision architectural emerald green (4.14:1 contrast on base)
     strong: '#ffffff', // Crisp white card/panel
   },
   shadow: {
-    1: 'rgba(0, 0, 0, 0.08) 0px 14px 34px 0px, rgba(26, 86, 219, 0.14) 0px 0px 26px 0px',
+    1: 'rgba(0, 0, 0, 0.08) 0px 14px 34px 0px, rgba(22, 163, 74, 0.16) 0px 0px 26px 0px',
   },
 };
 
@@ -92,7 +92,7 @@ export const MASS_RADIUS_TOKENS = [
 export const MASS_SHADOW_TOKENS = [
   {
     token: 'shadow.1',
-    value: 'rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(232, 128, 46, 0.15) 0px 0px 30px 0px',
+    value: 'rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(34, 197, 94, 0.18) 0px 0px 30px 0px',
     useCase: 'Elevated architectural model card, inquiry modal backdrop elevation',
   },
 ];
@@ -192,7 +192,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     image: '/src/assets/images/map_manhattan_carto_1791915045536.jpg',
     parcelCount: '18,400 Parcels',
     layers: 'Building Data 8+ · True-Width Roads · Waterfront Piers',
-    accent: '#e8802e',
+    accent: '#22c55e',
   },
   {
     id: 'tokyo-bay',
@@ -202,7 +202,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     image: '/src/assets/images/map_tokyo_carto_1791915087818.jpg',
     parcelCount: '32,100 Parcels',
     layers: 'Rail Transit Network · Coastal Bathymetry · 3D Terrain',
-    accent: '#f08e40',
+    accent: '#10b981',
   },
   {
     id: 'london-core',
@@ -212,7 +212,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     image: '/src/assets/images/map_london_carto_1791915087785.jpg',
     parcelCount: '24,600 Parcels',
     layers: 'River Thames Curves · Historic Envelopes · Urban Fabric',
-    accent: '#e8802e',
+    accent: '#16a34a',
   },
   {
     id: 'cologne-radial',
@@ -222,7 +222,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     image: '/src/assets/images/map_cologne_carto_1791915088536.jpg',
     parcelCount: '19,800 Parcels',
     layers: 'Radial Boulevards · Riverfront Promenade · Medieval Core',
-    accent: '#d47225',
+    accent: '#15803d',
   },
 ];
 

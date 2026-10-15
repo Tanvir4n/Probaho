@@ -88,7 +88,7 @@ MassLabs provides implementation-ready, token-driven UI guidance optimized for c
 - color.surface.base: #000000 (Dominant canvas obsidian)
 - color.surface.muted: #121214 (Card elevation 1)
 - color.surface.strong: #0e0e0f (Interactive container ground)
-- color.surface.raised: #e8802e (Signature ember accent - 7.1:1 against black)
+- color.surface.raised: #22c55e (Night) / #16a34a (Day) (Signature architectural green accent)
 
 ### Spacing Scale
 - space.1: 7px | space.2: 8px | space.3: 10px | space.4: 11px
@@ -96,7 +96,7 @@ MassLabs provides implementation-ready, token-driven UI guidance optimized for c
 
 ### Radius, Shadow & Motion
 - radius.xs: 2px
-- shadow.1: rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(232, 128, 46, 0.15) 0px 0px 30px 0px
+- shadow.1: rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(34, 197, 94, 0.18) 0px 0px 30px 0px (Night) / rgba(0, 0, 0, 0.08) 0px 14px 34px 0px, rgba(22, 163, 74, 0.16) 0px 0px 26px 0px (Day)
 - motion.duration.instant: 150ms
 - motion.duration.fast: 200ms
 - motion.duration.normal: 220ms

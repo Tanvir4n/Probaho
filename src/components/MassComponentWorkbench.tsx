@@ -40,7 +40,7 @@ export const MassComponentWorkbench: React.FC = () => {
     const base = 'inline-flex items-center justify-center font-medium transition-all select-none whitespace-nowrap shrink-0 text-[12.64px] leading-tight px-[14px] py-[11px] rounded-[2px]';
     
     if (variant === 'primary') {
-      const textColor = isDay ? 'text-white' : 'text-black';
+      const textColor = 'text-white';
       switch (state) {
         case 'default':
           return `${base} bg-[var(--color-surface-raised)] ${textColor} shadow-sm hover:brightness-105`;

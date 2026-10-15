@@ -108,7 +108,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
                 <path
                   d="M116 120 h8 M120 116 v8 M120 120 m-6 0 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0"
                   fill="none"
-                  stroke="rgba(232, 128, 46, 0.45)"
+                  stroke="rgba(34, 197, 94, 0.45)"
                   strokeWidth="0.75"
                 />
                 {/* Corner corner registration brackets */}
@@ -150,7 +150,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
             {/* Structural parcel vectors */}
             <path
               d="M300,100 L700,400 L600,800 L200,500 Z M1100,200 L1600,150 L1700,650 L1250,700 Z"
-              stroke="rgba(232, 128, 46, 0.22)"
+              stroke="rgba(34, 197, 94, 0.25)"
               strokeWidth="1"
             />
             {/* Precision dimension arc */}
@@ -176,9 +176,9 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
       {layersVisibility.scanBeam && (
         <div className="absolute inset-x-0 h-40 z-4 pointer-events-none animate-mass-scan">
           {/* Glowing laser sweep gradient */}
-          <div className="w-full h-full bg-gradient-to-b from-transparent via-[#e8802e]/12 to-transparent" />
-          {/* Fine 1px tracing line with ember laser focal point */}
-          <div className="absolute bottom-1/2 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#e8802e]/85 to-transparent shadow-[0_0_15px_rgba(232,128,46,0.6)]" />
+          <div className="w-full h-full bg-gradient-to-b from-transparent via-[#22c55e]/12 to-transparent" />
+          {/* Fine 1px tracing line with green laser focal point */}
+          <div className="absolute bottom-1/2 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#22c55e]/85 to-transparent shadow-[0_0_15px_rgba(34,197,94,0.6)]" />
         </div>
       )}
 
@@ -211,7 +211,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
         <div className="bg-black/85 backdrop-blur-md border border-white/10 px-3.5 py-2 rounded-[2px] text-xs font-mono text-[#8a8a86] flex items-center gap-3.5 shadow-2xl">
           {/* Active Location Info */}
           <div className="flex items-center gap-2 text-[#eceae6]">
-            <MapPin className="w-3.5 h-3.5 text-[#e8802e]" />
+            <MapPin className="w-3.5 h-3.5 text-[#22c55e]" />
             <span className="font-semibold">{activeMap.cityName}</span>
             <span className="text-white/25">·</span>
             <span className="text-[10px] text-[#8a8a86]">{activeMap.coordinates}</span>
@@ -222,10 +222,10 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
           {/* Layer Count Indicator */}
           <button
             onClick={() => setShowControls(!showControls)}
-            className="flex items-center gap-1.5 text-[10px] text-[#eceae6] hover:text-[#e8802e] transition-colors"
+            className="flex items-center gap-1.5 text-[10px] text-[#eceae6] hover:text-[#22c55e] transition-colors"
             title="Inspect Blueprint Layers"
           >
-            <Layers className="w-3 h-3 text-[#e8802e]" />
+            <Layers className="w-3 h-3 text-[#22c55e]" />
             <span>4 Blueprint Layers</span>
           </button>
 
@@ -238,7 +238,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
             title={isPlaying ? 'Pause Continuous Sequence' : 'Play Continuous Sequence'}
           >
             {isPlaying ? (
-              <Pause className="w-3.5 h-3.5 text-[#e8802e]" />
+              <Pause className="w-3.5 h-3.5 text-[#22c55e]" />
             ) : (
               <Play className="w-3.5 h-3.5 text-[#8a8a86]" />
             )}
@@ -252,7 +252,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
                 onClick={() => onMapChange(idx)}
                 className={`w-2 h-2 rounded-full transition-all ${
                   idx === currentMapIndex
-                    ? 'bg-[#e8802e] w-4'
+                    ? 'bg-[#22c55e] w-4'
                     : 'bg-white/20 hover:bg-white/50'
                 }`}
                 title={`Switch blueprint to ${m.cityName}`}
@@ -282,7 +282,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
         {/* Expanded Blueprint Layer Toggles Panel */}
         {showControls && (
           <div className="absolute bottom-12 left-0 bg-[#0e0e0f] border border-white/20 p-3 rounded-[2px] shadow-2xl text-[10.56px] font-mono space-y-2 w-64 animate-in fade-in slide-in-from-bottom-2 duration-150">
-            <div className="flex items-center justify-between text-[#e8802e] font-semibold border-b border-white/10 pb-1.5">
+            <div className="flex items-center justify-between text-[#22c55e] font-semibold border-b border-white/10 pb-1.5">
               <span>BLUEPRINT LAYER STACK</span>
               <button
                 onClick={() => setShowControls(false)}
@@ -303,7 +303,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
                   key={layer.key}
                   onClick={() =>
                     setLayersVisibility((prev) => ({
-                      ...prev,
+                       ...prev,
                       [layer.key]: !prev[layer.key],
                     }))
                   }
@@ -311,7 +311,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
                 >
                   <span>{layer.label}</span>
                   {layersVisibility[layer.key] ? (
-                    <Eye className="w-3.5 h-3.5 text-[#e8802e]" />
+                    <Eye className="w-3.5 h-3.5 text-[#22c55e]" />
                   ) : (
                     <EyeOff className="w-3.5 h-3.5 text-[#555552]" />
                   )}

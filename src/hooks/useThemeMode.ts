@@ -14,7 +14,7 @@ export interface ThemePalette {
   surfaceBase: string;
   surfaceMuted: string;
   surfaceStrong: string;
-  surfaceRaised: string; // Signature Accent: Ember Orange (Night) / Cobalt Blue (Day)
+  surfaceRaised: string; // Signature Accent: Architectural Green
   textPrimary: string;
   textSecondary: string;
   textTertiary: string;
@@ -25,38 +25,38 @@ export interface ThemePalette {
 
 /**
  * Standard MassLabs Color Palettes:
- * - Night Mode: Dark-base (Obsidian Black canvas, warm Ember Orange accent)
- * - Day Mode: Light-base (Warm Architectural Off-white canvas, precision Cobalt Blue accent)
+ * - Night Mode: Dark-base (Obsidian Black canvas, luminous Architectural Green accent)
+ * - Day Mode: Light-base (Warm Architectural Off-white canvas, precision Architectural Emerald Green accent)
  * Both palettes strictly satisfy WCAG 2.2 AA (>= 4.5:1 text, >= 3:1 UI components) and AAA (>= 7:1) criteria.
  */
 export const THEME_PALETTES: Record<ThemeMode, ThemePalette> = {
   night: {
-    name: 'Night Mode (Dark-Base / Obsidian & Ember)',
+    name: 'Night Mode (Dark-Base / Obsidian & Green)',
     mode: 'night',
     surfaceBase: '#000000',
     surfaceMuted: '#121214',
     surfaceStrong: '#0e0e0f',
-    surfaceRaised: '#e8802e', // Signature Ember Orange
+    surfaceRaised: '#22c55e', // Luminous Architectural Green
     textPrimary: '#eceae6',
     textSecondary: '#8a8a86',
     textTertiary: '#555552',
     borderStrong: '#ffffff',
     borderSubtle: 'rgba(255, 255, 255, 0.12)',
-    shadow1: 'rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(232, 128, 46, 0.15) 0px 0px 30px 0px',
+    shadow1: 'rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(34, 197, 94, 0.18) 0px 0px 30px 0px',
   },
   day: {
-    name: 'Day Mode (Light-Base / Off-White & Cobalt Blue)',
+    name: 'Day Mode (Light-Base / Off-White & Emerald Green)',
     mode: 'day',
     surfaceBase: '#f6f5f2', // Architectural Warm Off-White / Paper
     surfaceMuted: '#e8e6e1', // Subtly elevated concrete tile
     surfaceStrong: '#ffffff', // Crisp white card/panel
-    surfaceRaised: '#1a56db', // Precision Architectural Cobalt Blue
+    surfaceRaised: '#16a34a', // Precision Architectural Emerald Green
     textPrimary: '#111113', // Deep ink charcoal (14.8:1 contrast on #f6f5f2 - AAA)
     textSecondary: '#4b5563', // Neutral slate gray (5.8:1 contrast on #f6f5f2 - AA)
     textTertiary: '#6b7280', // Subtle cool gray (4.54:1 contrast on #f6f5f2 - AA)
     borderStrong: '#111113', // High-contrast structural line
     borderSubtle: 'rgba(0, 0, 0, 0.12)',
-    shadow1: 'rgba(0, 0, 0, 0.08) 0px 14px 34px 0px, rgba(26, 86, 219, 0.14) 0px 0px 26px 0px',
+    shadow1: 'rgba(0, 0, 0, 0.08) 0px 14px 34px 0px, rgba(22, 163, 74, 0.16) 0px 0px 26px 0px',
   },
 };
 
@@ -174,8 +174,8 @@ export function useThemeMode(initialMode?: ThemeMode): UseThemeModeReturn {
     const secondaryOnBase = calculateContrast(palette.textSecondary, palette.surfaceBase);
     const raisedOnBase = calculateContrast(palette.surfaceRaised, palette.surfaceBase);
     
-    // Primary button text: white on cobalt blue (day) / black on ember orange (night)
-    const buttonTextColor = mode === 'day' ? '#ffffff' : '#000000';
+    // Primary button text: crisp white on architectural green in both day and night modes
+    const buttonTextColor = '#ffffff';
     const textOnRaised = calculateContrast(buttonTextColor, palette.surfaceRaised);
 
     const passesAA = primaryOnBase >= 4.5 && secondaryOnBase >= 4.5 && textOnRaised >= 4.5 && raisedOnBase >= 3.0;

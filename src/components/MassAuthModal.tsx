@@ -20,6 +20,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
 
   if (!isOpen) return null;
 
@@ -91,7 +92,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
             }}
             className={`py-2 rounded-[2px] transition-colors cursor-pointer ${
               mode === 'signin'
-                ? `bg-[var(--color-surface-raised)] ${isDay ? 'text-white' : 'text-black'} font-semibold shadow-sm`
+                ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
             }`}
           >
@@ -105,7 +106,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
             }}
             className={`py-2 rounded-[2px] transition-colors cursor-pointer ${
               mode === 'signup'
-                ? `bg-[var(--color-surface-raised)] ${isDay ? 'text-white' : 'text-black'} font-semibold shadow-sm`
+                ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
             }`}
           >
@@ -156,7 +157,10 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
               {mode === 'signin' && (
                 <button
                   type="button"
-                  onClick={() => alert('Password reset link sent to your email address.')}
+                  onClick={() => {
+                    setInfoMessage('Password reset instructions sent to your email address.');
+                    setError('');
+                  }}
                   className="text-[10px] font-mono text-[var(--color-surface-raised)] hover:underline cursor-pointer"
                 >
                   Forgot password?
@@ -175,6 +179,12 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
             </div>
           </div>
 
+          {infoMessage && (
+            <div className="text-xs text-[var(--color-surface-raised)] font-mono bg-[var(--color-surface-raised)]/10 p-2.5 border border-[var(--color-surface-raised)]/20 rounded-[2px]">
+              {infoMessage}
+            </div>
+          )}
+
           {error && (
             <div className="text-xs text-red-500 font-mono bg-red-500/10 p-2.5 border border-red-500/20 rounded-[2px]">
               {error}
@@ -184,7 +194,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 text-xs font-semibold ${isDay ? 'text-white' : 'text-black'} bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[2px] transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer shadow-md`}
+            className="w-full py-3 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[2px] transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer shadow-md"
           >
             {isLoading ? (
               <>

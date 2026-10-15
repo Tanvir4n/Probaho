@@ -94,7 +94,7 @@ export const MassBackgroundMapRotator: React.FC<MassBackgroundMapRotatorProps> =
       <div className="absolute bottom-6 left-6 z-20 pointer-events-auto hidden sm:flex items-center gap-3">
         <div className="bg-black/80 backdrop-blur-md border border-white/10 px-3 py-2 rounded-[2px] text-xs font-mono text-[#8a8a86] flex items-center gap-3 shadow-2xl">
           <div className="flex items-center gap-2 text-[#eceae6]">
-            <MapPin className="w-3.5 h-3.5 text-[#e8802e]" />
+            <MapPin className="w-3.5 h-3.5 text-[#22c55e]" />
             <span className="font-semibold">{activeMap.cityName}</span>
             <span className="text-white/30">·</span>
             <span className="text-[10px] text-[#8a8a86]">{activeMap.coordinates}</span>
@@ -115,7 +115,7 @@ export const MassBackgroundMapRotator: React.FC<MassBackgroundMapRotatorProps> =
             title={isPlaying ? 'Pause map sequence' : 'Play map sequence'}
           >
             {isPlaying ? (
-              <Pause className="w-3.5 h-3.5 text-[#e8802e]" />
+              <Pause className="w-3.5 h-3.5 text-[#22c55e]" />
             ) : (
               <Play className="w-3.5 h-3.5 text-[#8a8a86]" />
             )}
@@ -129,7 +129,7 @@ export const MassBackgroundMapRotator: React.FC<MassBackgroundMapRotatorProps> =
                 onClick={() => onMapChange(idx)}
                 className={`w-2 h-2 rounded-full transition-all ${
                   idx === currentMapIndex
-                    ? 'bg-[#e8802e] w-4'
+                    ? 'bg-[#22c55e] w-4'
                     : 'bg-white/20 hover:bg-white/50'
                 }`}
                 title={`Switch map to ${m.cityName}`}
@@ -147,7 +147,7 @@ export const MassBackgroundMapRotator: React.FC<MassBackgroundMapRotatorProps> =
               onClick={() => setDarkness(level)}
               className={`px-1.5 py-0.5 rounded-[1px] transition-colors ${
                 Math.abs(darkness - level) < 0.04
-                  ? 'bg-[#e8802e] text-white font-bold'
+                  ? 'bg-[#22c55e] text-white font-bold'
                   : 'hover:text-white text-[#8a8a86]'
               }`}
             >

@@ -203,7 +203,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
                 <path
                   d="M116 120 h8 M120 116 v8 M120 120 m-6 0 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0"
                   fill="none"
-                  stroke={isDay ? "rgba(26, 86, 219, 0.55)" : "rgba(232, 128, 46, 0.45)"}
+                  stroke={isDay ? "rgba(22, 163, 74, 0.55)" : "rgba(34, 197, 94, 0.45)"}
                   strokeWidth="0.75"
                 />
                 {/* Boundary registration marks */}
@@ -252,7 +252,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
             {/* Structural Parcel Polygons */}
             <path
               d="M300,100 L700,400 L600,800 L200,500 Z M1100,200 L1600,150 L1700,650 L1250,700 Z"
-              stroke={isDay ? "rgba(26, 86, 219, 0.35)" : "rgba(232, 128, 46, 0.25)"}
+              stroke={isDay ? "rgba(22, 163, 74, 0.35)" : "rgba(34, 197, 94, 0.30)"}
               strokeWidth="1"
             />
             {/* Site radius indicator */}

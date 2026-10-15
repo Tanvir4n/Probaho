@@ -46,13 +46,13 @@ function AppContent() {
         <button
           onClick={toggleMode}
           className="p-2 bg-[var(--color-surface-strong)]/90 hover:bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] backdrop-blur-md shadow-2xl text-[11px] font-mono flex items-center gap-1.5 transition-all"
-          title={isDay ? "Switch to Night Mode (Black/Orange)" : "Switch to Day Mode (Off-white/Blue)"}
+          title={isDay ? "Switch to Night Mode (Dark-Base / Obsidian & Green)" : "Switch to Day Mode (Light-Base / Off-White & Emerald Green)"}
           aria-label="Toggle theme mode"
         >
           {isDay ? (
-            <Sun className="w-3.5 h-3.5 text-[#1a56db]" />
+            <Sun className="w-3.5 h-3.5 text-[#16a34a]" />
           ) : (
-            <Moon className="w-3.5 h-3.5 text-[#e8802e]" />
+            <Moon className="w-3.5 h-3.5 text-[#22c55e]" />
           )}
           <span className="hidden sm:inline font-bold uppercase">{mode}</span>
         </button>
@@ -89,7 +89,7 @@ function AppContent() {
                     onClick={() => setSystemTab('tokens')}
                     className={`px-3 py-1 text-xs font-mono rounded-[2px] transition-colors flex items-center gap-1.5 cursor-pointer ${
                       systemTab === 'tokens'
-                        ? `bg-[var(--color-surface-raised)] ${isDay ? 'text-white' : 'text-black'} font-semibold shadow-sm`
+                        ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
                     }`}
                   >
@@ -101,7 +101,7 @@ function AppContent() {
                     onClick={() => setSystemTab('workbench')}
                     className={`px-3 py-1 text-xs font-mono rounded-[2px] transition-colors flex items-center gap-1.5 cursor-pointer ${
                       systemTab === 'workbench'
-                        ? `bg-[var(--color-surface-raised)] ${isDay ? 'text-white' : 'text-black'} font-semibold shadow-sm`
+                        ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
                     }`}
                   >
@@ -113,7 +113,7 @@ function AppContent() {
                     onClick={() => setSystemTab('spec')}
                     className={`px-3 py-1 text-xs font-mono rounded-[2px] transition-colors flex items-center gap-1.5 cursor-pointer ${
                       systemTab === 'spec'
-                        ? `bg-[var(--color-surface-raised)] ${isDay ? 'text-white' : 'text-black'} font-semibold shadow-sm`
+                        ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
                         : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
                     }`}
                   >

@@ -51,7 +51,7 @@ export const MassTokenInspector: React.FC = () => {
         { fg: palette.textPrimary, bg: palette.surfaceStrong, label: 'color.text.primary on color.surface.strong (Dialogs & panels)' },
         { fg: palette.textSecondary, bg: palette.surfaceBase, label: 'color.text.secondary on color.surface.base (Subtitles & metadata)' },
         { fg: palette.textSecondary, bg: palette.surfaceMuted, label: 'color.text.secondary on color.surface.muted (Card footnotes)' },
-        { fg: palette.surfaceRaised, bg: palette.surfaceBase, label: 'color.surface.raised (Cobalt Blue) on color.surface.base (Accent icons)' },
+        { fg: palette.surfaceRaised, bg: palette.surfaceBase, label: 'color.surface.raised (Emerald Green) on color.surface.base (Accent icons)' },
         { fg: '#ffffff', bg: palette.surfaceRaised, label: 'white text on color.surface.raised (Primary button text)' },
         { fg: palette.textTertiary, bg: palette.surfaceBase, label: 'color.text.tertiary on color.surface.base (Disabled indicators & captions)' },
       ]
@@ -61,8 +61,8 @@ export const MassTokenInspector: React.FC = () => {
         { fg: palette.textPrimary, bg: palette.surfaceStrong, label: 'color.text.primary on color.surface.strong (Workbench & dialogs)' },
         { fg: palette.textSecondary, bg: palette.surfaceBase, label: 'color.text.secondary on color.surface.base (Subtitles & metadata)' },
         { fg: palette.textSecondary, bg: palette.surfaceMuted, label: 'color.text.secondary on color.surface.muted (Card footnotes)' },
-        { fg: palette.surfaceRaised, bg: palette.surfaceBase, label: 'color.surface.raised (Ember Orange) on color.surface.base (Accent icons)' },
-        { fg: '#000000', bg: palette.surfaceRaised, label: 'color.surface.base on color.surface.raised (Primary button text)' },
+        { fg: palette.surfaceRaised, bg: palette.surfaceBase, label: 'color.surface.raised (Architectural Green) on color.surface.base (Accent icons)' },
+        { fg: '#ffffff', bg: palette.surfaceRaised, label: 'white text on color.surface.raised (Primary button text)' },
         { fg: palette.textTertiary, bg: palette.surfaceBase, label: 'color.text.tertiary on color.surface.base (Disabled indicators - Non-text)' },
       ];
 
@@ -91,10 +91,10 @@ export const MassTokenInspector: React.FC = () => {
               onClick={() => setMode('night')}
               className={`px-2.5 py-1 rounded-[2px] flex items-center gap-1.5 transition-all cursor-pointer ${
                 !isDay
-                  ? 'bg-[#e8802e] text-black font-bold'
+                  ? 'bg-[#22c55e] text-black font-bold'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }`}
-              title="Switch to Night Mode (Dark-Base / Obsidian & Ember)"
+              title="Switch to Night Mode (Dark-Base / Obsidian & Green)"
             >
               <Moon className="w-3.5 h-3.5" />
               <span>Night Mode</span>
@@ -103,10 +103,10 @@ export const MassTokenInspector: React.FC = () => {
               onClick={() => setMode('day')}
               className={`px-2.5 py-1 rounded-[2px] flex items-center gap-1.5 transition-all cursor-pointer ${
                 isDay
-                  ? 'bg-[#1a56db] text-white font-bold'
+                  ? 'bg-[#16a34a] text-white font-bold'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }`}
-              title="Switch to Day Mode (Light-Base / Off-White & Cobalt Blue)"
+              title="Switch to Day Mode (Light-Base / Off-White & Emerald Green)"
             >
               <Sun className="w-3.5 h-3.5" />
               <span>Day Mode</span>
@@ -147,7 +147,7 @@ export const MassTokenInspector: React.FC = () => {
                 {palette.name}
               </h2>
               <p className="text-xs text-[var(--color-text-secondary)] mt-0.5">
-                {isDay ? 'Light architectural palette using warm off-white canvas and high-contrast cobalt blue accent.' : 'Dark architectural palette using deep obsidian canvas and signature ember orange accent.'}
+                {isDay ? 'Light architectural palette using warm off-white canvas and high-contrast emerald green accent.' : 'Dark architectural palette using deep obsidian canvas and signature green accent.'}
               </p>
             </div>
             <span className="text-xs font-mono px-2 py-0.5 rounded-[2px] bg-[var(--color-surface-muted)] text-[var(--color-surface-raised)] font-semibold border border-[var(--color-border-subtle)]">
@@ -165,7 +165,7 @@ export const MassTokenInspector: React.FC = () => {
                 { name: 'color.surface.base', hex: palette.surfaceBase, role: isDay ? 'Canvas ground, architectural warm off-white' : 'Canvas ground, deep obsidian' },
                 { name: 'color.surface.muted', hex: palette.surfaceMuted, role: 'Card surface elevation 1' },
                 { name: 'color.surface.strong', hex: palette.surfaceStrong, role: 'Interactive container, modal background' },
-                { name: 'color.surface.raised', hex: palette.surfaceRaised, role: isDay ? 'Primary architectural cobalt blue accent' : 'Primary architectural ember orange accent' },
+                { name: 'color.surface.raised', hex: palette.surfaceRaised, role: isDay ? 'Primary architectural emerald green accent' : 'Primary architectural luminous green accent' },
               ].map((token) => (
                 <div
                   key={token.name}
@@ -197,7 +197,7 @@ export const MassTokenInspector: React.FC = () => {
                   >
                     {copiedToken === token.name ? (
                       <>
-                        <Check className="w-3 h-3 text-[#e8802e]" />
+                        <Check className="w-3 h-3 text-[var(--color-surface-raised)]" />
                         <span>Copied Var</span>
                       </>
                     ) : (
@@ -315,7 +315,7 @@ export const MassTokenInspector: React.FC = () => {
                     className="h-12 w-full bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] rounded-[2px] flex items-center justify-center text-[10.56px] font-mono text-[var(--color-text-primary)]"
                     style={{ boxShadow: s.value }}
                   >
-                    {isDay ? 'Subtle Architectural Soft Shadow' : 'Deep Ambient Obsidian + Ember Glow'}
+                    {isDay ? 'Subtle Architectural Soft Shadow' : 'Deep Ambient Obsidian + Green Glow'}
                   </div>
                 </div>
               ))}

@@ -58,6 +58,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   // Authentication State
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ email: string; name: string } | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Blueprint Animation Speed & Pause Technical Controls
   const [isBlueprintPaused, setIsBlueprintPaused] = useState(false);
@@ -124,7 +125,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
     if (!currentUser) {
       setIsAuthModalOpen(true);
     } else {
-      alert(`Upgrading ${currentUser.name} to the ${plan.name} plan!`);
+      setToastMessage(`Account updated: Upgrading ${currentUser.name} to the ${plan.name} plan.`);
+      setTimeout(() => setToastMessage(null), 4000);
     }
   };
 
@@ -269,17 +271,17 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             <button
               onClick={toggleMode}
               className="flex items-center gap-1.5 text-[11px] py-1.5 px-2.5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] bg-[var(--color-surface-strong)]/60 hover:bg-[var(--color-surface-strong)] text-[var(--color-text-primary)] transition-all font-mono tracking-wider group cursor-pointer"
-              title={isDay ? "Shift to Night Mode (Dark-base / Obsidian & Orange)" : "Shift to Day Mode (Light-base / Off-white & Cobalt Blue)"}
+              title={isDay ? "Shift to Night Mode (Dark-base / Obsidian & Green)" : "Shift to Day Mode (Light-base / Off-white & Emerald Green)"}
               aria-label={`Toggle theme mode (currently ${mode})`}
             >
               {isDay ? (
                 <>
-                  <Sun className="w-3.5 h-3.5 text-[#1a56db] group-hover:rotate-45 transition-transform" />
+                  <Sun className="w-3.5 h-3.5 text-[#16a34a] group-hover:rotate-45 transition-transform" />
                   <span className="font-semibold text-[var(--color-text-primary)]">DAY</span>
                 </>
               ) : (
                 <>
-                  <Moon className="w-3.5 h-3.5 text-[#e8802e] group-hover:-rotate-12 transition-transform" />
+                  <Moon className="w-3.5 h-3.5 text-[#22c55e] group-hover:-rotate-12 transition-transform" />
                   <span className="font-semibold text-[var(--color-text-primary)]">NIGHT</span>
                 </>
               )}
@@ -370,8 +372,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 className={`w-[78px] h-[84px] flex flex-col items-center justify-center gap-2 rounded-[2px] transition-all duration-200 group relative cursor-pointer backdrop-blur-md select-none ${
                   isActive
                     ? isDay
-                      ? 'bg-[#ece9e2]/80 border-2 border-[#1a56db] text-[#111113] shadow-[0_6px_20px_rgba(26,86,219,0.18),inset_0_1px_1px_rgba(255,255,255,0.95)]'
-                      : 'bg-white/10 border-2 border-[#e8802e] text-[#eceae6] shadow-[0_6px_22px_rgba(232,128,46,0.22),inset_0_1px_1px_rgba(255,255,255,0.2)]'
+                      ? 'bg-[#ece9e2]/80 border-2 border-[#16a34a] text-[#111113] shadow-[0_6px_20px_rgba(22,163,74,0.2),inset_0_1px_1px_rgba(255,255,255,0.95)]'
+                      : 'bg-white/10 border-2 border-[#22c55e] text-[#eceae6] shadow-[0_6px_22px_rgba(34,197,94,0.25),inset_0_1px_1px_rgba(255,255,255,0.2)]'
                     : isDay
                       ? 'bg-white/35 hover:bg-white/65 border border-black/10 hover:border-black/25 text-[#4b5563] hover:text-[#111113] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_2px_8px_rgba(0,0,0,0.03)] hover:-translate-y-0.5'
                       : 'bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-[#8a8a86] hover:text-[#eceae6] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:-translate-y-0.5'
@@ -415,9 +417,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 {/* 3. Colorgram radial fan swatch */}
                 {tool.id === 'cologram' && (
                   <svg className="w-6 h-6 drop-shadow-sm" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 21L6 14A8 8 0 0 1 18 14L12 21Z" fill="#e8802e" fillOpacity="0.85" />
-                    <path d="M12 21L3 17A9 9 0 0 1 9 9L12 21Z" fill="#d97706" fillOpacity="0.9" />
-                    <path d="M12 21L15 9A9 9 0 0 1 21 17L12 21Z" fill="#f97316" fillOpacity="0.9" />
+                    <path d="M12 21L6 14A8 8 0 0 1 18 14L12 21Z" fill="#16a34a" fillOpacity="0.85" />
+                    <path d="M12 21L3 17A9 9 0 0 1 9 9L12 21Z" fill="#15803d" fillOpacity="0.9" />
+                    <path d="M12 21L15 9A9 9 0 0 1 21 17L12 21Z" fill="#22c55e" fillOpacity="0.9" />
                     <circle cx="12" cy="20" r="1.5" fill="#ffffff" />
                   </svg>
                 )}
@@ -439,7 +441,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 {isActive && (
                   <span
                     className={`absolute -right-[2px] top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-l-[1px] shadow-sm ${
-                      isDay ? 'bg-[#1a56db]' : 'bg-[#e8802e]'
+                      isDay ? 'bg-[#16a34a]' : 'bg-[#22c55e]'
                     }`}
                   />
                 )}
@@ -602,7 +604,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <button
                 onClick={() => {
                   setActiveToolId('laserfish');
-                  alert('LaserFish tool activated! Contour slicing pipeline ready.');
+                  setToastMessage('LaserFish tool activated: Contour slicing pipeline ready.');
+                  setTimeout(() => setToastMessage(null), 4000);
                 }}
                 className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] bg-[var(--color-surface-muted)] rounded-[2px] font-mono transition-colors cursor-pointer"
               >
@@ -630,7 +633,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <button
                 onClick={() => {
                   setActiveToolId('cologram');
-                  alert('Cologram urban chromatic analysis ready!');
+                  setToastMessage('Cologram urban chromatic analysis ready.');
+                  setTimeout(() => setToastMessage(null), 4000);
                 }}
                 className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] bg-[var(--color-surface-muted)] rounded-[2px] font-mono transition-colors cursor-pointer"
               >
@@ -941,7 +945,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   <button
                     type="submit"
                     disabled={formState === 'loading'}
-                    className={`w-full py-3 text-xs font-semibold ${isDay ? 'text-white' : 'text-black'} bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[2px] transition-all flex items-center justify-center gap-2 font-mono cursor-pointer shadow-md`}
+                    className="w-full py-3 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[2px] transition-all flex items-center justify-center gap-2 font-mono cursor-pointer shadow-md"
                   >
                     {formState === 'loading' ? (
                       <>
@@ -1072,7 +1076,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setIsNoticeOpen(false);
                   setIsSiteAnalysisStudioOpen(true);
                 }}
-                className={`px-4 py-2 text-xs font-semibold ${isDay ? 'text-white' : 'text-black'} bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] flex items-center gap-1.5 font-mono cursor-pointer shadow-sm`}
+                className="px-4 py-2 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] flex items-center gap-1.5 font-mono cursor-pointer shadow-sm"
               >
                 <span>Open →</span>
               </button>
@@ -1110,7 +1114,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       onClick={() => setCurrentMapIndex(idx)}
                       className={`px-2.5 py-1 text-[10px] font-mono rounded-[2px] transition-colors cursor-pointer ${
                         idx === currentMapIndex
-                          ? `bg-[var(--color-surface-raised)] ${isDay ? 'text-white' : 'text-black'} font-bold`
+                          ? 'bg-[var(--color-surface-raised)] text-white font-bold'
                           : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
                       }`}
                     >
@@ -1195,9 +1199,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="pt-2">
                   <button
                     onClick={() => {
-                      alert(`Exported site analysis vector package for ${activeMap.cityName}!`);
+                      setToastMessage(`Exported site analysis vector package for ${activeMap.cityName}.`);
+                      setTimeout(() => setToastMessage(null), 4000);
                     }}
-                    className={`w-full py-2.5 text-xs font-semibold ${isDay ? 'text-white' : 'text-black'} bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] transition-colors cursor-pointer shadow-md`}
+                    className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] transition-colors cursor-pointer shadow-md"
                   >
                     Export Vector Package (.DXF)
                   </button>
@@ -1282,7 +1287,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     setSelectedProject(null);
                     setIsInquiryModalOpen(true);
                   }}
-                  className={`px-4 py-2 text-xs font-mono ${isDay ? 'text-white' : 'text-black'} bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-semibold cursor-pointer shadow-md`}
+                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-semibold cursor-pointer shadow-md"
                 >
                   Commission Similar Envelope
                 </button>
@@ -1321,7 +1326,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               onSubmit={(e) => {
                 e.preventDefault();
                 setIsInquiryModalOpen(false);
-                alert('Thank you. Your architectural inquiry has been sent to MassLabs.');
+                setToastMessage('Thank you. Your architectural inquiry has been sent to MassLabs.');
+                setTimeout(() => setToastMessage(null), 4000);
               }}
               className="space-y-4"
             >
@@ -1358,7 +1364,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className={`px-4 py-2 text-xs font-mono ${isDay ? 'text-white' : 'text-black'} bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-semibold cursor-pointer shadow-md`}
+                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-semibold cursor-pointer shadow-md"
                 >
                   Send Briefing
                 </button>
@@ -1376,6 +1382,21 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           setCurrentUser(user);
         }}
       />
+
+      {/* Non-intrusive Toast Notification Banner */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-6 z-50 max-w-md bg-[var(--color-surface-strong)] border border-[var(--color-surface-raised)] text-[var(--color-text-primary)] px-4 py-3 rounded-[2px] shadow-2xl flex items-center gap-3 font-mono text-xs animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <CheckCircle className="w-4 h-4 text-[var(--color-surface-raised)] shrink-0" />
+          <span>{toastMessage}</span>
+          <button
+            onClick={() => setToastMessage(null)}
+            className="ml-auto text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
+            aria-label="Dismiss notification"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
