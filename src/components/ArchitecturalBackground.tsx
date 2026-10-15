@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { URBAN_MAP_DATASETS } from '../data/tokens';
-import { Play, Pause, MapPin, Layers, Eye, EyeOff, FastForward, Activity } from 'lucide-react';
+import { Play, Pause, MapPin, Layers, Eye, EyeOff, FastForward, Activity, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface ArchitecturalBackgroundProps {
   currentMapIndex?: number;
@@ -14,6 +14,8 @@ interface ArchitecturalBackgroundProps {
   overlayOpacity?: number; // 0.05 to 0.85
   onOverlayOpacityChange?: (opacity: number) => void;
   themeMode?: 'day' | 'night';
+  zoomLevel?: number; // 0.60 to 1.40
+  onZoomChange?: (zoom: number) => void;
 }
 
 export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = ({
@@ -28,15 +30,15 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
   overlayOpacity: controlledOverlayOpacity,
   onOverlayOpacityChange,
   themeMode = 'night',
+  zoomLevel: controlledZoomLevel,
+  onZoomChange,
 }) => {
   const isDay = themeMode === 'day';
   const [internalMapIndex, setInternalMapIndex] = useState(0);
   const [internalPaused, setInternalPaused] = useState(!autoPlay);
   const [internalOverlayOpacity, setInternalOverlayOpacity] = useState(0.18);
+  const [internalZoomLevel, setInternalZoomLevel] = useState(0.40); // 40% Compact Zoomed-out Start ("size ektu komay dew")
   const [showLayerControls, setShowLayerControls] = useState(false);
-
-  // Parallax cursor coordinates (-1 to 1 normalized)
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
   // Stack visibility state
   const [layersVisibility, setLayersVisibility] = useState({
@@ -48,6 +50,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
   const activeIndex = controlledMapIndex !== undefined ? controlledMapIndex : internalMapIndex;
   const paused = isPaused !== undefined ? isPaused : internalPaused;
   const currentOpacity = controlledOverlayOpacity !== undefined ? controlledOverlayOpacity : internalOverlayOpacity;
+  const currentZoom = controlledZoomLevel !== undefined ? controlledZoomLevel : internalZoomLevel;
 
   const handleIndexChange = (newIndex: number) => {
     if (onMapChange) {
@@ -65,6 +68,15 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
     }
   };
 
+  const handleZoomChange = (newZoom: number) => {
+    const clamped = Math.min(1.20, Math.max(0.20, Number(newZoom.toFixed(2))));
+    if (onZoomChange) {
+      onZoomChange(clamped);
+    } else {
+      setInternalZoomLevel(clamped);
+    }
+  };
+
   // Continuous timer rotating through map blueprint layers
   // Speed-adjusted interval: standard 6500ms divided by speed multiplier
   useEffect(() => {
@@ -79,44 +91,15 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
     return () => clearInterval(interval);
   }, [paused, activeIndex, speedMultiplier]);
 
-  // Cursor movement tracking for tactile blueprint parallax effect
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-
-      // Normalized coordinates from -1 to 1 centered on viewport
-      const normX = (e.clientX / windowWidth) * 2 - 1;
-      const normY = (e.clientY / windowHeight) * 2 - 1;
-
-      setMouseOffset({
-        x: Math.max(-1, Math.min(1, normX)),
-        y: Math.max(-1, Math.min(1, normY)),
-      });
-    };
-
-    const handleMouseLeave = () => {
-      setMouseOffset({ x: 0, y: 0 });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
   const activeMap = URBAN_MAP_DATASETS[activeIndex];
-
-  // Layer-specific parallax displacements (staggered depth math)
-  const cartographyTransform = `translate3d(${mouseOffset.x * 8}px, ${mouseOffset.y * 8}px, 0)`;
-  const cadGridTransform = `translate3d(${mouseOffset.x * 16}px, ${mouseOffset.y * 16}px, 0)`;
-  const contoursTransform = `translate3d(${mouseOffset.x * 24}px, ${mouseOffset.y * 24}px, 0)`;
 
   // Dynamic animation duration based on speed multiplier
   const blueprintAnimDuration = `${7 / speedMultiplier}s`;
+
+  // Dynamic zoom scale: Calibrated so that at ALL zoom levels (0.20 - 1.20),
+  // the cartography and CAD blueprint layers ALWAYS completely cover 100% of the screen
+  // width and height, completely filling the left, right, top, and bottom edges without any empty margins.
+  const zoomScale = Math.max(1.0, currentZoom / 0.38);
 
   return (
     <div
@@ -126,40 +109,110 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
       {/* 
         ========================================================================
         LAYER 1: CARTOGRAPHY & TERRAIN BLUEPRINT LAYER
-        Absolute-positioned div applying 'animate-mass-blueprint' + parallax offset
+        Full-bleed Edge-to-Edge with Zero Gaps on Left/Right Sides ("fill the side")
         ========================================================================
       */}
       {layersVisibility.cartography && (
-        <div
-          className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out"
-          style={{
-            transform: cartographyTransform,
-          }}
-        >
-          {URBAN_MAP_DATASETS.map((mapData, idx) => {
-            const isActive = idx === activeIndex;
-            return (
-              <div
-                key={mapData.id}
-                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
-                  isActive ? 'opacity-100 z-1' : 'opacity-0 z-0'
-                }`}
-              >
-                <img
-                  src={mapData.image}
-                  alt=""
-                  className={`w-full h-full object-cover transform transition-transform duration-[7000ms] ease-out ${
-                    isDay
-                      ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]'
-                      : 'filter contrast-[1.12] brightness-[1.08] saturate-[1.05]'
-                  } ${
-                    isActive ? 'scale-105 translate-y-0' : 'scale-100 translate-y-1'
+        <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+          {/* Base Ambient Cartography Layer: Always 100% full-bleed covering every pixel */}
+          <div className="absolute inset-0 w-full h-full">
+            {URBAN_MAP_DATASETS.map((mapData, idx) => {
+              const isActive = idx === activeIndex;
+              return (
+                <div
+                  key={`ambient-${mapData.id}`}
+                  className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                    isActive ? 'opacity-85 z-0' : 'opacity-0 z-0'
                   }`}
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-            );
-          })}
+                >
+                  <img
+                    src={mapData.image}
+                    alt=""
+                    className={`w-full h-full object-cover transform scale-105 ${
+                      isDay
+                        ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]'
+                        : 'filter contrast-[1.12] brightness-[1.08] saturate-[1.05]'
+                    }`}
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Left and Right Side Extension Wings: Continuous blueprint terrain filling outer bounds */}
+          <div className="absolute top-0 bottom-0 left-0 w-48 sm:w-72 pointer-events-none z-1 overflow-hidden opacity-40">
+            <img
+              src={activeMap.image}
+              alt=""
+              className={`absolute top-0 bottom-0 right-0 h-full w-[300%] max-w-none object-cover transform -scale-x-100 ${
+                isDay
+                  ? 'invert-[0.93] hue-rotate-180 contrast-[1.12]'
+                  : 'filter contrast-[1.12] brightness-[1.05]'
+              }`}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: isDay
+                  ? 'linear-gradient(to right, rgba(246, 245, 242, 0.4), transparent)'
+                  : 'linear-gradient(to right, rgba(11, 13, 14, 0.4), transparent)',
+              }}
+            />
+          </div>
+          <div className="absolute top-0 bottom-0 right-0 w-48 sm:w-72 pointer-events-none z-1 overflow-hidden opacity-40">
+            <img
+              src={activeMap.image}
+              alt=""
+              className={`absolute top-0 bottom-0 left-0 h-full w-[300%] max-w-none object-cover transform -scale-x-100 ${
+                isDay
+                  ? 'invert-[0.93] hue-rotate-180 contrast-[1.12]'
+                  : 'filter contrast-[1.12] brightness-[1.05]'
+              }`}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: isDay
+                  ? 'linear-gradient(to left, rgba(246, 245, 242, 0.4), transparent)'
+                  : 'linear-gradient(to left, rgba(11, 13, 14, 0.4), transparent)',
+              }}
+            />
+          </div>
+
+          {/* Zoomable Interactive Cartography Core Layer */}
+          <div
+            className="absolute inset-0 w-full h-full transition-transform duration-700 ease-out flex items-center justify-center pointer-events-none z-2"
+            style={{
+              transform: `scale(${zoomScale})`,
+              transformOrigin: 'center center',
+            }}
+          >
+            {URBAN_MAP_DATASETS.map((mapData, idx) => {
+              const isActive = idx === activeIndex;
+              return (
+                <div
+                  key={mapData.id}
+                  className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                    isActive ? 'opacity-100 z-1' : 'opacity-0 z-0'
+                  }`}
+                >
+                  <img
+                    src={mapData.image}
+                    alt=""
+                    className={`w-full h-full object-cover transform transition-transform duration-[7000ms] ease-out ${
+                      isDay
+                        ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]'
+                        : 'filter contrast-[1.12] brightness-[1.08] saturate-[1.05]'
+                    } ${
+                      isActive ? 'scale-100 translate-y-0' : 'scale-95 translate-y-1'
+                    }`}
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -171,27 +224,30 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
       */}
       {layersVisibility.cadGrid && (
         <div
-          className="absolute inset-0 w-full h-full z-2 opacity-40 pointer-events-none animate-mass-blueprint animate-mass-grid-drift transition-transform duration-300 ease-out"
+          className="absolute inset-0 w-full h-full z-2 opacity-45 pointer-events-none animate-mass-blueprint animate-mass-grid-drift"
           style={{
-            transform: cadGridTransform,
             animationDuration: blueprintAnimDuration,
             animationPlayState: paused ? 'paused' : 'running',
           }}
         >
-          {/* Hairline 80px Architectural Grid */}
+          {/* Hairline 80px & 20px Architectural Dual Grid covering 100% edge-to-edge */}
           <div
             className="w-full h-full"
             style={{
               backgroundImage: isDay
                 ? `
                 linear-gradient(to right, rgba(17, 17, 19, 0.08) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(17, 17, 19, 0.08) 1px, transparent 1px)
+                linear-gradient(to bottom, rgba(17, 17, 19, 0.08) 1px, transparent 1px),
+                linear-gradient(to right, rgba(17, 17, 19, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(17, 17, 19, 0.025) 1px, transparent 1px)
               `
                 : `
                 linear-gradient(to right, rgba(236, 234, 230, 0.08) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(236, 234, 230, 0.08) 1px, transparent 1px)
+                linear-gradient(to bottom, rgba(236, 234, 230, 0.08) 1px, transparent 1px),
+                linear-gradient(to right, rgba(236, 234, 230, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(236, 234, 230, 0.025) 1px, transparent 1px)
               `,
-              backgroundSize: '80px 80px',
+              backgroundSize: '80px 80px, 80px 80px, 20px 20px, 20px 20px',
             }}
           />
 
@@ -223,14 +279,13 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
       {/* 
         ========================================================================
         LAYER 3: TOPOGRAPHIC ELEVATION CONTOURS & VECTOR PARCEL BLUEPRINT LAYER
-        Absolute-positioned div applying 'animate-mass-blueprint' + deepest tactile parallax
+        Spanning 100% full-width across left & right edges without shrinking
         ========================================================================
       */}
       {layersVisibility.topographyContours && (
         <div
-          className="absolute inset-0 w-full h-full z-3 pointer-events-none opacity-45 animate-mass-blueprint transition-transform duration-300 ease-out"
+          className="absolute inset-0 w-full h-full z-3 pointer-events-none opacity-45 animate-mass-blueprint"
           style={{
-            transform: contoursTransform,
             animationDuration: blueprintAnimDuration,
             animationPlayState: paused ? 'paused' : 'running',
           }}
@@ -242,16 +297,16 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
             preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Elevation Contours */}
+            {/* Extended Continuous Elevation Contours spanning past both sides */}
             <path
-              d="M-50,200 Q400,150 900,320 T1950,220 M-50,350 Q450,280 950,480 T1950,380 M-50,520 Q500,420 1020,620 T1950,540 M-50,700 Q550,580 1100,780 T1950,710 M-50,880 Q600,750 1200,920 T1950,880"
+              d="M-200,180 Q300,130 900,320 T2120,200 M-200,320 Q350,250 950,480 T2120,350 M-200,490 Q400,390 1020,620 T2120,510 M-200,670 Q450,550 1100,780 T2120,680 M-200,850 Q500,720 1200,920 T2120,850"
               stroke={isDay ? "rgba(17, 17, 19, 0.15)" : "rgba(255, 255, 255, 0.14)"}
               strokeWidth="0.8"
               strokeDasharray="4 6"
             />
-            {/* Structural Parcel Polygons */}
+            {/* Structural Parcel Polygons spanning center, left and right sides */}
             <path
-              d="M300,100 L700,400 L600,800 L200,500 Z M1100,200 L1600,150 L1700,650 L1250,700 Z"
+              d="M80,120 L480,380 L400,780 L50,520 Z M1320,180 L1840,130 L1940,630 L1460,680 Z M650,250 L1150,210 L1250,710 L800,760 Z"
               stroke={isDay ? "rgba(22, 163, 74, 0.35)" : "rgba(34, 197, 94, 0.30)"}
               strokeWidth="1"
             />
@@ -264,9 +319,28 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
               strokeWidth="0.75"
               strokeDasharray="6 8"
             />
+            {/* Left and Right Side Radial Range Rings Filling the Outer Margins */}
+            <circle
+              cx="140"
+              cy="540"
+              r="220"
+              stroke={isDay ? "rgba(22, 163, 74, 0.16)" : "rgba(34, 197, 94, 0.13)"}
+              strokeWidth="0.75"
+              strokeDasharray="4 8"
+            />
+            <circle
+              cx="1780"
+              cy="540"
+              r="220"
+              stroke={isDay ? "rgba(22, 163, 74, 0.16)" : "rgba(34, 197, 94, 0.13)"}
+              strokeWidth="0.75"
+              strokeDasharray="4 8"
+            />
           </svg>
         </div>
       )}
+
+
 
       {/* 
         ========================================================================
@@ -306,13 +380,13 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
         HUD TELEMETRY CONTROLS (Bottom Left, interactive controls for layer testing)
         ========================================================================
       */}
-      <div className="absolute bottom-6 left-6 z-20 pointer-events-auto hidden sm:flex items-center gap-3">
-        <div className="bg-[var(--color-surface-strong)]/90 backdrop-blur-md border border-[var(--color-border-subtle)] px-3.5 py-2 rounded-[2px] text-xs font-mono text-[var(--color-text-secondary)] flex items-center gap-3.5 shadow-2xl">
-          <div className="flex items-center gap-2 text-[var(--color-text-primary)]">
-            <MapPin className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
+      <div className="absolute bottom-6 left-6 z-20 pointer-events-auto hidden sm:flex items-center gap-2.5">
+        <div className="glass-pill px-2.5 py-1 rounded-[5px] text-[10.5px] font-mono text-[var(--color-text-secondary)] flex items-center gap-2.5 shadow-2xl">
+          <div className="flex items-center gap-1.5 text-[var(--color-text-primary)]">
+            <MapPin className="w-3 h-3 text-[var(--color-surface-raised)]" />
             <span className="font-semibold">{activeMap.cityName}</span>
             <span className="opacity-40">·</span>
-            <span className="text-[10px] text-[var(--color-text-secondary)]">{activeMap.coordinates}</span>
+            <span className="text-[9.5px] text-[var(--color-text-secondary)]">{activeMap.coordinates}</span>
           </div>
 
           <span className="opacity-30">|</span>
@@ -320,12 +394,45 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
           {/* Layer Inspector Toggle */}
           <button
             onClick={() => setShowLayerControls(!showLayerControls)}
-            className="flex items-center gap-1.5 text-[10px] text-[var(--color-text-primary)] hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-[9.5px] text-[var(--color-text-primary)] hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer"
             title="Inspect Blueprint Stack"
           >
             <Layers className="w-3 h-3 text-[var(--color-surface-raised)]" />
-            <span>Blueprint Layers</span>
+            <span>Layers</span>
           </button>
+
+          <span className="opacity-30">|</span>
+
+          {/* Zoom Out / In Controls */}
+          <div className="flex items-center gap-1">
+            <span className="text-[9.5px] text-[var(--color-text-secondary)] hidden lg:inline">Zoom:</span>
+            <button
+              onClick={() => handleZoomChange(currentZoom - 0.05)}
+              className="p-0.5 rounded-[2px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors cursor-pointer"
+              title="Zoom Out Blueprint"
+            >
+              <ZoomOut className="w-3 h-3" />
+            </button>
+            <span className="text-[9.5px] font-mono font-bold text-[var(--color-surface-raised)] min-w-[26px] text-center">
+              {Math.round(currentZoom * 100)}%
+            </span>
+            <button
+              onClick={() => handleZoomChange(currentZoom + 0.05)}
+              className="p-0.5 rounded-[2px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors cursor-pointer"
+              title="Zoom In Blueprint"
+            >
+              <ZoomIn className="w-3 h-3" />
+            </button>
+            {Math.abs(currentZoom - 0.40) > 0.02 && (
+              <button
+                onClick={() => handleZoomChange(0.40)}
+                className="text-[8.5px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] underline ml-0.5 cursor-pointer"
+                title="Reset to default zoomed-out view (40%)"
+              >
+                reset
+              </button>
+            )}
+          </div>
 
           <span className="opacity-30">|</span>
 
@@ -396,7 +503,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
 
         {/* Blueprint Layer Stack Popover */}
         {showLayerControls && (
-          <div className="absolute bottom-12 left-0 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] p-3 rounded-[2px] shadow-2xl text-[10.56px] font-mono space-y-2.5 w-72 animate-in fade-in slide-in-from-bottom-2 duration-150">
+          <div className="absolute bottom-12 left-0 glass-panel p-3 rounded-[6px] shadow-2xl text-[10.56px] font-mono space-y-2.5 w-72 animate-in fade-in slide-in-from-bottom-2 duration-150">
             <div className="flex items-center justify-between text-[var(--color-surface-raised)] font-semibold border-b border-[var(--color-border-subtle)] pb-1.5">
               <span>BLUEPRINT & OVERLAY CONTROLS</span>
               <button
@@ -405,6 +512,28 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
               >
                 ✕
               </button>
+            </div>
+
+            {/* Blueprint Zoom Slider */}
+            <div className="space-y-1 bg-[var(--color-surface-muted)] p-2 rounded-[2px]">
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="text-[var(--color-text-primary)]">Blueprint Zoom View</span>
+                <span className="text-[var(--color-surface-raised)] font-bold">{Math.round(currentZoom * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="30"
+                max="120"
+                step="5"
+                value={Math.round(currentZoom * 100)}
+                onChange={(e) => handleZoomChange(Number(e.target.value) / 100)}
+                className="w-full accent-[var(--color-surface-raised)] cursor-pointer h-1.5 bg-[var(--color-surface-base)] rounded"
+              />
+              <div className="flex justify-between text-[8px] text-[var(--color-text-secondary)]">
+                <span>30% (Wide Macro)</span>
+                <span>50% (Default Zoom-Out)</span>
+                <span>100% (Detail)</span>
+              </div>
             </div>
 
             {/* Black / Light Opacity Slider */}

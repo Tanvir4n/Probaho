@@ -49,9 +49,9 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4">
       <div
-        className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-6 animate-in fade-in zoom-in-95 duration-200 text-[var(--color-text-primary)]"
+        className="glass-panel rounded-[8px] max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-6 animate-in fade-in zoom-in-95 duration-200 text-[var(--color-text-primary)]"
         role="dialog"
         aria-modal="true"
       >
@@ -75,7 +75,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[2px] cursor-pointer"
+            className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[3px] cursor-pointer"
             aria-label="Close auth dialog"
           >
             <X className="w-5 h-5" />
@@ -83,14 +83,14 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
         </div>
 
         {/* Tab Switcher */}
-        <div className="grid grid-cols-2 p-1 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] rounded-[2px] text-xs font-mono">
+        <div className="grid grid-cols-2 p-1 glass-pill rounded-[4px] text-xs font-mono">
           <button
             type="button"
             onClick={() => {
               setMode('signin');
               setError('');
             }}
-            className={`py-2 rounded-[2px] transition-colors cursor-pointer ${
+            className={`py-2 rounded-[3px] transition-colors cursor-pointer ${
               mode === 'signin'
                 ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
@@ -104,7 +104,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
               setMode('signup');
               setError('');
             }}
-            className={`py-2 rounded-[2px] transition-colors cursor-pointer ${
+            className={`py-2 rounded-[3px] transition-colors cursor-pointer ${
               mode === 'signup'
                 ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
@@ -127,7 +127,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
                   placeholder="e.g. Maya Lin Architecture Studio"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] font-mono"
+                  className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
                 />
               </div>
             </div>
@@ -144,7 +144,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
                 placeholder="architect@studio-practice.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] font-mono"
+                className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
               />
             </div>
           </div>
@@ -174,19 +174,19 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] font-mono"
+                className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
               />
             </div>
           </div>
 
           {infoMessage && (
-            <div className="text-xs text-[var(--color-surface-raised)] font-mono bg-[var(--color-surface-raised)]/10 p-2.5 border border-[var(--color-surface-raised)]/20 rounded-[2px]">
+            <div className="text-xs text-[var(--color-surface-raised)] font-mono bg-[var(--color-surface-raised)]/10 p-2.5 border border-[var(--color-surface-raised)]/20 rounded-[3px]">
               {infoMessage}
             </div>
           )}
 
           {error && (
-            <div className="text-xs text-red-500 font-mono bg-red-500/10 p-2.5 border border-red-500/20 rounded-[2px]">
+            <div className="text-xs text-red-500 font-mono bg-red-500/10 p-2.5 border border-red-500/20 rounded-[3px]">
               {error}
             </div>
           )}
@@ -194,7 +194,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[2px] transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer shadow-md"
+            className="w-full py-3 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[3px] transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
           >
             {isLoading ? (
               <>
@@ -209,7 +209,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
 
         {/* Divider */}
         <div className="relative flex items-center justify-center text-[10px] font-mono text-[var(--color-text-tertiary)] border-t border-[var(--color-border-subtle)] pt-4">
-          <span className="bg-[var(--color-surface-strong)] px-2 uppercase">or continue with</span>
+          <span className="glass-tile px-2 uppercase rounded-[2px]">or continue with</span>
         </div>
 
         {/* Third-party SSO */}

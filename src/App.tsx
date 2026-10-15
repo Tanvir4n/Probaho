@@ -45,7 +45,7 @@ function AppContent() {
         {/* Floating Quick Day/Night Toggle */}
         <button
           onClick={toggleMode}
-          className="p-2 bg-[var(--color-surface-strong)]/90 hover:bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] backdrop-blur-md shadow-2xl text-[11px] font-mono flex items-center gap-1.5 transition-all"
+          className="p-2 glass-pill text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-surface-raised)] rounded-[4px] shadow-2xl text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer"
           title={isDay ? "Switch to Night Mode (Dark-Base / Obsidian & Green)" : "Switch to Day Mode (Light-Base / Off-White & Emerald Green)"}
           aria-label="Toggle theme mode"
         >
@@ -59,7 +59,7 @@ function AppContent() {
 
         <button
           onClick={() => setIsDesignSystemOpen(true)}
-          className="px-3 py-1.5 bg-[var(--color-surface-strong)]/90 hover:bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] backdrop-blur-md shadow-2xl text-[11px] font-mono flex items-center gap-2 transition-all group"
+          className="px-3.5 py-1.5 glass-pill text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-surface-raised)] rounded-[4px] shadow-2xl text-[11px] font-mono flex items-center gap-2 transition-all group cursor-pointer"
           title="Open MassLabs Design System Guidance & Token Inspector"
         >
           <Code2 className="w-3.5 h-3.5 text-[var(--color-surface-raised)] group-hover:rotate-12 transition-transform" />
@@ -71,10 +71,10 @@ function AppContent() {
         Design System & Token Architecture Modal Overlay
       */}
       {isDesignSystemOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col p-4 sm:p-6 overflow-hidden">
-          <div className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] flex-1 flex flex-col overflow-hidden shadow-2xl max-w-7xl w-full mx-auto">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex flex-col p-4 sm:p-6 overflow-hidden">
+          <div className="glass-panel rounded-[8px] flex-1 flex flex-col overflow-hidden shadow-2xl max-w-7xl w-full mx-auto">
             {/* Modal Header */}
-            <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-[var(--color-surface-base)]/90 backdrop-blur-sm">
+            <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-md">
               <div className="flex items-center gap-3">
                 <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">MassLabs</span>
                 <span className="text-[var(--color-text-tertiary)]">|</span>
@@ -84,13 +84,13 @@ function AppContent() {
 
               <div className="flex items-center gap-3">
                 {/* System Navigation Tabs */}
-                <div className="flex items-center gap-1 bg-[var(--color-surface-muted)] p-1 border border-[var(--color-border-subtle)] rounded-[2px]">
+                <div className="flex items-center gap-1 glass-pill p-1 rounded-[4px]">
                   <button
                     onClick={() => setSystemTab('tokens')}
-                    className={`px-3 py-1 text-xs font-mono rounded-[2px] transition-colors flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-colors flex items-center gap-1.5 cursor-pointer ${
                       systemTab === 'tokens'
                         ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
-                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                     }`}
                   >
                     <Sliders className="w-3 h-3" />
@@ -99,10 +99,10 @@ function AppContent() {
 
                   <button
                     onClick={() => setSystemTab('workbench')}
-                    className={`px-3 py-1 text-xs font-mono rounded-[2px] transition-colors flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-colors flex items-center gap-1.5 cursor-pointer ${
                       systemTab === 'workbench'
                         ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
-                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                     }`}
                   >
                     <Layers className="w-3 h-3" />
@@ -111,10 +111,10 @@ function AppContent() {
 
                   <button
                     onClick={() => setSystemTab('spec')}
-                    className={`px-3 py-1 text-xs font-mono rounded-[2px] transition-colors flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-colors flex items-center gap-1.5 cursor-pointer ${
                       systemTab === 'spec'
                         ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
-                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                     }`}
                   >
                     <FileCode className="w-3 h-3" />
@@ -124,7 +124,7 @@ function AppContent() {
 
                 <button
                   onClick={() => setIsDesignSystemOpen(false)}
-                  className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] rounded-[2px] hover:bg-[var(--color-surface-muted)] cursor-pointer"
+                  className="p-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] rounded-[3px] glass-tile cursor-pointer"
                   aria-label="Close Design System Specs"
                 >
                   <X className="w-4 h-4" />
@@ -133,7 +133,7 @@ function AppContent() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[var(--color-surface-base)]">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-[var(--color-surface-base)]/80">
               {systemTab === 'tokens' && <MassTokenInspector />}
               {systemTab === 'workbench' && <MassComponentWorkbench />}
               {systemTab === 'spec' && <MassSpecDocument />}

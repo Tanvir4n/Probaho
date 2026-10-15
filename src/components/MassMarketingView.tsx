@@ -10,6 +10,7 @@ import {
 import { ArchitecturalBackground } from './ArchitecturalBackground';
 import { MassPricingSection } from './MassPricingSection';
 import { MassAuthModal } from './MassAuthModal';
+import { MassGlassSidebar } from './MassGlassSidebar';
 import {
   ArrowRight,
   ChevronRight,
@@ -64,6 +65,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   const [isBlueprintPaused, setIsBlueprintPaused] = useState(false);
   const [blueprintSpeed, setBlueprintSpeed] = useState<number>(1.0);
   const [mapOverlayOpacity, setMapOverlayOpacity] = useState<number>(0.18);
+  const [blueprintZoom, setBlueprintZoom] = useState<number>(0.40); // Compact Zoomed-out Start (40% scale, "size ektu komay dew")
 
   // Site Analysis GIS Interactive Layer Toggles
   const [activeGisLayers, setActiveGisLayers] = useState({
@@ -151,6 +153,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           overlayOpacity={mapOverlayOpacity}
           onOverlayOpacityChange={setMapOverlayOpacity}
           themeMode={mode}
+          zoomLevel={blueprintZoom}
+          onZoomChange={setBlueprintZoom}
         />
 
         {/* 
@@ -160,7 +164,11 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           Right: PRICING · LOGIN · 9+ Bell · LANGUAGE dropdown · DAY/NIGHT TOGGLE
           ====================================================================
         */}
-        <header className="relative z-30 px-6 sm:px-10 py-5 flex items-center justify-between border-b border-[var(--color-border-subtle)] bg-[var(--color-surface-base)]/40 backdrop-blur-sm">
+        <header className={`relative z-30 px-6 sm:px-10 py-4 flex items-center justify-between border-b transition-colors duration-200 backdrop-blur-2xl backdrop-saturate-180 ${
+          isDay
+            ? 'bg-white/60 border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)]'
+            : 'bg-[#0b0d0e]/60 border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.12)]'
+        }`}>
           {/* Brand Logo & Emblem */}
           <a
             href="/"
@@ -190,14 +198,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           <div className="flex items-center gap-4 sm:gap-6 text-xs font-mono tracking-wider text-[var(--color-text-secondary)]">
             <a
               href="#pricing"
-              className="hover:text-[var(--color-text-primary)] transition-colors uppercase"
+              className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium"
             >
               PRICING
             </a>
 
             {currentUser ? (
               <div className="flex items-center gap-2">
-                <span className="text-[var(--color-text-primary)] text-xs font-semibold flex items-center gap-1.5 bg-[var(--color-surface-muted)] px-2.5 py-1 rounded-[2px] border border-[var(--color-border-subtle)]">
+                <span className="text-[var(--color-text-primary)] text-xs font-semibold flex items-center gap-1.5 glass-tile px-2.5 py-1 rounded-[3px] border border-[var(--color-border-subtle)]">
                   <User className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
                   <span>{currentUser.name}</span>
                 </span>
@@ -212,7 +220,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             ) : (
               <button
                 onClick={() => setIsAuthModalOpen(true)}
-                className="hover:text-[var(--color-text-primary)] transition-colors uppercase"
+                className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium cursor-pointer"
               >
                 LOGIN
               </button>
@@ -221,7 +229,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             {/* Notification Bell with Red 9+ Badge */}
             <button
               onClick={() => setIsNoticeOpen(true)}
-              className="relative p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+              className="relative p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
               title="Notifications"
             >
               <Bell className="w-4 h-4" />
@@ -234,14 +242,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             <div className="relative">
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-1.5 text-[var(--color-text-primary)] hover:opacity-90 transition-opacity uppercase text-[11px] py-1.5 px-3 border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] rounded-[2px] bg-[var(--color-surface-strong)]/60 font-mono"
+                className="flex items-center gap-1.5 text-[var(--color-text-primary)] hover:opacity-90 transition-opacity uppercase text-[11px] py-1.5 px-3 border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] rounded-[3px] glass-tile font-mono cursor-pointer"
               >
                 <span>LANGUAGE</span>
                 <span className="text-[8px] text-[var(--color-text-secondary)]">▼</span>
               </button>
 
               {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-1.5 w-36 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] shadow-2xl py-1 z-50 text-[11px] font-mono">
+                <div className="absolute right-0 mt-1.5 w-36 glass-panel rounded-[4px] shadow-2xl py-1 z-50 text-[11px] font-mono">
                   {[
                     { code: 'EN', label: 'English' },
                     { code: 'JA', label: '日本語' },
@@ -255,7 +263,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                         setSelectedLanguage(lang.code as any);
                         setIsLangDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-1.5 hover:bg-[var(--color-surface-muted)] transition-colors flex items-center justify-between ${
+                      className={`w-full text-left px-3 py-1.5 hover:bg-[var(--color-surface-muted)] transition-colors flex items-center justify-between cursor-pointer ${
                         selectedLanguage === lang.code ? 'text-[var(--color-surface-raised)] font-bold' : 'text-[var(--color-text-secondary)]'
                       }`}
                     >
@@ -270,7 +278,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             {/* Day / Night Theme Mode Switcher */}
             <button
               onClick={toggleMode}
-              className="flex items-center gap-1.5 text-[11px] py-1.5 px-2.5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] bg-[var(--color-surface-strong)]/60 hover:bg-[var(--color-surface-strong)] text-[var(--color-text-primary)] transition-all font-mono tracking-wider group cursor-pointer"
+              className="flex items-center gap-1.5 text-[11px] py-1.5 px-2.5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[3px] glass-tile text-[var(--color-text-primary)] transition-all font-mono tracking-wider group cursor-pointer shadow-sm"
               title={isDay ? "Shift to Night Mode (Dark-base / Obsidian & Green)" : "Shift to Day Mode (Light-base / Off-white & Emerald Green)"}
               aria-label={`Toggle theme mode (currently ${mode})`}
             >
@@ -324,7 +332,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <button
                 onClick={() => setIsSiteAnalysisStudioOpen(true)}
-                className="px-8 py-3.5 text-base font-bold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[2px] transition-all whitespace-nowrap flex items-center gap-3 shadow-2xl group focus-visible:ring-2 focus-visible:ring-[var(--color-border-strong)] outline-none cursor-pointer"
+                className="px-8 py-3.5 text-base font-bold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[3px] transition-all whitespace-nowrap flex items-center gap-3 shadow-[0_12px_32px_rgba(34,197,94,0.38),inset_0_1.5px_1px_rgba(255,255,255,0.35)] group focus-visible:ring-2 focus-visible:ring-[var(--color-border-strong)] outline-none cursor-pointer backdrop-blur-md"
               >
                 <span>{activeTool.ctaText}</span>
               </button>
@@ -334,121 +342,20 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
         {/* 
           ====================================================================
-          RIGHT VERTICAL PRODUCT SWITCHER DOCK (Exact 4 tiles from image.png):
-          1. MassLabs
-          2. archiMap
-          3. Colorgram
-          4. LaserFish
+          RIGHT VERTICAL PRODUCT SWITCHER DOCK & GLASSMORPHIC SIDEBAR
           ====================================================================
         */}
-        {/* 
-          ====================================================================
-          RIGHT VERTICAL PRODUCT SWITCHER DOCK (Glassmorphism UI from image.png):
-          1. MassLabs
-          2. archiMap
-          3. Colorgram
-          4. LaserFish
-          ====================================================================
-        */}
-        <aside
-          aria-label="Tool Suite Switcher"
-          className={`absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2.5 p-2 rounded-[3px] transition-all duration-300 backdrop-blur-2xl backdrop-saturate-150 ${
-            isDay
-              ? 'bg-white/50 border border-white/80 shadow-[0_20px_48px_-6px_rgba(0,0,0,0.12),0_1px_2px_rgba(255,255,255,0.9)_inset]'
-              : 'bg-[#0a0a0c]/55 border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.65),0_1px_1px_rgba(255,255,255,0.12)_inset]'
-          }`}
-          style={{
-            backgroundImage: isDay
-              ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%)'
-              : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%)',
-          }}
-        >
-          {MASSLABS_TOOLS.filter((t) => t.id !== 'globee').map((tool) => {
-            const isActive = tool.id === activeToolId;
-            return (
-              <button
-                key={tool.id}
-                onClick={() => handleToolSelect(tool.id)}
-                className={`w-[78px] h-[84px] flex flex-col items-center justify-center gap-2 rounded-[2px] transition-all duration-200 group relative cursor-pointer backdrop-blur-md select-none ${
-                  isActive
-                    ? isDay
-                      ? 'bg-[#ece9e2]/80 border-2 border-[#16a34a] text-[#111113] shadow-[0_6px_20px_rgba(22,163,74,0.2),inset_0_1px_1px_rgba(255,255,255,0.95)]'
-                      : 'bg-white/10 border-2 border-[#22c55e] text-[#eceae6] shadow-[0_6px_22px_rgba(34,197,94,0.25),inset_0_1px_1px_rgba(255,255,255,0.2)]'
-                    : isDay
-                      ? 'bg-white/35 hover:bg-white/65 border border-black/10 hover:border-black/25 text-[#4b5563] hover:text-[#111113] shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_2px_8px_rgba(0,0,0,0.03)] hover:-translate-y-0.5'
-                      : 'bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-[#8a8a86] hover:text-[#eceae6] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:-translate-y-0.5'
-                }`}
-                title={tool.name}
-              >
-                {/* 1. MassLabs 3-node connected emblem */}
-                {tool.id === 'masslabs' && (
-                  <svg
-                    className={`w-8 h-6 transition-colors ${
-                      isActive
-                        ? isDay ? 'text-[#111113]' : 'text-[#eceae6]'
-                        : isDay ? 'text-[#374151] group-hover:text-[#111113]' : 'text-[#8a8a86] group-hover:text-[#eceae6]'
-                    }`}
-                    viewBox="0 0 32 20"
-                    fill="none"
-                  >
-                    <path
-                      d="M5 14L16 6L27 14"
-                      stroke="currentColor"
-                      strokeWidth="2.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="5" cy="14" r="3.2" fill="currentColor" />
-                    <circle cx="16" cy="6" r="3.2" fill="currentColor" />
-                    <circle cx="27" cy="14" r="3.2" fill="currentColor" />
-                  </svg>
-                )}
-
-                {/* 2. archiMap 4-quadrant pastel grid */}
-                {tool.id === 'archimap' && (
-                  <div className="w-6 h-6 rounded-[2px] overflow-hidden grid grid-cols-2 grid-rows-2 gap-[1px] bg-black/60 p-[1px] border border-white/40 shadow-sm">
-                    <div className="bg-[#93c5fd]" />
-                    <div className="bg-[#fda4af]" />
-                    <div className="bg-[#86efac]" />
-                    <div className="bg-[#fef08a]" />
-                  </div>
-                )}
-
-                {/* 3. Colorgram radial fan swatch */}
-                {tool.id === 'cologram' && (
-                  <svg className="w-6 h-6 drop-shadow-sm" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 21L6 14A8 8 0 0 1 18 14L12 21Z" fill="#16a34a" fillOpacity="0.85" />
-                    <path d="M12 21L3 17A9 9 0 0 1 9 9L12 21Z" fill="#15803d" fillOpacity="0.9" />
-                    <path d="M12 21L15 9A9 9 0 0 1 21 17L12 21Z" fill="#22c55e" fillOpacity="0.9" />
-                    <circle cx="12" cy="20" r="1.5" fill="#ffffff" />
-                  </svg>
-                )}
-
-                {/* 4. LaserFish geometric origami fish */}
-                {tool.id === 'laserfish' && (
-                  <svg className="w-6 h-5 drop-shadow-sm" viewBox="0 0 28 20" fill="none">
-                    <path d="M4 10L14 3L22 10L14 17L4 10Z" fill="#d4a373" />
-                    <path d="M22 10L27 5V15L22 10Z" fill="#bc6c25" />
-                    <circle cx="8" cy="10" r="1.5" fill="#000000" />
-                  </svg>
-                )}
-
-                <span className="text-[10.56px] font-mono tracking-tight leading-none text-center">
-                  {tool.name}
-                </span>
-
-                {/* Active right tab indicator pip matching image */}
-                {isActive && (
-                  <span
-                    className={`absolute -right-[2px] top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-l-[1px] shadow-sm ${
-                      isDay ? 'bg-[#16a34a]' : 'bg-[#22c55e]'
-                    }`}
-                  />
-                )}
-              </button>
-            );
-          })}
-        </aside>
+        <MassGlassSidebar
+          activeToolId={activeToolId}
+          onSelectTool={handleToolSelect}
+          isDay={isDay}
+          currentMapIndex={currentMapIndex}
+          onSelectMap={setCurrentMapIndex}
+          onOpenSiteAnalysis={() => setIsSiteAnalysisStudioOpen(true)}
+          onOpenDesignSystem={onOpenDesignSystem}
+          blueprintZoom={blueprintZoom}
+          onZoomChange={setBlueprintZoom}
+        />
 
         {/* Hero Bottom Bar Info */}
         <div className="relative z-20 px-6 sm:px-10 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11.52px] font-mono text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)]/70 backdrop-blur-sm">
@@ -474,39 +381,39 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         {/* 
           ====================================================================
           FLOATING TECHNICAL BLUEPRINT SEQUENCE CONTROLLER
-          Allows users to pause or speed up the blueprint animation sequence
+          Allows users to pause, speed up, or zoom the blueprint animation sequence
           ====================================================================
         */}
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-35 pointer-events-auto">
-          <div className="bg-[var(--color-surface-strong)]/90 backdrop-blur-md border border-[var(--color-border-subtle)] px-3 py-1.5 rounded-[2px] shadow-2xl flex items-center gap-3 text-xs font-mono text-[var(--color-text-primary)]">
+          <div className="glass-pill px-2.5 py-1 rounded-[5px] shadow-xl flex items-center gap-2 text-[10.5px] font-mono text-[var(--color-text-primary)]">
             {/* Pause / Play Toggle */}
             <button
               onClick={() => setIsBlueprintPaused(!isBlueprintPaused)}
-              className={`px-2.5 py-1 rounded-[2px] flex items-center gap-1.5 transition-all select-none cursor-pointer ${
+              className={`px-2 py-0.5 rounded-[3px] flex items-center gap-1 transition-all select-none cursor-pointer ${
                 isBlueprintPaused
                   ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
-                  : 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
+                  : 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-[0_2px_8px_rgba(34,197,94,0.4)]'
               }`}
               title={isBlueprintPaused ? 'Resume blueprint animation' : 'Pause blueprint animation'}
             >
               {isBlueprintPaused ? (
                 <>
-                  <Play className="w-3.5 h-3.5 fill-current" />
-                  <span>RESUME</span>
+                  <Play className="w-3 h-3 fill-current" />
+                  <span className="text-[9.5px]">RESUME</span>
                 </>
               ) : (
                 <>
-                  <Pause className="w-3.5 h-3.5 fill-current" />
-                  <span>PAUSE</span>
+                  <Pause className="w-3 h-3 fill-current" />
+                  <span className="text-[9.5px]">PAUSE</span>
                 </>
               )}
             </button>
 
-            <div className="h-4 w-[1px] bg-[var(--color-border-subtle)]" />
+            <div className="h-3.5 w-[1px] bg-[var(--color-border-subtle)]" />
 
             {/* Speed Selector Buttons */}
-            <div className="flex items-center gap-1 text-[11px]">
-              <span className="text-[var(--color-text-secondary)] mr-1 hidden sm:inline">SPEED:</span>
+            <div className="flex items-center gap-1 text-[10px]">
+              <span className="text-[var(--color-text-secondary)] mr-0.5 hidden sm:inline">SPEED:</span>
               {[0.5, 1.0, 2.0].map((spd) => (
                 <button
                   key={spd}
@@ -514,10 +421,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     setBlueprintSpeed(spd);
                     if (isBlueprintPaused) setIsBlueprintPaused(false);
                   }}
-                  className={`px-2 py-0.5 rounded-[2px] transition-colors cursor-pointer ${
+                  className={`px-1.5 py-0.5 rounded-[2px] transition-colors cursor-pointer ${
                     blueprintSpeed === spd && !isBlueprintPaused
-                      ? 'bg-[var(--color-surface-muted)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] font-bold'
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)]'
+                      ? 'glass-tile text-[var(--color-text-primary)] border border-[var(--color-surface-raised)] font-bold shadow-sm'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                   }`}
                 >
                   {spd}x
@@ -525,12 +432,45 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               ))}
             </div>
 
-            <div className="h-4 w-[1px] bg-[var(--color-border-subtle)] hidden md:block" />
+            <div className="h-3.5 w-[1px] bg-[var(--color-border-subtle)]" />
+
+            {/* Blueprint Zoom Controls */}
+            <div className="flex items-center gap-1 text-[10px]">
+              <span className="text-[var(--color-text-secondary)] hidden sm:inline">ZOOM:</span>
+              <button
+                onClick={() => setBlueprintZoom((z) => Math.max(0.20, +(z - 0.05).toFixed(2)))}
+                className="px-1 py-0.5 rounded-[2px] text-[11px] font-mono hover:bg-white/10 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
+                title="Zoom Out Blueprint (Reduce Size)"
+              >
+                −
+              </button>
+              <span className="px-1 py-0.5 font-mono text-[10px] text-[var(--color-surface-raised)] font-bold min-w-[28px] text-center">
+                {Math.round(blueprintZoom * 100)}%
+              </span>
+              <button
+                onClick={() => setBlueprintZoom((z) => Math.min(1.20, +(z + 0.05).toFixed(2)))}
+                className="px-1 py-0.5 rounded-[2px] text-[11px] font-mono hover:bg-white/10 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
+                title="Zoom In Blueprint"
+              >
+                +
+              </button>
+              {Math.abs(blueprintZoom - 0.40) > 0.02 && (
+                <button
+                  onClick={() => setBlueprintZoom(0.40)}
+                  className="text-[8.5px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] underline cursor-pointer ml-0.5"
+                  title="Reset to default compact zoomed-out view (40%)"
+                >
+                  reset
+                </button>
+              )}
+            </div>
+
+            <div className="h-3.5 w-[1px] bg-[var(--color-border-subtle)] hidden md:block" />
 
             {/* Technical Status Readout */}
-            <div className="items-center gap-2 text-[10px] text-[var(--color-text-secondary)] hidden md:flex pr-1">
+            <div className="items-center gap-1.5 text-[9.5px] text-[var(--color-text-secondary)] hidden md:flex pr-0.5">
               <span className={`w-1.5 h-1.5 rounded-full ${isBlueprintPaused ? 'bg-amber-400' : 'bg-[var(--color-surface-raised)] animate-pulse'}`} />
-              <span>{isBlueprintPaused ? 'STATUS: FROZEN' : `CAD TACTILE: ${blueprintSpeed}X`}</span>
+              <span>{isBlueprintPaused ? 'FROZEN' : `TACTILE ${blueprintSpeed}X`}</span>
             </div>
           </div>
         </div>
@@ -557,17 +497,17 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Tool 1: archiMap */}
-            <div className="p-8 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between shadow-sm">
+            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">01 · SITE INTELLIGENCE</span>
                   <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">195 Countries</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">archiMap</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">archiMap</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                   Comprehensive 2D and 3D site analysis on a single page. Instant building heights, cadastral parcels, roads with true widths, and 3D terrain topography. Export directly to Rhino, AutoCAD, or Blender.
                 </p>
-                <div className="p-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] rounded-[2px] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
+                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
                   <div>• Building Data LOD 2 + True-Width Roads</div>
                   <div>• 350+ Global Geospatial Datasets</div>
                   <div>• Direct DXF, Shapefile & SVG Vector Pipe</div>
@@ -578,24 +518,24 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setActiveToolId('archimap');
                   setIsSiteAnalysisStudioOpen(true);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-mono transition-all cursor-pointer shadow-sm"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)]"
               >
                 Launch archiMap →
               </button>
             </div>
 
             {/* Tool 2: LaserFish */}
-            <div className="p-8 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between shadow-sm">
+            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">02 · MODEL MAKING AUTOMATION</span>
                   <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Rhino Plugin & Web</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">LaserFish</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">LaserFish</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                   Automate the tedious manual work of preparing laser-cut drawings for physical architectural models. Automatically slice complex 3D meshes, apply kerf offsets, generate numbering, and lay out sheets.
                 </p>
-                <div className="p-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] rounded-[2px] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
+                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
                   <div>• Automatic Contour Slicing by Sheet Thickness</div>
                   <div>• 0.05mm Kerf Precision Compensation</div>
                   <div>• Production-Ready Nested DXF / SVG Exports</div>
@@ -607,24 +547,24 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setToastMessage('LaserFish tool activated: Contour slicing pipeline ready.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] bg-[var(--color-surface-muted)] rounded-[2px] font-mono transition-colors cursor-pointer"
+                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer"
               >
                 Explore LaserFish →
               </button>
             </div>
 
             {/* Tool 3: Cologram */}
-            <div className="p-8 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between shadow-sm">
+            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">03 · CHROMATIC & SOLAR MATRIX</span>
                   <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Urban Palettes</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">Cologram</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Cologram</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                   Extract surrounding architectural color signatures and analyze facade material reflectance. Harmonize proposed envelopes with existing historical and contextual material palettes.
                 </p>
-                <div className="p-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] rounded-[2px] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
+                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
                   <div>• Micro-Palette Extraction from Satellite & Street Views</div>
                   <div>• Heritage Zoning & Albedo Reflectance Calculations</div>
                   <div>• Export Swatches to Adobe, Figma & CAD</div>
@@ -636,24 +576,24 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setToastMessage('Cologram urban chromatic analysis ready.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] bg-[var(--color-surface-muted)] rounded-[2px] font-mono transition-colors cursor-pointer"
+                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer"
               >
                 Launch Cologram →
               </button>
             </div>
 
             {/* Tool 4: Globee */}
-            <div className="p-8 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between shadow-sm">
+            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">04 · PLANETARY INTELLIGENCE</span>
                   <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">50+ Datasets</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">Globee</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Globee</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
                   Planetary scale environmental datasets covering population density, terrain elevation, wind vectors, seasonal climate shifts, and atmospheric metrics across the entire globe.
                 </p>
-                <div className="p-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] rounded-[2px] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
+                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
                   <div>• Real-Time Climate & Atmospheric Monitoring</div>
                   <div>• Global Population Dispersion & Nighttime Irradiance</div>
                   <div>• Free to access during initial public release</div>
@@ -661,7 +601,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               </div>
               <button
                 onClick={() => setIsNoticeOpen(true)}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-mono transition-all cursor-pointer shadow-sm"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)]"
               >
                 Open Globee →
               </button>
@@ -696,7 +636,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             </div>
 
             {/* Filter Buttons */}
-            <div className="flex items-center gap-1.5 p-1 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px]">
+            <div className="flex items-center gap-1.5 p-1 glass-pill rounded-[6px]">
               {[
                 { id: 'all', label: 'All Projects' },
                 { id: 'pavilion', label: 'Pavilions' },
@@ -706,10 +646,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setFilterCategory(tab.id)}
-                  className={`px-3 py-1.5 text-[11.52px] font-mono transition-colors rounded-[2px] whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`px-3 py-1.5 text-[11.52px] font-mono transition-colors rounded-[3px] whitespace-nowrap shrink-0 cursor-pointer ${
                     filterCategory === tab.id
-                      ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)]'
+                      ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-md'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                   }`}
                 >
                   {tab.label}
@@ -723,17 +663,17 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             {filteredProjects.map((project) => (
               <div
                 key={project.id}
-                className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] overflow-hidden group hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between shadow-sm"
+                className="rounded-[8px] overflow-hidden group hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card"
               >
                 <div>
                   <div className="relative aspect-[4/3] overflow-hidden bg-black/60">
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm px-2 py-1 text-[9.6px] font-mono text-white border border-white/10 rounded-[2px]">
+                    <div className="absolute top-3 left-3 glass-pill px-2.5 py-1 text-[9.6px] font-mono text-white rounded-[3px]">
                       {project.location}
                     </div>
                   </div>
@@ -763,7 +703,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="p-6 pt-0">
                   <button
                     onClick={() => setSelectedProject(project)}
-                    className="w-full py-2.5 text-xs font-mono text-[var(--color-text-primary)] bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] hover:text-[var(--color-surface-raised)] rounded-[2px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-2.5 text-xs font-mono text-[var(--color-text-primary)] glass-tile border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] hover:text-[var(--color-surface-raised)] rounded-[3px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <span>Inspect Monograph Spec</span>
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -1091,14 +1031,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         ====================================================================
       */}
       {isSiteAnalysisStudioOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8">
           <div
-            className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] max-w-5xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+            className="glass-panel rounded-[8px] max-w-5xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden"
             role="dialog"
             aria-modal="true"
           >
             {/* Header */}
-            <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-[var(--color-surface-base)]/80">
+            <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">archiMap STUDIO</span>
                 <span className="text-[var(--color-text-tertiary)]">|</span>
@@ -1107,15 +1047,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 bg-[var(--color-surface-muted)] p-1 border border-[var(--color-border-subtle)] rounded-[2px]">
+                <div className="flex items-center gap-1 glass-pill p-1 rounded-[4px]">
                   {URBAN_MAP_DATASETS.map((m, idx) => (
                     <button
                       key={m.id}
                       onClick={() => setCurrentMapIndex(idx)}
-                      className={`px-2.5 py-1 text-[10px] font-mono rounded-[2px] transition-colors cursor-pointer ${
+                      className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer ${
                         idx === currentMapIndex
-                          ? 'bg-[var(--color-surface-raised)] text-white font-bold'
-                          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                          ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                       }`}
                     >
                       {m.cityName}
@@ -1152,14 +1092,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 )}
 
                 {/* HUD Overlay */}
-                <div className="absolute top-4 left-4 bg-[var(--color-surface-strong)]/85 backdrop-blur-sm border border-[var(--color-border-subtle)] p-3 rounded-[2px] text-xs font-mono space-y-1">
+                <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
                   <div className="text-[var(--color-surface-raised)] font-semibold">Active Dataset: {activeMap.layers}</div>
                   <div className="text-[10px] text-[var(--color-text-secondary)]">Scale: 1:2500 · Projection: EPSG:3857 · Elevation: +12.4m</div>
                 </div>
               </div>
 
               {/* Layer Controls Sidebar */}
-              <div className="w-full lg:w-72 bg-[var(--color-surface-muted)] border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
+              <div className="w-full lg:w-72 glass-tile border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
                 <div>
                   <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
                     SITE ANALYSIS GIS LAYERS
@@ -1175,10 +1115,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       <button
                         key={layer.key}
                         onClick={() => toggleGisLayer(layer.key)}
-                        className={`w-full p-2.5 rounded-[2px] border text-left flex items-center justify-between transition-colors cursor-pointer ${
+                        className={`w-full p-2.5 rounded-[3px] border text-left flex items-center justify-between transition-colors cursor-pointer ${
                           activeGisLayers[layer.key]
-                            ? 'bg-[var(--color-surface-raised)]/10 border-[var(--color-surface-raised)] text-[var(--color-text-primary)] font-medium'
-                            : 'bg-[var(--color-surface-strong)] border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-surface-raised)]/50'
+                            ? 'bg-[var(--color-surface-raised)]/15 border-[var(--color-surface-raised)] text-[var(--color-text-primary)] font-medium'
+                            : 'glass-tile border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-surface-raised)]/50'
                         }`}
                       >
                         <span>{layer.label}</span>
@@ -1190,7 +1130,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
+                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
                   <div className="text-[var(--color-text-primary)] font-semibold">Export Format Supported:</div>
                   <div>• GeoJSON, Shapefile, DXF, SVG Vector</div>
                   <div>• Rhino Grasshopper Mesh Direct Pipe</div>
@@ -1202,7 +1142,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       setToastMessage(`Exported site analysis vector package for ${activeMap.cityName}.`);
                       setTimeout(() => setToastMessage(null), 4000);
                     }}
-                    className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] transition-colors cursor-pointer shadow-md"
+                    className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] transition-colors cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
                   >
                     Export Vector Package (.DXF)
                   </button>
@@ -1215,19 +1155,19 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
       {/* Modal: Project Monograph Inspector */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6">
           <div
-            className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
+            className="glass-panel rounded-[8px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
             role="dialog"
             aria-modal="true"
           >
-            <div className="sticky top-0 bg-[var(--color-surface-strong)]/90 backdrop-blur-sm p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-black/40 backdrop-blur-md p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between z-10">
               <div className="text-xs font-mono text-[var(--color-text-secondary)]">
                 MONOGRAPH SPECIFICATION · {selectedProject.id.toUpperCase()}
               </div>
               <button
                 onClick={() => setSelectedProject(null)}
-                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[2px] cursor-pointer"
+                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[3px] cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
@@ -1235,7 +1175,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             </div>
 
             <div className="p-6 space-y-6">
-              <div className="relative aspect-[16/9] rounded-[2px] overflow-hidden border border-[var(--color-border-subtle)]">
+              <div className="relative aspect-[16/9] rounded-[4px] overflow-hidden border border-[var(--color-border-subtle)]">
                 <img
                   src={selectedProject.image}
                   alt={selectedProject.title}
@@ -1250,7 +1190,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <p className="mt-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">{selectedProject.summary}</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 p-4 bg-[var(--color-surface-muted)] rounded-[2px] border border-[var(--color-border-subtle)] font-mono text-xs">
+              <div className="grid grid-cols-2 gap-4 p-4 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] font-mono text-xs">
                 <div>
                   <div className="text-[var(--color-text-secondary)]">Primary Metric</div>
                   <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.metric} ({selectedProject.metricLabel})</div>
@@ -1267,7 +1207,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   {selectedProject.materials.map((mat, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 text-xs font-mono bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] rounded-[2px]"
+                      className="px-2.5 py-1 text-xs font-mono glass-tile border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] rounded-[3px]"
                     >
                       {mat}
                     </span>
@@ -1287,7 +1227,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     setSelectedProject(null);
                     setIsInquiryModalOpen(true);
                   }}
-                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-semibold cursor-pointer shadow-md"
+                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
                 >
                   Commission Similar Envelope
                 </button>
@@ -1299,9 +1239,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
       {/* Modal: Quick Commission Study Form */}
       {isInquiryModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4">
           <div
-            className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] max-w-lg w-full p-6 shadow-2xl relative space-y-6"
+            className="glass-panel rounded-[8px] max-w-lg w-full p-6 shadow-2xl relative space-y-6"
             role="dialog"
             aria-modal="true"
           >
@@ -1339,7 +1279,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   type="email"
                   required
                   placeholder="name@organization.com"
-                  className="w-full px-3 py-2 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] font-mono"
+                  className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
                 />
               </div>
 
@@ -1350,7 +1290,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <input
                   type="text"
                   placeholder="e.g. Zurich Canton · Q4 2026"
-                  className="w-full px-3 py-2 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] font-mono"
+                  className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
                 />
               </div>
 
@@ -1364,7 +1304,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] font-semibold cursor-pointer shadow-md"
+                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
                 >
                   Send Briefing
                 </button>

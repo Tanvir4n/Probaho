@@ -53,11 +53,11 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
             <button
               type="button"
               onClick={() => setIsAnnual(!isAnnual)}
-              className="w-12 h-6 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] rounded-full p-0.5 transition-colors relative cursor-pointer"
+              className="w-12 h-6 glass-pill border border-[var(--color-border-subtle)] rounded-full p-0.5 transition-colors relative cursor-pointer"
               aria-label="Toggle annual billing"
             >
               <div
-                className={`w-5 h-5 bg-[var(--color-surface-raised)] rounded-full transition-transform ${
+                className={`w-5 h-5 bg-[var(--color-surface-raised)] rounded-full transition-transform shadow-md ${
                   isAnnual ? 'translate-x-6' : 'translate-x-0'
                 }`}
               />
@@ -66,7 +66,7 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
               <span className={isAnnual ? 'text-[var(--color-text-primary)] font-bold' : 'text-[var(--color-text-secondary)]'}>
                 Annual Billing
               </span>
-              <span className="px-1.5 py-0.5 text-[10px] bg-[var(--color-surface-raised)]/15 text-[var(--color-surface-raised)] border border-[var(--color-surface-raised)]/30 rounded-[2px] font-bold">
+              <span className="px-2 py-0.5 text-[10px] glass-pill text-[var(--color-surface-raised)] border border-[var(--color-surface-raised)]/40 rounded-[3px] font-bold shadow-sm">
                 SAVE 20%
               </span>
             </div>
@@ -82,14 +82,14 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
             return (
               <div
                 key={plan.id}
-                className={`rounded-[2px] p-8 flex flex-col justify-between transition-all relative ${
+                className={`rounded-[8px] p-8 flex flex-col justify-between transition-all duration-300 relative glass-card ${
                   isPro
-                    ? 'bg-[var(--color-surface-strong)] border-2 border-[var(--color-surface-raised)] shadow-2xl scale-[1.02]'
-                    : 'bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)]'
+                    ? 'border-2 border-[var(--color-surface-raised)] shadow-[0_24px_60px_-10px_rgba(0,0,0,0.5),0_0_35px_rgba(34,197,94,0.22)] md:-translate-y-2'
+                    : 'hover:border-[var(--color-surface-raised)]'
                 }`}
               >
                 {plan.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--color-surface-raised)] text-white text-[10px] font-bold font-mono px-3 py-0.5 rounded-[2px] uppercase tracking-wider shadow-sm">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--color-surface-raised)] text-white text-[10px] font-bold font-mono px-3 py-0.5 rounded-[3px] uppercase tracking-wider shadow-[0_4px_12px_rgba(34,197,94,0.4)]">
                     {plan.badge}
                   </div>
                 )}
@@ -137,10 +137,10 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
                 <div className="pt-8">
                   <button
                     onClick={() => onSelectPlan(plan)}
-                    className={`w-full py-3 text-xs font-semibold rounded-[2px] transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer ${
+                    className={`w-full py-3 text-xs font-semibold rounded-[3px] transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer ${
                       isPro
-                        ? 'bg-[var(--color-surface-raised)] text-white hover:brightness-110 shadow-md'
-                        : 'bg-[var(--color-surface-muted)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)]'
+                        ? 'bg-[var(--color-surface-raised)] text-white hover:brightness-110 shadow-[0_8px_20px_rgba(34,197,94,0.35)]'
+                        : 'glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)]'
                     }`}
                   >
                     <span>{plan.cta}</span>
