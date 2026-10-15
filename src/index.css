@@ -285,3 +285,56 @@ body {
 .animate-mass-coordinate {
   animation: massCoordinatePulse calc(var(--motion-duration-slow) * 3) ease-in-out infinite;
 }
+
+/* 
+  Page and Section Transition Animations: Coming from below
+*/
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes massSlideUpFromBelow {
+  0% {
+    opacity: 0;
+    transform: translateY(38px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes massPageModalFromBelow {
+  0% {
+    opacity: 0;
+    transform: translateY(56px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes massHeroContentFromBelow {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-from-below {
+  animation: massSlideUpFromBelow 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-page-from-below {
+  animation: massPageModalFromBelow 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-hero-from-below {
+  animation: massHeroContentFromBelow 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+

@@ -12,18 +12,13 @@ import {
   Layers,
   Sliders,
   FileCode,
-  Globe,
-  X,
-  Code2,
-  Sun,
-  Moon
+  X
 } from 'lucide-react';
-import { ThemeProvider, useTheme } from './context/ThemeContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 function AppContent() {
   const [isDesignSystemOpen, setIsDesignSystemOpen] = useState(false);
   const [systemTab, setSystemTab] = useState<'tokens' | 'workbench' | 'spec'>('tokens');
-  const { mode, isDay, toggleMode, palette } = useTheme();
 
   return (
     <div className="min-h-screen bg-[var(--color-surface-base)] text-[var(--color-text-primary)] flex flex-col font-sans selection:bg-[var(--color-surface-raised)] selection:text-white transition-colors duration-200 relative">
@@ -37,35 +32,7 @@ function AppContent() {
         />
       </main>
 
-      {/* 
-        Discreet Floating Button (Bottom Right)
-        Allows engineers to inspect tokens, 7-state lifecycle workbench, QA checklist, and active theme palette.
-      */}
-      <div className="fixed bottom-5 right-5 z-40 flex items-center gap-2">
-        {/* Floating Quick Day/Night Toggle */}
-        <button
-          onClick={toggleMode}
-          className="p-2 glass-pill text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-surface-raised)] rounded-[4px] shadow-2xl text-[11px] font-mono flex items-center gap-1.5 transition-all cursor-pointer"
-          title={isDay ? "Switch to Night Mode (Dark-Base / Obsidian & Green)" : "Switch to Day Mode (Light-Base / Off-White & Emerald Green)"}
-          aria-label="Toggle theme mode"
-        >
-          {isDay ? (
-            <Sun className="w-3.5 h-3.5 text-[#16a34a]" />
-          ) : (
-            <Moon className="w-3.5 h-3.5 text-[#22c55e]" />
-          )}
-          <span className="hidden sm:inline font-bold uppercase">{mode}</span>
-        </button>
 
-        <button
-          onClick={() => setIsDesignSystemOpen(true)}
-          className="px-3.5 py-1.5 glass-pill text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-surface-raised)] rounded-[4px] shadow-2xl text-[11px] font-mono flex items-center gap-2 transition-all group cursor-pointer"
-          title="Open MassLabs Design System Guidance & Token Inspector"
-        >
-          <Code2 className="w-3.5 h-3.5 text-[var(--color-surface-raised)] group-hover:rotate-12 transition-transform" />
-          <span>Design System Specs</span>
-        </button>
-      </div>
 
       {/* 
         Design System & Token Architecture Modal Overlay
