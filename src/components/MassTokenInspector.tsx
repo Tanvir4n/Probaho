@@ -72,7 +72,7 @@ export const MassTokenInspector: React.FC = () => {
       <div className="border-b border-[var(--color-border-subtle)] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest mb-2 font-mono">
-            <span>MassLabs Token Architecture</span>
+            <span>Probaho Token Architecture</span>
             <span>·</span>
             <span>Production Specification</span>
           </div>
@@ -80,7 +80,7 @@ export const MassTokenInspector: React.FC = () => {
             Design Token Inspector & WCAG Auditor
           </h1>
           <p className="mt-2 text-[var(--color-text-secondary)] text-sm max-w-2xl leading-relaxed">
-            Strict token-driven UI governance for masslabs-archi.com. All components consume verified semantic tokens rather than arbitrary raw CSS values.
+            Strict token-driven UI governance for Probaho. All components consume verified semantic tokens rather than arbitrary raw CSS values.
           </p>
         </div>
 
@@ -243,7 +243,7 @@ export const MassTokenInspector: React.FC = () => {
                       style={{ fontSize: item.value }}
                       className="text-[var(--color-text-primary)] tracking-tight truncate leading-normal"
                     >
-                      MassLabs: Computational Form & Structural Assembly ({item.value})
+                      Probaho: Computational Form & Structural Assembly ({item.value})
                     </div>
                     <div className="text-[9.6px] text-[var(--color-text-tertiary)] mt-0.5">{item.role}</div>
                   </div>

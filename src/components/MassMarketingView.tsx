@@ -11,6 +11,7 @@ import { ArchitecturalBackground } from './ArchitecturalBackground';
 import { MassPricingSection } from './MassPricingSection';
 import { MassAuthModal } from './MassAuthModal';
 import { MassGlassSidebar } from './MassGlassSidebar';
+import { ProbahoLogo } from './ProbahoLogo';
 import {
   ArrowRight,
   ChevronRight,
@@ -34,9 +35,10 @@ import {
   Pause,
   Bell,
   Sun,
-  Moon
+  Moon,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface MassMarketingViewProps {
   onOpenDesignSystem?: () => void;
@@ -172,26 +174,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           {/* Brand Logo & Emblem */}
           <a
             href="/"
-            className="flex items-center gap-3 text-xl font-bold tracking-tight text-[var(--color-text-primary)] whitespace-nowrap hover:opacity-90 transition-opacity"
+            className="flex items-center gap-3 text-xl font-bold tracking-tight text-[var(--color-text-primary)] whitespace-nowrap hover:opacity-90 transition-opacity group"
           >
-            <svg
-              className="w-7 h-5 text-[var(--color-text-primary)] shrink-0"
-              viewBox="0 0 32 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M5 14L16 6L27 14"
-                stroke="currentColor"
-                strokeWidth="2.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <circle cx="5" cy="14" r="3.2" fill="currentColor" />
-              <circle cx="16" cy="6" r="3.2" fill="currentColor" />
-              <circle cx="27" cy="14" r="3.2" fill="currentColor" />
-            </svg>
-            <span className="font-bold tracking-tight">MassLabs</span>
+            <ProbahoLogo className="w-7 h-7 text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] shrink-0 transition-colors" />
+            <span className="font-bold tracking-tight">Probaho</span>
           </a>
 
           {/* Right Navigation Controls */}
@@ -309,35 +295,45 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           ====================================================================
         */}
         <div className="relative z-20 flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-16">
-          <div className="max-w-4xl space-y-4">
-            {/* Main Headline */}
-            <h1
-              className="font-extrabold tracking-tight text-[var(--color-text-primary)] leading-[1.04] drop-shadow-md"
-              style={{ fontSize: 'clamp(3.2rem, 7vw, 5.75rem)' }}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTool.id}
+              initial={{ opacity: 0, y: 36 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-4xl space-y-4"
             >
-              {activeTool.headline}
-            </h1>
-
-            {/* Metadata Subtitle 1 */}
-            <p className="text-base sm:text-lg text-[var(--color-text-primary)] font-normal leading-relaxed max-w-3xl drop-shadow-sm opacity-90">
-              {activeTool.meta}
-            </p>
-
-            {/* Subtitle 2 */}
-            <p className="text-base sm:text-lg text-[var(--color-text-secondary)] font-normal leading-relaxed max-w-2xl drop-shadow-sm pb-2">
-              {activeTool.description}
-            </p>
-
-            {/* Primary Action Button */}
-            <div className="pt-2 flex flex-wrap items-center gap-4">
-              <button
-                onClick={() => setIsSiteAnalysisStudioOpen(true)}
-                className="px-8 py-3.5 text-base font-bold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[3px] transition-all whitespace-nowrap flex items-center gap-3 shadow-[0_12px_32px_rgba(34,197,94,0.38),inset_0_1.5px_1px_rgba(255,255,255,0.35)] group focus-visible:ring-2 focus-visible:ring-[var(--color-border-strong)] outline-none cursor-pointer backdrop-blur-md"
+              {/* Main Headline */}
+              <h1
+                className="font-extrabold tracking-tight text-[var(--color-text-primary)] leading-[1.04] drop-shadow-md"
+                style={{ fontSize: 'clamp(3.2rem, 7vw, 5.75rem)' }}
               >
-                <span>{activeTool.ctaText}</span>
-              </button>
-            </div>
-          </div>
+                {activeTool.headline}
+              </h1>
+
+              {/* Metadata Subtitle 1 */}
+              <p className="text-base sm:text-lg text-[var(--color-text-primary)] font-normal leading-relaxed max-w-3xl drop-shadow-sm opacity-90">
+                {activeTool.meta}
+              </p>
+
+              {/* Subtitle 2 */}
+              <p className="text-base sm:text-lg text-[var(--color-text-secondary)] font-normal leading-relaxed max-w-2xl drop-shadow-sm pb-2">
+                {activeTool.description}
+              </p>
+
+              {/* Primary Action Button */}
+              <div className="pt-2 flex flex-wrap items-center gap-4">
+                <button
+                  onClick={() => setIsSiteAnalysisStudioOpen(true)}
+                  className="px-8 py-3.5 text-base font-bold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[3px] transition-all whitespace-nowrap flex items-center gap-3 shadow-[0_12px_32px_rgba(34,197,94,0.38),inset_0_1.5px_1px_rgba(255,255,255,0.35)] group focus-visible:ring-2 focus-visible:ring-[var(--color-border-strong)] outline-none cursor-pointer backdrop-blur-md"
+                >
+                  <span>{activeTool.ctaText}</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* 
@@ -361,7 +357,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="relative z-20 px-6 sm:px-10 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11.52px] font-mono text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)]/70 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)]" />
-            <span className="text-[var(--color-text-primary)] font-semibold">MassLabs Cartography Core:</span>
+            <span className="text-[var(--color-text-primary)] font-semibold">Probaho Cartography Core:</span>
             <span>Streaming {activeMap.cityName} ({activeMap.coordinates})</span>
           </div>
 
@@ -481,11 +477,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         PRODUCT SUITE OVERVIEW (archiMap, LaserFish, Cologram, Globee):
         ====================================================================
       */}
-      <section id="tools" className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200">
+      <motion.section
+        id="tools"
+        initial={{ opacity: 0, y: 36 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <div className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-surface-raised)]">
-              MassLabs Integrated Suite
+              Probaho Integrated Suite
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
               Four Specialized Tools. One Unified Workflow.
@@ -608,7 +611,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 
         ====================================================================
@@ -622,7 +625,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         BUILT PROJECTS SECTION & MONOGRAPH BENTO:
         ====================================================================
       */}
-      <section id="projects" className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200">
+      <motion.section
+        id="projects"
+        initial={{ opacity: 0, y: 36 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           {/* Section Header with Functional Filter Buttons */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--color-border-subtle)] pb-6">
@@ -713,14 +723,21 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 
         ====================================================================
         METHODOLOGY SECTION:
         ====================================================================
       */}
-      <section id="methodology" className="py-20 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200">
+      <motion.section
+        id="methodology"
+        initial={{ opacity: 0, y: 36 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="py-20 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="max-w-2xl space-y-3">
             <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono">
@@ -730,7 +747,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               Site Analysis to Physical Fabrication Pipeline
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-              From global planetary GIS layers in archiMap down to laser-cut structural prototypes in LaserFish, MassLabs bridges computational mathematics and tangible architecture.
+              From global planetary GIS layers in archiMap down to laser-cut structural prototypes in LaserFish, Probaho bridges computational mathematics and tangible architecture.
             </p>
           </div>
 
@@ -772,14 +789,21 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 
         ====================================================================
         STUDIO COMMISSION INQUIRY FORM:
         ====================================================================
       */}
-      <section id="practice" className="py-20 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200">
+      <motion.section
+        id="practice"
+        initial={{ opacity: 0, y: 36 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="py-20 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
@@ -790,7 +814,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 Commission an architectural feasibility study.
               </h2>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                MassLabs accepts a select cohort of civic, cultural, and private architectural commissions each cycle. Our research partners and lead architects review all inquiries within 48 business hours.
+                Probaho accepts a select cohort of civic, cultural, and private architectural commissions each cycle. Our research partners and lead architects review all inquiries within 48 business hours.
               </p>
 
               <div className="space-y-3 font-mono text-xs text-[var(--color-text-secondary)]">
@@ -818,7 +842,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     Commission Inquiry Dispatched
                   </h3>
                   <p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto leading-relaxed">
-                    Thank you. The MassLabs principal team has received your project briefing for <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span>. A partner will correspond directly via {inquiryEmail}.
+                    Thank you. The Probaho principal team has received your project briefing for <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span>. A partner will correspond directly via {inquiryEmail}.
                   </p>
                   <button
                     onClick={() => {
@@ -901,7 +925,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* 
         ====================================================================
@@ -912,9 +936,12 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight">MassLabs</div>
+              <div className="flex items-center gap-2.5">
+                <ProbahoLogo size={20} className="text-[var(--color-surface-raised)]" />
+                <div className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight">Probaho</div>
+              </div>
               <p className="text-[11.52px] mt-1 text-[var(--color-text-secondary)] max-w-sm">
-                Site analysis, model making & laser-cut drawings. Standardized under masslabs-archi.com.
+                Site analysis, model making & laser-cut drawings. Standardized under probaho.io.
               </p>
             </div>
 
@@ -929,7 +956,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
           <div className="pt-6 border-t border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10.56px]">
             <div>
-              © {new Date().getFullYear()} MassLabs Architectural Laboratory. All rights reserved.
+              © {new Date().getFullYear()} Probaho Architectural Laboratory. All rights reserved.
             </div>
             <div className="flex items-center gap-4 text-[var(--color-text-tertiary)]">
               <span>WCAG 2.2 Level AA & AAA Verified</span>
@@ -950,93 +977,114 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         POPUP / NOTICE MODAL (From Video at 0:26! "Globee is live"):
         ====================================================================
       */}
-      {isNoticeOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div
-            className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] max-w-lg w-full p-6 shadow-2xl relative space-y-5 animate-in fade-in duration-200"
-            role="dialog"
-            aria-modal="true"
+      <AnimatePresence>
+        {isNoticeOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
           >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
-              <div className="flex items-center gap-2 text-xs font-mono text-[var(--color-text-secondary)]">
-                <span className="text-[var(--color-surface-raised)] font-bold">NOTICE</span>
-                <span>·</span>
-                <span>MassLabs · Globee</span>
+            <motion.div
+              initial={{ opacity: 0, y: 36, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] max-w-lg w-full p-6 shadow-2xl relative space-y-5"
+              role="dialog"
+              aria-modal="true"
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
+                <div className="flex items-center gap-2 text-xs font-mono text-[var(--color-text-secondary)]">
+                  <span className="text-[var(--color-surface-raised)] font-bold">NOTICE</span>
+                  <span>·</span>
+                  <span>Probaho · Globee</span>
+                </div>
+                <button
+                  onClick={() => setIsNoticeOpen(false)}
+                  className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[2px] cursor-pointer"
+                  aria-label="Close Notice"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={() => setIsNoticeOpen(false)}
-                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[2px] cursor-pointer"
-                aria-label="Close Notice"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            {/* Notice Image / Graphic */}
-            <div className="relative aspect-[16/9] rounded-[2px] overflow-hidden border border-[var(--color-border-subtle)] bg-black">
-              <img
-                src="/src/assets/images/map_tokyo_carto_1791915087818.jpg"
-                alt="Globee Planetary GIS Grid"
-                className="w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex items-end p-4">
-                <div className="text-sm font-semibold text-white">
-                  Global Planetary Intelligence Grid
+              {/* Notice Image / Graphic */}
+              <div className="relative aspect-[16/9] rounded-[2px] overflow-hidden border border-[var(--color-border-subtle)] bg-black">
+                <img
+                  src="/src/assets/images/map_tokyo_carto_1791915087818.jpg"
+                  alt="Globee Planetary GIS Grid"
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex items-end p-4">
+                  <div className="text-sm font-semibold text-white">
+                    Global Planetary Intelligence Grid
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Notice Body Text */}
-            <div className="space-y-2">
-              <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
-                Globee is live
-              </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Population & society · terrain · climate · atmosphere — 50+ datasets, from everyday life to outer space.
-              </p>
-              <p className="text-xs text-[var(--color-text-primary)] leading-relaxed">
-                Become a bee and explore data from every corner of the Earth. Free to use until October 31.
-              </p>
-              <div className="text-[10px] font-mono text-[var(--color-text-tertiary)] pt-1">
-                Posted: October 13, 2026 · MassLabs Core
+              {/* Notice Body Text */}
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
+                  Globee is live
+                </h3>
+                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                  Population & society · terrain · climate · atmosphere — 50+ datasets, from everyday life to outer space.
+                </p>
+                <p className="text-xs text-[var(--color-text-primary)] leading-relaxed">
+                  Become a bee and explore data from every corner of the Earth. Free to use until October 31.
+                </p>
+                <div className="text-[10px] font-mono text-[var(--color-text-tertiary)] pt-1">
+                  Posted: October 13, 2026 · Probaho Core
+                </div>
               </div>
-            </div>
 
-            {/* Actions */}
-            <div className="pt-3 border-t border-[var(--color-border-subtle)] flex items-center justify-between">
-              <label className="flex items-center gap-2 text-[11px] font-mono text-[var(--color-text-secondary)] cursor-pointer">
-                <input type="checkbox" className="accent-[var(--color-surface-raised)]" />
-                <span>Don't show again today</span>
-              </label>
+              {/* Actions */}
+              <div className="pt-3 border-t border-[var(--color-border-subtle)] flex items-center justify-between">
+                <label className="flex items-center gap-2 text-[11px] font-mono text-[var(--color-text-secondary)] cursor-pointer">
+                  <input type="checkbox" className="accent-[var(--color-surface-raised)]" />
+                  <span>Don't show again today</span>
+                </label>
 
-              <button
-                onClick={() => {
-                  setIsNoticeOpen(false);
-                  setIsSiteAnalysisStudioOpen(true);
-                }}
-                className="px-4 py-2 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] flex items-center gap-1.5 font-mono cursor-pointer shadow-sm"
-              >
-                <span>Open →</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                <button
+                  onClick={() => {
+                    setIsNoticeOpen(false);
+                    setIsSiteAnalysisStudioOpen(true);
+                  }}
+                  className="px-4 py-2 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] flex items-center gap-1.5 font-mono cursor-pointer shadow-sm"
+                >
+                  <span>Open →</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 
         ====================================================================
         INTERACTIVE SITE ANALYSIS STUDIO MODAL (Triggered by "Start archiMap →"):
         ====================================================================
       */}
-      {isSiteAnalysisStudioOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8">
-          <div
-            className="glass-panel rounded-[8px] max-w-5xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden"
-            role="dialog"
-            aria-modal="true"
+      <AnimatePresence>
+        {isSiteAnalysisStudioOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8"
           >
+            <motion.div
+              initial={{ opacity: 0, y: 44, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.98 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="glass-panel rounded-[8px] max-w-5xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+            >
             {/* Header */}
             <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm">
               <div className="flex items-center gap-3">
@@ -1149,170 +1197,193 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Modal: Project Monograph Inspector */}
-      {selectedProject && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6">
-          <div
-            className="glass-panel rounded-[8px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
-            role="dialog"
-            aria-modal="true"
+      <AnimatePresence>
+        {selectedProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6"
           >
-            <div className="sticky top-0 bg-black/40 backdrop-blur-md p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between z-10">
-              <div className="text-xs font-mono text-[var(--color-text-secondary)]">
-                MONOGRAPH SPECIFICATION · {selectedProject.id.toUpperCase()}
-              </div>
-              <button
-                onClick={() => setSelectedProject(null)}
-                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[3px] cursor-pointer"
-                aria-label="Close dialog"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              <div className="relative aspect-[16/9] rounded-[4px] overflow-hidden border border-[var(--color-border-subtle)]">
-                <img
-                  src={selectedProject.image}
-                  alt={selectedProject.title}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              <div>
-                <div className="text-xs font-mono text-[var(--color-surface-raised)] mb-1">{selectedProject.category} · {selectedProject.location}</div>
-                <h3 className="text-2xl font-semibold text-[var(--color-text-primary)]">{selectedProject.title}</h3>
-                <p className="mt-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">{selectedProject.summary}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 p-4 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] font-mono text-xs">
-                <div>
-                  <div className="text-[var(--color-text-secondary)]">Primary Metric</div>
-                  <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.metric} ({selectedProject.metricLabel})</div>
+            <motion.div
+              initial={{ opacity: 0, y: 40, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 28, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="glass-panel rounded-[8px] max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="sticky top-0 bg-black/40 backdrop-blur-md p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between z-10">
+                <div className="text-xs font-mono text-[var(--color-text-secondary)]">
+                  MONOGRAPH SPECIFICATION · {selectedProject.id.toUpperCase()}
                 </div>
-                <div>
-                  <div className="text-[var(--color-text-secondary)]">Spatial Footprint</div>
-                  <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.dimensions}</div>
-                </div>
-              </div>
-
-              <div>
-                <div className="text-xs font-mono text-[var(--color-text-secondary)] mb-2">SPECIFIED MATERIAL PALETTE</div>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.materials.map((mat, i) => (
-                    <span
-                      key={i}
-                      className="px-2.5 py-1 text-xs font-mono glass-tile border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] rounded-[3px]"
-                    >
-                      {mat}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-[var(--color-border-subtle)] flex justify-end gap-3">
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="px-4 py-2 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                  className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[3px] cursor-pointer"
+                  aria-label="Close dialog"
                 >
-                  Close Monograph
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedProject(null);
-                    setIsInquiryModalOpen(true);
-                  }}
-                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
-                >
-                  Commission Similar Envelope
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+
+              <div className="p-6 space-y-6">
+                <div className="relative aspect-[16/9] rounded-[4px] overflow-hidden border border-[var(--color-border-subtle)]">
+                  <img
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+
+                <div>
+                  <div className="text-xs font-mono text-[var(--color-surface-raised)] mb-1">{selectedProject.category} · {selectedProject.location}</div>
+                  <h3 className="text-2xl font-semibold text-[var(--color-text-primary)]">{selectedProject.title}</h3>
+                  <p className="mt-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">{selectedProject.summary}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 p-4 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] font-mono text-xs">
+                  <div>
+                    <div className="text-[var(--color-text-secondary)]">Primary Metric</div>
+                    <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.metric} ({selectedProject.metricLabel})</div>
+                  </div>
+                  <div>
+                    <div className="text-[var(--color-text-secondary)]">Spatial Footprint</div>
+                    <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.dimensions}</div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-xs font-mono text-[var(--color-text-secondary)] mb-2">SPECIFIED MATERIAL PALETTE</div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.materials.map((mat, i) => (
+                      <span
+                        key={i}
+                        className="px-2.5 py-1 text-xs font-mono glass-tile border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] rounded-[3px]"
+                      >
+                        {mat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-[var(--color-border-subtle)] flex justify-end gap-3">
+                  <button
+                    onClick={() => setSelectedProject(null)}
+                    className="px-4 py-2 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                  >
+                    Close Monograph
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedProject(null);
+                      setIsInquiryModalOpen(true);
+                    }}
+                    className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
+                  >
+                    Commission Similar Envelope
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Modal: Quick Commission Study Form */}
-      {isInquiryModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4">
-          <div
-            className="glass-panel rounded-[8px] max-w-lg w-full p-6 shadow-2xl relative space-y-6"
-            role="dialog"
-            aria-modal="true"
+      <AnimatePresence>
+        {isInquiryModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4"
           >
-            <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
-              <div className="text-xs font-mono text-[var(--color-surface-raised)] font-bold">
-                DIRECT STUDIO COMMISSION INQUIRY
-              </div>
-              <button
-                onClick={() => setIsInquiryModalOpen(false)}
-                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-              Connect directly with MassLabs partners for structural feasibility and carbon reduction modeling.
-            </p>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setIsInquiryModalOpen(false);
-                setToastMessage('Thank you. Your architectural inquiry has been sent to MassLabs.');
-                setTimeout(() => setToastMessage(null), 4000);
-              }}
-              className="space-y-4"
+            <motion.div
+              initial={{ opacity: 0, y: 36, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 24, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="glass-panel rounded-[8px] max-w-lg w-full p-6 shadow-2xl relative space-y-6"
+              role="dialog"
+              aria-modal="true"
             >
-              <div>
-                <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1">
-                  OFFICIAL EMAIL *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="name@organization.com"
-                  className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1">
-                  PROJECT LOCATION & TARGET TIMELINE
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Zurich Canton · Q4 2026"
-                  className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-3">
+              <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
+                <div className="text-xs font-mono text-[var(--color-surface-raised)] font-bold">
+                  DIRECT STUDIO COMMISSION INQUIRY
+                </div>
                 <button
-                  type="button"
                   onClick={() => setIsInquiryModalOpen(false)}
-                  className="px-3 py-2 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                  className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                  aria-label="Close modal"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
-                >
-                  Send Briefing
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+
+              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                Connect directly with Probaho partners for structural feasibility and carbon reduction modeling.
+              </p>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setIsInquiryModalOpen(false);
+                  setToastMessage('Thank you. Your architectural inquiry has been sent to Probaho.');
+                  setTimeout(() => setToastMessage(null), 4000);
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1">
+                    OFFICIAL EMAIL *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="name@organization.com"
+                    className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1">
+                    PROJECT LOCATION & TARGET TIMELINE
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Zurich Canton · Q4 2026"
+                    className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
+                  />
+                </div>
+
+                <div className="pt-2 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsInquiryModalOpen(false)}
+                    className="px-3 py-2 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
+                  >
+                    Send Briefing
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Auth Modal (Login / Sign Up) */}
       <MassAuthModal

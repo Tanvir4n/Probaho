@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MASSLABS_PRICING, PricingPlan } from '../data/tokens';
 import { Check, ArrowRight, ShieldCheck, HelpCircle } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { motion } from 'motion/react';
 
 interface MassPricingSectionProps {
   onSelectPlan: (plan: PricingPlan) => void;
@@ -14,7 +15,7 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
   const faqs = [
     {
       q: 'Which CAD / 3D software applications are supported?',
-      a: 'MassLabs exports standard DXF, SVG, GeoJSON, and Shapefile geometry natively compatible with Rhino 7/8, Grasshopper, AutoCAD, Revit, SketchUp, ArchiCAD, and Blender.',
+      a: 'Probaho exports standard DXF, SVG, GeoJSON, and Shapefile geometry natively compatible with Rhino 7/8, Grasshopper, AutoCAD, Revit, SketchUp, ArchiCAD, and Blender.',
     },
     {
       q: 'How does LaserFish model-making work?',
@@ -31,7 +32,14 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
   ];
 
   return (
-    <section id="pricing" className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] transition-colors duration-200">
+    <motion.section
+      id="pricing"
+      initial={{ opacity: 0, y: 36 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] transition-colors duration-200"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
@@ -199,6 +207,6 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };

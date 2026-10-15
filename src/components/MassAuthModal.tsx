@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle2, Lock, Mail, User, ArrowRight } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { ProbahoLogo } from './ProbahoLogo';
+import { motion } from 'motion/react';
 
 interface MassAuthModalProps {
   isOpen: boolean;
@@ -50,27 +52,21 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4">
-      <div
-        className="glass-panel rounded-[8px] max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-6 animate-in fade-in zoom-in-95 duration-200 text-[var(--color-text-primary)]"
+      <motion.div
+        initial={{ opacity: 0, y: 36, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.98 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="glass-panel rounded-[8px] max-w-md w-full p-6 sm:p-8 shadow-2xl relative space-y-6 text-[var(--color-text-primary)]"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-4">
           <div className="flex items-center gap-2">
-            <svg
-              className="w-5 h-5 text-[var(--color-surface-raised)]"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 19V5l9 7 9-7v14" />
-            </svg>
+            <ProbahoLogo size={20} className="text-[var(--color-surface-raised)]" />
             <span className="font-bold tracking-tight text-sm font-mono uppercase text-[var(--color-text-primary)]">
-              MassLabs Account
+              Probaho Account
             </span>
           </div>
           <button
@@ -202,7 +198,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
                 <span>Authenticating...</span>
               </>
             ) : (
-              <span>{mode === 'signin' ? 'Sign In to MassLabs' : 'Join MassLabs Studio'}</span>
+              <span>{mode === 'signin' ? 'Sign In to Probaho' : 'Join Probaho Studio'}</span>
             )}
           </button>
         </form>
@@ -237,9 +233,9 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
         </div>
 
         <div className="text-[10px] text-center text-[var(--color-text-tertiary)] font-mono leading-relaxed">
-          By signing in, you agree to MassLabs Terms of Service and Architectural Data Privacy Policy.
+          By signing in, you agree to Probaho Terms of Service and Architectural Data Privacy Policy.
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

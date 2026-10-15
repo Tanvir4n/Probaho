@@ -21,7 +21,7 @@ export const MassComponentWorkbench: React.FC = () => {
   const [selectedState, setSelectedState] = useState<ComponentState>('default');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [interactiveCounter, setInteractiveCounter] = useState<number>(0);
-  const [inputValue, setInputValue] = useState<string>('contact@masslabs-archi.com');
+  const [inputValue, setInputValue] = useState<string>('contact@probaho.io');
   const [keyboardLog, setKeyboardLog] = useState<string[]>([]);
 
   const handleCopyCode = (code: string, id: string) => {
@@ -123,7 +123,7 @@ export const MassComponentWorkbench: React.FC = () => {
       <div className="border-b border-[var(--color-border-subtle)] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest mb-2 font-mono">
-            <span>MassLabs Engineering Workbench</span>
+            <span>Probaho Engineering Workbench</span>
             <span>·</span>
             <span>WCAG 2.2 AA Compliance</span>
           </div>
@@ -131,7 +131,7 @@ export const MassComponentWorkbench: React.FC = () => {
             Interactive Component & State Sandbox
           </h1>
           <p className="mt-2 text-[var(--color-text-secondary)] text-sm max-w-2xl leading-relaxed">
-            Every component in MassLabs must implement explicit behaviors for all seven mandatory lifecycle states. Test live pointer, keyboard, and touch responses against the token system.
+            Every component in Probaho must implement explicit behaviors for all seven mandatory lifecycle states. Test live pointer, keyboard, and touch responses against the token system.
           </p>
         </div>
 
@@ -391,9 +391,9 @@ export const MassComponentWorkbench: React.FC = () => {
                     Error: Enter a valid corporate or studio email domain (e.g. name@practice.archi)
                   </span>
                 ) : selectedState === 'loading' ? (
-                  <span className="text-[var(--color-text-secondary)]">Validating address with MassLabs registry...</span>
+                  <span className="text-[var(--color-text-secondary)]">Validating address with Probaho registry...</span>
                 ) : (
-                  <span className="text-[var(--color-text-secondary)]">Direct dispatch to MassLabs principal architects</span>
+                  <span className="text-[var(--color-text-secondary)]">Direct dispatch to Probaho principal architects</span>
                 )}
               </div>
             </div>

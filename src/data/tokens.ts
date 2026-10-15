@@ -240,8 +240,8 @@ export interface MassLabTool {
 export const MASSLABS_TOOLS: MassLabTool[] = [
   {
     id: 'masslabs',
-    name: 'MassLabs',
-    kicker: 'MassLabs Integrated Platform',
+    name: 'Probaho',
+    kicker: 'Probaho Integrated Platform',
     headline: 'All Projects in One Place',
     meta: 'Site analysis · color combinations · laser cutting · global data',
     description: 'Do it all here, with a single account.',
@@ -251,7 +251,7 @@ export const MASSLABS_TOOLS: MassLabTool[] = [
   {
     id: 'archimap',
     name: 'archiMap',
-    kicker: 'MassLabs Site Intelligence',
+    kicker: 'Probaho Site Intelligence',
     headline: 'Site Analysis',
     meta: '195 countries · 100+ layers · 350+ datasets · building data 8+ · parcel data 5+ · true-width roads · 3D terrain',
     description: 'Finish your whole site analysis on a single page.',

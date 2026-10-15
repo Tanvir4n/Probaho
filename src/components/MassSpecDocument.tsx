@@ -57,13 +57,13 @@ export const MassSpecDocument: React.FC = () => {
 
   const completedCount = Object.values(checkedItems).filter(Boolean).length;
 
-  const markdownContent = `# MassLabs Design System Specification (v1.0.0)
-URL: https://masslabs-archi.com/
+  const markdownContent = `# Probaho Design System Specification (v1.0.0)
+URL: https://probaho.io/
 Audience: Buyers, teams, and decision-makers
 Product Surface: Marketing site & Architectural interface
 
 ## 1. Context & Design Intent
-MassLabs provides implementation-ready, token-driven UI guidance optimized for consistency, accessibility, and high-velocity delivery across all marketing surfaces and architectural interfaces.
+Probaho provides implementation-ready, token-driven UI guidance optimized for consistency, accessibility, and high-velocity delivery across all marketing surfaces and architectural interfaces.
 
 ## 2. Style Foundations & Design Tokens
 ### Typography Stack
@@ -142,7 +142,7 @@ Every interactive element must provide testable styles and behaviors for:
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'masslabs-design-system-guidance.md';
+    a.download = 'probaho-design-system-guidance.md';
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -153,7 +153,7 @@ Every interactive element must provide testable styles and behaviors for:
       <div className="border-b border-[var(--color-border-subtle)] pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest mb-2 font-mono">
-            <span>MassLabs Design Constitution</span>
+            <span>Probaho Design Constitution</span>
             <span>·</span>
             <span>Release 1.0.0</span>
           </div>
@@ -161,7 +161,7 @@ Every interactive element must provide testable styles and behaviors for:
             Implementation-Ready UI Guidance
           </h1>
           <p className="mt-2 text-[var(--color-text-secondary)] text-sm max-w-2xl leading-relaxed">
-            Standardized design manual for engineering and design teams building the MassLabs architectural marketing surface.
+            Standardized design manual for engineering and design teams building the Probaho architectural marketing surface.
           </p>
         </div>
 
@@ -197,11 +197,11 @@ Every interactive element must provide testable styles and behaviors for:
             </h2>
             <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed space-y-3">
               <p>
-                <strong className="text-[var(--color-text-primary)]">Mission:</strong> Create implementation-ready, token-driven UI guidance for MassLabs that is optimized for consistency, accessibility, and fast delivery across marketing sites.
+                <strong className="text-[var(--color-text-primary)]">Mission:</strong> Create implementation-ready, token-driven UI guidance for Probaho that is optimized for consistency, accessibility, and fast delivery across marketing sites.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[var(--color-surface-base)]/60 rounded-[2px] border border-[var(--color-border-subtle)] font-mono text-xs">
-                <div>• Brand: <span className="text-[var(--color-text-primary)]">MassLabs</span></div>
-                <div>• Canonical URL: <span className="text-[var(--color-surface-raised)]">masslabs-archi.com</span></div>
+                <div>• Brand: <span className="text-[var(--color-text-primary)]">Probaho</span></div>
+                <div>• Canonical URL: <span className="text-[var(--color-surface-raised)]">probaho.io</span></div>
                 <div>• Primary Audience: <span className="text-[var(--color-text-primary)]">Buyers, teams & decision-makers</span></div>
                 <div>• Product Surface: <span className="text-[var(--color-text-primary)]">Marketing site & Monograph</span></div>
               </div>
@@ -219,7 +219,7 @@ Every interactive element must provide testable styles and behaviors for:
             </h2>
             <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed space-y-4">
               <p>
-                Every component shipped under the MassLabs token architecture must explicitly define and render behaviors for seven lifecycle states without exception:
+                Every component shipped under the Probaho token architecture must explicitly define and render behaviors for seven lifecycle states without exception:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
                 <div className="p-2.5 bg-[var(--color-surface-base)]/50 border border-[var(--color-border-subtle)] rounded-[2px]">

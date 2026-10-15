@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { MASSLABS_TOOLS, URBAN_MAP_DATASETS, MassLabTool } from '../data/tokens';
+import { ProbahoLogo } from './ProbahoLogo';
 import {
   Compass,
   Layers,
@@ -19,6 +20,7 @@ import {
   Code2,
   CheckCircle2,
   Play,
+  Pause,
   FileCode2,
   Activity
 } from 'lucide-react';
@@ -33,6 +35,10 @@ interface MassGlassSidebarProps {
   onOpenDesignSystem?: () => void;
   blueprintZoom?: number;
   onZoomChange?: (zoom: number) => void;
+  isBlueprintPaused?: boolean;
+  onTogglePause?: () => void;
+  blueprintSpeed?: number;
+  onSpeedChange?: (speed: number) => void;
 }
 
 export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
@@ -45,6 +51,10 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
   onOpenDesignSystem,
   blueprintZoom = 0.40,
   onZoomChange,
+  isBlueprintPaused = false,
+  onTogglePause,
+  blueprintSpeed = 1.0,
+  onSpeedChange,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const activeTool = MASSLABS_TOOLS.find((t) => t.id === activeToolId) || MASSLABS_TOOLS[0];
@@ -79,7 +89,7 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
               <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[var(--color-surface-raised)]">
-                MassLabs Telemetry
+                Probaho Telemetry
               </span>
             </div>
             <button
@@ -200,6 +210,40 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
                 </div>
               </div>
             )}
+
+            {/* Blueprint Animation Sequence Controls */}
+            {onTogglePause && (
+              <div className="pt-2 flex items-center justify-between text-[10px] font-mono border-t border-[var(--color-border-subtle)] mt-2">
+                <span className="text-[var(--color-text-secondary)]">Sequence:</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={onTogglePause}
+                    className={`px-2 py-0.5 rounded-[2px] flex items-center gap-1 text-[9.5px] font-bold cursor-pointer transition-colors ${
+                      isBlueprintPaused
+                        ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
+                        : 'bg-[var(--color-surface-raised)] text-white'
+                    }`}
+                  >
+                    {isBlueprintPaused ? <Play className="w-2.5 h-2.5 fill-current" /> : <Pause className="w-2.5 h-2.5 fill-current" />}
+                    <span>{isBlueprintPaused ? 'RESUME' : 'PAUSE'}</span>
+                  </button>
+
+                  {onSpeedChange && [0.5, 1.0, 2.0].map((spd) => (
+                    <button
+                      key={spd}
+                      onClick={() => onSpeedChange(spd)}
+                      className={`px-1.5 py-0.5 rounded-[2px] transition-colors cursor-pointer ${
+                        blueprintSpeed === spd && !isBlueprintPaused
+                          ? 'bg-[var(--color-surface-raised)] text-white font-bold'
+                          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
+                      }`}
+                    >
+                      {spd}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Direct Studio Launch Action */}
@@ -308,28 +352,16 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
                 }`}
               />
 
-              {/* 1. MassLabs 3-node connected emblem */}
+              {/* 1. Probaho dynamic architectural emblem */}
               {tool.id === 'masslabs' && (
-                <svg
-                  className={`w-6 h-4.5 transition-colors drop-shadow-sm ${
+                <ProbahoLogo
+                  size={20}
+                  className={`transition-colors drop-shadow-sm ${
                     isActive
                       ? isDay ? 'text-[#111113]' : 'text-[#eceae6]'
                       : isDay ? 'text-[#374151] group-hover:text-[#111113]' : 'text-[#8a8a86] group-hover:text-[#eceae6]'
                   }`}
-                  viewBox="0 0 32 20"
-                  fill="none"
-                >
-                  <path
-                    d="M5 14L16 6L27 14"
-                    stroke="currentColor"
-                    strokeWidth="2.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="5" cy="14" r="3.2" fill="currentColor" />
-                  <circle cx="16" cy="6" r="3.2" fill="currentColor" />
-                  <circle cx="27" cy="14" r="3.2" fill="currentColor" />
-                </svg>
+                />
               )}
 
               {/* 2. archiMap 4-quadrant pastel grid */}
