@@ -1,20 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { URBAN_MAP_DATASETS } from '../data/tokens';
 import { Play, Pause, MapPin, Eye, EyeOff, Layers, SlidersHorizontal } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface MassArchitecturalBackgroundProps {
   currentMapIndex: number;
   onMapChange: (index: number) => void;
   overlayOpacity?: number; // 0.0 to 1.0
+  onOverlayOpacityChange?: (opacity: number) => void;
   autoPlay?: boolean;
+  isPaused?: boolean;
+  onTogglePause?: () => void;
+  speedMultiplier?: number;
+  onSpeedChange?: (speed: number) => void;
+  themeMode?: 'day' | 'night';
+  zoomLevel?: number;
+  onZoomChange?: (zoom: number) => void;
+  className?: string;
 }
 
 export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundProps> = ({
   currentMapIndex,
   onMapChange,
   overlayOpacity = 0.72,
+  onOverlayOpacityChange,
   autoPlay = true,
+  isPaused,
+  onTogglePause,
+  className = '',
 }) => {
+  const { isDay } = useTheme();
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [darkness, setDarkness] = useState(overlayOpacity);
   const [showControls, setShowControls] = useState(false);
@@ -27,21 +42,24 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
     scanBeam: true,
   });
 
+  // Keep internal play state synced if external pause controller is used
+  const effectivePlaying = isPaused !== undefined ? !isPaused : isPlaying;
+
   // Automated layer transition sequence calibrated to tokens (6.5s interval)
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!effectivePlaying) return;
 
     const interval = setInterval(() => {
       onMapChange((currentMapIndex + 1) % URBAN_MAP_DATASETS.length);
     }, 6500);
 
     return () => clearInterval(interval);
-  }, [isPlaying, currentMapIndex, onMapChange]);
+  }, [effectivePlaying, currentMapIndex, onMapChange]);
 
   const activeMap = URBAN_MAP_DATASETS[currentMapIndex];
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none select-none z-0 ${className}`}>
       {/* 
         ========================================================================
         LAYER 1: STACKED BASE CARTOGRAPHY WITH CONTINUOUS CROSS-FADE TRANSITIONS
@@ -62,6 +80,8 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
                   src={mapData.image}
                   alt={`${mapData.cityName} architectural GIS site analysis map`}
                   className={`w-full h-full object-cover transform transition-transform duration-[7000ms] ease-out ${
+                    isDay ? 'filter contrast-[1.04] brightness-[1.02]' : 'filter contrast-[1.1] brightness-[1.05]'
+                  } ${
                     isActive ? 'scale-105 translate-y-0' : 'scale-100 translate-y-1'
                   }`}
                   referrerPolicy="no-referrer"
@@ -84,10 +104,15 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
           <div
             className="w-full h-full"
             style={{
-              backgroundImage: `
-                linear-gradient(to right, rgba(236, 234, 230, 0.08) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(236, 234, 230, 0.08) 1px, transparent 1px)
-              `,
+              backgroundImage: isDay
+                ? `
+                  linear-gradient(to right, rgba(17, 17, 19, 0.06) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(17, 17, 19, 0.06) 1px, transparent 1px)
+                `
+                : `
+                  linear-gradient(to right, rgba(236, 234, 230, 0.08) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(236, 234, 230, 0.08) 1px, transparent 1px)
+                `,
               backgroundSize: '80px 80px',
             }}
           />
@@ -108,14 +133,14 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
                 <path
                   d="M116 120 h8 M120 116 v8 M120 120 m-6 0 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0"
                   fill="none"
-                  stroke="rgba(34, 197, 94, 0.45)"
+                  stroke={isDay ? "rgba(22, 163, 74, 0.55)" : "rgba(34, 197, 94, 0.45)"}
                   strokeWidth="0.75"
                 />
-                {/* Corner corner registration brackets */}
+                {/* Corner registration brackets */}
                 <path
                   d="M10 10 h12 M10 10 v12 M230 10 h-12 M230 10 v12 M10 230 h12 M10 230 v-12 M230 230 h-12 M230 230 v-12"
                   fill="none"
-                  stroke="rgba(255, 255, 255, 0.15)"
+                  stroke={isDay ? "rgba(17, 17, 19, 0.15)" : "rgba(255, 255, 255, 0.15)"}
                   strokeWidth="0.75"
                 />
               </pattern>
@@ -143,14 +168,14 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
             {/* Topographic elevation contours */}
             <path
               d="M-50,200 Q400,150 900,320 T1950,220 M-50,350 Q450,280 950,480 T1950,380 M-50,520 Q500,420 1020,620 T1950,540 M-50,700 Q550,580 1100,780 T1950,710 M-50,880 Q600,750 1200,920 T1950,880"
-              stroke="rgba(255, 255, 255, 0.12)"
+              stroke={isDay ? "rgba(17, 17, 19, 0.14)" : "rgba(255, 255, 255, 0.12)"}
               strokeWidth="0.8"
               strokeDasharray="4 6"
             />
             {/* Structural parcel vectors */}
             <path
               d="M300,100 L700,400 L600,800 L200,500 Z M1100,200 L1600,150 L1700,650 L1250,700 Z"
-              stroke="rgba(34, 197, 94, 0.25)"
+              stroke={isDay ? "rgba(22, 163, 74, 0.35)" : "rgba(34, 197, 94, 0.25)"}
               strokeWidth="1"
             />
             {/* Precision dimension arc */}
@@ -158,7 +183,7 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
               cx="960"
               cy="540"
               r="380"
-              stroke="rgba(255, 255, 255, 0.08)"
+              stroke={isDay ? "rgba(17, 17, 19, 0.1)" : "rgba(255, 255, 255, 0.08)"}
               strokeWidth="0.75"
               strokeDasharray="6 8"
             />
@@ -169,78 +194,89 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
       {/* 
         ========================================================================
         LAYER 4: ARCHITECTURAL REVEAL BEAM (LiDAR Scanning Pulse)
-        CSS keyframe animation (.animate-mass-scan) sweeping across the blueprint
-        layers using the defined motion duration tokens (calc(var(--motion-duration-slow) * 8))
         ========================================================================
       */}
       {layersVisibility.scanBeam && (
         <div className="absolute inset-x-0 h-40 z-4 pointer-events-none animate-mass-scan">
           {/* Glowing laser sweep gradient */}
-          <div className="w-full h-full bg-gradient-to-b from-transparent via-[#22c55e]/12 to-transparent" />
+          <div className={`w-full h-full bg-gradient-to-b from-transparent ${isDay ? 'via-[#16a34a]/10' : 'via-[#22c55e]/12'} to-transparent`} />
           {/* Fine 1px tracing line with green laser focal point */}
-          <div className="absolute bottom-1/2 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#22c55e]/85 to-transparent shadow-[0_0_15px_rgba(34,197,94,0.6)]" />
+          <div className={`absolute bottom-1/2 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent ${isDay ? 'via-[#16a34a]/85' : 'via-[#22c55e]/85'} to-transparent shadow-[0_0_15px_rgba(34,197,94,0.6)]`} />
         </div>
       )}
 
       {/* 
         ========================================================================
-        LAYER 5: SEMI-TRANSPARENT BLACK GRADIENT LAYER FOR HIGH READABILITY
-        Requested: "overlaid with a semi-transparent black gradient layer for high readability"
-        Multi-stop directional gradient + ambient radial vignette
+        LAYER 5: ADAPTIVE GRADIENT READABILITY SCRIM (Day: Off-White / Night: Obsidian)
+        Ensures >= 14:1 contrast for charcoal text in Day mode and off-white in Night mode
         ========================================================================
       */}
       <div
         className="absolute inset-0 transition-all duration-500 z-5"
         style={{
-          backgroundColor: `rgba(0, 0, 0, ${darkness})`,
-          backgroundImage: `
-            radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.88) 100%),
-            linear-gradient(180deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.52) 25%, rgba(0,0,0,0.58) 70%, rgba(0,0,0,0.96) 100%)
-          `,
+          backgroundColor: isDay ? `rgba(246, 245, 242, ${darkness})` : `rgba(0, 0, 0, ${darkness})`,
+          backgroundImage: isDay
+            ? `
+              radial-gradient(ellipse at 50% 40%, rgba(246, 245, 242, 0.72) 0%, rgba(246, 245, 242, 0.94) 100%),
+              linear-gradient(180deg, rgba(246, 245, 242, 0.96) 0%, rgba(246, 245, 242, 0.76) 25%, rgba(246, 245, 242, 0.82) 70%, rgba(246, 245, 242, 0.98) 100%)
+            `
+            : `
+              radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.88) 100%),
+              linear-gradient(180deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.52) 25%, rgba(0,0,0,0.58) 70%, rgba(0,0,0,0.96) 100%)
+            `,
         }}
       />
 
       {/* 
         ========================================================================
         HUD: ARCHITECTURAL TELEMETRY & LAYER STACK CONTROLLER (Bottom Left)
-        Interactive affordance for testing layer visibility, dark opacity & city transitions
         ========================================================================
       */}
       <div className="absolute bottom-6 left-6 z-20 pointer-events-auto hidden sm:flex items-center gap-3">
         {/* Main Telemetry Dock */}
-        <div className="bg-black/85 backdrop-blur-md border border-white/10 px-3.5 py-2 rounded-[2px] text-xs font-mono text-[#8a8a86] flex items-center gap-3.5 shadow-2xl">
+        <div className={`${
+          isDay
+            ? 'bg-white/90 border border-black/10 text-[#4b5563] shadow-lg'
+            : 'bg-black/85 border border-white/10 text-[#8a8a86] shadow-2xl'
+        } backdrop-blur-md px-3.5 py-2 rounded-[2px] text-xs font-mono flex items-center gap-3.5 transition-colors duration-200`}>
           {/* Active Location Info */}
-          <div className="flex items-center gap-2 text-[#eceae6]">
-            <MapPin className="w-3.5 h-3.5 text-[#22c55e]" />
+          <div className={`flex items-center gap-2 ${isDay ? 'text-[#111113]' : 'text-[#eceae6]'}`}>
+            <MapPin className={`w-3.5 h-3.5 ${isDay ? 'text-[#16a34a]' : 'text-[#22c55e]'}`} />
             <span className="font-semibold">{activeMap.cityName}</span>
-            <span className="text-white/25">·</span>
-            <span className="text-[10px] text-[#8a8a86]">{activeMap.coordinates}</span>
+            <span className={isDay ? 'text-black/25' : 'text-white/25'}>·</span>
+            <span className={`text-[10px] ${isDay ? 'text-[#4b5563]' : 'text-[#8a8a86]'}`}>{activeMap.coordinates}</span>
           </div>
 
-          <span className="text-white/20">|</span>
+          <span className={isDay ? 'text-black/20' : 'text-white/20'}>|</span>
 
           {/* Layer Count Indicator */}
           <button
             onClick={() => setShowControls(!showControls)}
-            className="flex items-center gap-1.5 text-[10px] text-[#eceae6] hover:text-[#22c55e] transition-colors"
+            className={`flex items-center gap-1.5 text-[10px] ${isDay ? 'text-[#111113] hover:text-[#16a34a]' : 'text-[#eceae6] hover:text-[#22c55e]'} transition-colors cursor-pointer`}
             title="Inspect Blueprint Layers"
           >
-            <Layers className="w-3 h-3 text-[#22c55e]" />
+            <Layers className={`w-3 h-3 ${isDay ? 'text-[#16a34a]' : 'text-[#22c55e]'}`} />
             <span>4 Blueprint Layers</span>
           </button>
 
-          <span className="text-white/20">|</span>
+          <span className={isDay ? 'text-black/20' : 'text-white/20'}>|</span>
 
           {/* Play/Pause Sequence Button */}
           <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="p-1 hover:text-white transition-colors"
-            title={isPlaying ? 'Pause Continuous Sequence' : 'Play Continuous Sequence'}
+            onClick={() => {
+              if (onTogglePause) {
+                onTogglePause();
+              } else {
+                setIsPlaying(!isPlaying);
+              }
+            }}
+            className={`p-1 ${isDay ? 'hover:text-[#111113]' : 'hover:text-white'} transition-colors cursor-pointer`}
+            title={effectivePlaying ? 'Pause Continuous Sequence' : 'Play Continuous Sequence'}
           >
-            {isPlaying ? (
-              <Pause className="w-3.5 h-3.5 text-[#22c55e]" />
+            {effectivePlaying ? (
+              <Pause className={`w-3.5 h-3.5 ${isDay ? 'text-[#16a34a]' : 'text-[#22c55e]'}`} />
             ) : (
-              <Play className="w-3.5 h-3.5 text-[#8a8a86]" />
+              <Play className={`w-3.5 h-3.5 ${isDay ? 'text-[#4b5563]' : 'text-[#8a8a86]'}`} />
             )}
           </button>
 
@@ -250,10 +286,10 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
               <button
                 key={m.id}
                 onClick={() => onMapChange(idx)}
-                className={`w-2 h-2 rounded-full transition-all ${
+                className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
                   idx === currentMapIndex
-                    ? 'bg-[#22c55e] w-4'
-                    : 'bg-white/20 hover:bg-white/50'
+                    ? `${isDay ? 'bg-[#16a34a]' : 'bg-[#22c55e]'} w-4`
+                    : isDay ? 'bg-black/20 hover:bg-black/50' : 'bg-white/20 hover:bg-white/50'
                 }`}
                 title={`Switch blueprint to ${m.cityName}`}
               />
@@ -261,17 +297,26 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
           </div>
         </div>
 
-        {/* Black Gradient Opacity Presets */}
-        <div className="bg-black/85 backdrop-blur-md border border-white/10 px-2.5 py-2 rounded-[2px] text-[10px] font-mono text-[#8a8a86] flex items-center gap-2 shadow-2xl">
-          <span className="text-white/70">Dark Layer:</span>
+        {/* Scrim Opacity Presets */}
+        <div className={`${
+          isDay
+            ? 'bg-white/90 border border-black/10 text-[#4b5563] shadow-lg'
+            : 'bg-black/85 border border-white/10 text-[#8a8a86] shadow-2xl'
+        } backdrop-blur-md px-2.5 py-2 rounded-[2px] text-[10px] font-mono flex items-center gap-2 transition-colors duration-200`}>
+          <span className={isDay ? 'text-[#111113]/70 font-semibold' : 'text-white/70'}>
+            {isDay ? 'Day Scrim:' : 'Dark Layer:'}
+          </span>
           {[0.55, 0.72, 0.86].map((level) => (
             <button
               key={level}
-              onClick={() => setDarkness(level)}
-              className={`px-1.5 py-0.5 rounded-[1px] transition-colors ${
+              onClick={() => {
+                setDarkness(level);
+                onOverlayOpacityChange?.(level);
+              }}
+              className={`px-1.5 py-0.5 rounded-[1px] transition-colors cursor-pointer ${
                 darkness === level
-                  ? 'bg-white/20 text-[#eceae6] font-bold'
-                  : 'hover:text-white text-[#555552]'
+                  ? isDay ? 'bg-black/10 text-[#111113] font-bold' : 'bg-white/20 text-[#eceae6] font-bold'
+                  : isDay ? 'hover:text-[#111113] text-[#6b7280]' : 'hover:text-white text-[#555552]'
               }`}
             >
               {Math.round(level * 100)}%
@@ -281,18 +326,20 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
 
         {/* Expanded Blueprint Layer Toggles Panel */}
         {showControls && (
-          <div className="absolute bottom-12 left-0 bg-[#0e0e0f] border border-white/20 p-3 rounded-[2px] shadow-2xl text-[10.56px] font-mono space-y-2 w-64 animate-in fade-in slide-in-from-bottom-2 duration-150">
-            <div className="flex items-center justify-between text-[#22c55e] font-semibold border-b border-white/10 pb-1.5">
+          <div className={`absolute bottom-12 left-0 ${
+            isDay ? 'bg-white border-black/15 text-[#111113] shadow-xl' : 'bg-[#0e0e0f] border-white/20 text-[#eceae6] shadow-2xl'
+          } border p-3 rounded-[2px] text-[10.56px] font-mono space-y-2 w-64 animate-in fade-in slide-in-from-bottom-2 duration-150`}>
+            <div className={`flex items-center justify-between ${isDay ? 'text-[#16a34a]' : 'text-[#22c55e]'} font-semibold border-b ${isDay ? 'border-black/10' : 'border-white/10'} pb-1.5`}>
               <span>BLUEPRINT LAYER STACK</span>
               <button
                 onClick={() => setShowControls(false)}
-                className="text-[#8a8a86] hover:text-white"
+                className={`${isDay ? 'text-[#6b7280] hover:text-[#111113]' : 'text-[#8a8a86] hover:text-white'} cursor-pointer`}
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-1.5 text-[#eceae6]">
+            <div className={`space-y-1.5 ${isDay ? 'text-[#111113]' : 'text-[#eceae6]'}`}>
               {[
                 { key: 'cartography' as const, label: '01. Base Cartography' },
                 { key: 'cadGrid' as const, label: '02. CAD Drafting Grid' },
@@ -303,17 +350,17 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
                   key={layer.key}
                   onClick={() =>
                     setLayersVisibility((prev) => ({
-                       ...prev,
+                      ...prev,
                       [layer.key]: !prev[layer.key],
                     }))
                   }
-                  className="w-full flex items-center justify-between p-1.5 hover:bg-white/5 rounded-[2px] transition-colors text-left"
+                  className={`w-full flex items-center justify-between p-1.5 ${isDay ? 'hover:bg-black/5' : 'hover:bg-white/5'} rounded-[2px] transition-colors text-left cursor-pointer`}
                 >
                   <span>{layer.label}</span>
                   {layersVisibility[layer.key] ? (
-                    <Eye className="w-3.5 h-3.5 text-[#22c55e]" />
+                    <Eye className={`w-3.5 h-3.5 ${isDay ? 'text-[#16a34a]' : 'text-[#22c55e]'}`} />
                   ) : (
-                    <EyeOff className="w-3.5 h-3.5 text-[#555552]" />
+                    <EyeOff className={`w-3.5 h-3.5 ${isDay ? 'text-[#9ca3af]' : 'text-[#555552]'}`} />
                   )}
                 </button>
               ))}
@@ -324,3 +371,4 @@ export const MassArchitecturalBackground: React.FC<MassArchitecturalBackgroundPr
     </div>
   );
 };
+

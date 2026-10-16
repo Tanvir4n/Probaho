@@ -187,7 +187,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             className="flex items-center gap-3 text-xl font-bold tracking-tight text-[var(--color-text-primary)] whitespace-nowrap hover:opacity-90 transition-opacity group"
           >
             <ProbahoLogo className="w-7 h-7 text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] shrink-0 transition-colors" />
-            <span className="font-bold tracking-tight font-sans text-white text-xl">
+            <span className="font-bold tracking-tight font-sans text-[var(--color-text-primary)] transition-colors text-xl">
               {isBangla ? 'প্রবাহ' : 'Probaho'}
             </span>
           </a>
@@ -498,7 +498,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
                     {t.suite.tool1.type}
                   </span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)] px-2 py-0.5 rounded bg-white/5 border border-white/10">{t.suite.tool1.sub}</span>
+                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)] px-2 py-0.5 rounded bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)]">{t.suite.tool1.sub}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool1.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
@@ -533,11 +533,11 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-red-400 font-semibold flex items-center gap-1.5">
+                  <span className="text-xs font-mono text-red-500 font-semibold flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
                     {t.suite.tool2.type}
                   </span>
-                  <span className="text-[10px] font-mono text-red-400 px-2 py-0.5 rounded bg-red-950/40 border border-red-500/30">{t.suite.tool2.sub}</span>
+                  <span className="text-[10px] font-mono text-red-600 dark:text-red-400 px-2 py-0.5 rounded bg-red-500/10 border border-red-500/30">{t.suite.tool2.sub}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool2.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
@@ -573,11 +573,11 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-cyan-400 font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
                     {t.suite.tool3.type}
                   </span>
-                  <span className="text-[10px] font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-950/40 border border-cyan-500/30">{t.suite.tool3.sub}</span>
+                  <span className="text-[10px] font-mono text-cyan-700 dark:text-cyan-300 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">{t.suite.tool3.sub}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool3.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
@@ -991,7 +991,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <ProbahoBrand size={24} textSize="text-lg" />
+              <ProbahoBrand size={24} textSize="text-lg" title={isBangla ? 'প্রবাহ' : 'Probaho'} />
               <p className="text-[11.52px] mt-1 text-[var(--color-text-secondary)] max-w-sm">
                 {t.footer.desc}
               </p>

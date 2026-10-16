@@ -447,7 +447,7 @@ export const AdversarialSimulatorWidget: React.FC = () => {
 export const CadastralSectionTransitionBeam: React.FC = () => {
   const { isBangla, t } = useLanguage();
   return (
-    <div className="relative w-full overflow-hidden bg-black/80 border-y border-[var(--color-border-subtle)] py-3 px-4 sm:px-8 select-none">
+    <div className="relative w-full overflow-hidden bg-[var(--color-surface-strong)] border-y border-[var(--color-border-subtle)] py-3 px-4 sm:px-8 select-none transition-colors duration-200">
       {/* Moving Laser Beam Runner along the Top Edge */}
       <motion.div
         className="absolute top-0 left-0 w-48 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-surface-raised)] to-transparent shadow-[0_0_12px_#22c55e]"
@@ -457,12 +457,12 @@ export const CadastralSectionTransitionBeam: React.FC = () => {
 
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] font-mono">
         {/* Left Telemetry Feed */}
-        <div className="flex items-center gap-2.5 text-white/80">
+        <div className="flex items-center gap-2.5 text-[var(--color-text-secondary)]">
           <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-ping" />
           <span className="text-[var(--color-surface-raised)] font-bold">
             {isBangla ? 'ক্যাডাস্ট্রাল লাইভ স্ট্রিম:' : 'STREAMING CADASTRAL TELEMETRY:'}
           </span>
-          <span className="text-white/60 hidden sm:inline">
+          <span className="text-[var(--color-text-secondary)] opacity-85 hidden sm:inline">
             {isBangla
               ? 'ধানমন্ডি মৌজা (দাগ ১০৪২) · ৪টি ইঞ্জিন সক্রিয় · ১০০% লেজার সততা'
               : 'DHANMONDI MOUZA (DAG 1042) · 4 ENGINES ONLINE · 100% LEDGER INTEGRITY'}
@@ -470,13 +470,13 @@ export const CadastralSectionTransitionBeam: React.FC = () => {
         </div>
 
         {/* Right Section Navigation Indicator */}
-        <div className="flex items-center gap-4 text-white/60">
+        <div className="flex items-center gap-4 text-[var(--color-text-secondary)]">
           <span className="text-xs text-[var(--color-surface-raised)] font-bold">
             {t.transitionBeam.section02}
           </span>
           <motion.a
             href="#tools"
-            className="flex items-center gap-1.5 text-white/80 hover:text-white transition-colors cursor-pointer group"
+            className="flex items-center gap-1.5 text-[var(--color-text-primary)] hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer group font-semibold"
             animate={{ y: [0, 3, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
           >

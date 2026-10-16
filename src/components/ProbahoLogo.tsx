@@ -103,10 +103,12 @@ export const ProbahoBrand: React.FC<{
   size?: number | string;
   className?: string;
   textSize?: string;
+  title?: string;
 }> = ({
   size,
   className = '',
   textSize = 'text-xl',
+  title = 'Probaho',
 }) => {
   return (
     <div className={`flex items-center gap-3 whitespace-nowrap group ${className}`}>
@@ -114,8 +116,8 @@ export const ProbahoBrand: React.FC<{
         size={size}
         className="w-7 h-7 text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] shrink-0 transition-colors"
       />
-      <span className={`font-bold tracking-tight font-sans text-white ${textSize}`}>
-        Probaho
+      <span className={`font-bold tracking-tight font-sans text-[var(--color-text-primary)] transition-colors ${textSize}`}>
+        {title}
       </span>
     </div>
   );

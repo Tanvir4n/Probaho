@@ -65,7 +65,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-4">
-          <ProbahoBrand size={22} textSize="text-base" />
+          <ProbahoBrand size={22} textSize="text-base" title={isBangla ? 'প্রবাহ' : 'Probaho'} />
           <button
             onClick={onClose}
             className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[3px] cursor-pointer"

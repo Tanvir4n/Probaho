@@ -59,7 +59,7 @@ function AppContent() {
               className="glass-panel rounded-[8px] flex-1 flex flex-col overflow-hidden shadow-2xl max-w-7xl w-full mx-auto"
             >
             {/* Modal Header */}
-            <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-md">
+            <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-[var(--color-surface-strong)]/80 backdrop-blur-md">
               <div className="flex items-center gap-2.5">
                 <ProbahoBrand size={20} textSize="text-xs" />
                 <span className="text-[var(--color-text-tertiary)]">|</span>
