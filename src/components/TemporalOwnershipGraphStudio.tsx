@@ -403,7 +403,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
             />
 
             {/* Map Telemetry Floating Badge */}
-            <div className="absolute top-3 left-3 z-20 glass-pill px-2.5 py-1 text-[10px] font-mono text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/90 backdrop-blur-sm pointer-events-none flex items-center gap-1.5">
+            <div className="absolute bottom-14 right-3 z-20 glass-pill px-2.5 py-1 text-[10px] font-mono text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/90 backdrop-blur-sm pointer-events-none hidden sm:flex items-center gap-1.5 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
               <span>{isBangla ? 'ঢাকা ক্যাডাস্ট্রাল ভেক্টর সার্ভে ম্যাপ' : 'Dhaka Cadastral Vector GIS Map'}</span>
             </div>
