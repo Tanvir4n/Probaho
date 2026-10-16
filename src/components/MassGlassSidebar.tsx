@@ -431,6 +431,112 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
             </button>
           );
         })}
+
+        {/* 
+          ======================================================================
+          BLUEPRINT SEQUENCE & TACTILE CONTROLS SECTION
+          Moved from the bottom floating bar into the vertical sidebar dock
+          ======================================================================
+        */}
+        <div className={`h-[1px] w-full my-0.5 ${isDay ? 'bg-black/10' : 'bg-white/10'}`} />
+
+        <div
+          className={`w-[60px] rounded-[5px] p-1.5 flex flex-col gap-1.5 border transition-all select-none ${
+            isDay
+              ? 'bg-white/75 border-white/90 shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_0_rgba(255,255,255,0.95)]'
+              : 'bg-white/[0.05] border-white/10 shadow-[0_2px_10px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.10)]'
+          }`}
+          title="Blueprint Cartography & Motion Controls"
+        >
+          {/* 1. Pause / Resume Toggle */}
+          <button
+            onClick={onTogglePause}
+            className={`w-full h-6 rounded-[3px] flex items-center justify-center gap-1 text-[8.5px] font-mono font-bold transition-all cursor-pointer select-none ${
+              isBlueprintPaused
+                ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40 hover:bg-amber-500/30'
+                : 'bg-[var(--color-surface-raised)] text-white shadow-[0_2px_8px_rgba(34,197,94,0.4)] hover:brightness-110'
+            }`}
+            title={isBlueprintPaused ? 'Resume blueprint animation' : 'Pause blueprint animation'}
+          >
+            {isBlueprintPaused ? (
+              <>
+                <Play className="w-2.5 h-2.5 fill-current" />
+                <span>PLAY</span>
+              </>
+            ) : (
+              <>
+                <Pause className="w-2.5 h-2.5 fill-current" />
+                <span>PAUSE</span>
+              </>
+            )}
+          </button>
+
+          {/* 2. Speed Selector: 0.5x, 1x, 2x */}
+          <div className="flex items-center justify-between gap-0.5 w-full">
+            {[0.5, 1.0, 2.0].map((spd) => (
+              <button
+                key={spd}
+                onClick={() => {
+                  onSpeedChange?.(spd);
+                  if (isBlueprintPaused && onTogglePause) onTogglePause();
+                }}
+                className={`flex-1 py-0.5 rounded-[2px] text-[8px] font-mono transition-colors text-center cursor-pointer ${
+                  blueprintSpeed === spd && !isBlueprintPaused
+                    ? isDay
+                      ? 'bg-[#16a34a] text-white font-bold shadow-xs'
+                      : 'bg-[#22c55e] text-white font-bold shadow-xs'
+                    : isDay
+                      ? 'text-[#6b7280] hover:text-[#111113] hover:bg-black/5'
+                      : 'text-[#8a8a86] hover:text-[#eceae6] hover:bg-white/10'
+                }`}
+                title={`Set animation speed to ${spd}x`}
+              >
+                {spd}x
+              </button>
+            ))}
+          </div>
+
+          {/* 3. Blueprint Zoom Controls: − [40%] + */}
+          <div
+            className={`flex items-center justify-between w-full px-0.5 py-0.5 rounded-[3px] text-[8.5px] font-mono border ${
+              isDay ? 'bg-black/[0.04] border-black/5' : 'bg-black/30 border-white/5'
+            }`}
+          >
+            <button
+              onClick={() => onZoomChange?.(Math.max(0.20, +(blueprintZoom - 0.05).toFixed(2)))}
+              className="w-3.5 h-3.5 flex items-center justify-center rounded hover:bg-white/20 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer select-none"
+              title="Zoom Out Blueprint"
+            >
+              −
+            </button>
+            <button
+              onClick={() => onZoomChange?.(0.40)}
+              className="text-[8px] font-bold text-[var(--color-surface-raised)] hover:underline cursor-pointer select-none"
+              title="Reset zoom to default 40%"
+            >
+              {Math.round(blueprintZoom * 100)}%
+            </button>
+            <button
+              onClick={() => onZoomChange?.(Math.min(1.20, +(blueprintZoom + 0.05).toFixed(2)))}
+              className="w-3.5 h-3.5 flex items-center justify-center rounded hover:bg-white/20 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer select-none"
+              title="Zoom In Blueprint"
+            >
+              +
+            </button>
+          </div>
+
+          {/* 4. Tactile Status Readout */}
+          <div className="flex items-center justify-center gap-1 text-[7.5px] font-mono text-[var(--color-text-secondary)] pt-0.5 tracking-tight">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isBlueprintPaused ? 'bg-amber-400' : 'bg-[var(--color-surface-raised)] animate-pulse'
+              }`}
+            />
+            <span className="truncate max-w-[46px] font-semibold">
+              {isBlueprintPaused ? 'FROZEN' : `${blueprintSpeed}X`}
+            </span>
+          </div>
+        </div>
       </div>
     </aside>
   );
