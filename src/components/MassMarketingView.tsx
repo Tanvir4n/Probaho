@@ -16,6 +16,7 @@ import { JomiChainSection } from './JomiChainSection';
 import { RiskAnalyticsDashboard } from './RiskAnalyticsDashboard';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
+import { TemporalOwnershipGraphStudio } from './TemporalOwnershipGraphStudio';
 import {
   OwnershipGraphWidget,
   FraudEngineGaugeWidget,
@@ -516,7 +517,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 </p>
 
                 {/* Micro-Animated SVG Graph Widget */}
-                <OwnershipGraphWidget />
+                <OwnershipGraphWidget
+                  onLaunchStudio={() => {
+                    setCurrentMapIndex(0);
+                    setActiveToolId('archimap');
+                    setIsSiteAnalysisStudioOpen(true);
+                  }}
+                />
 
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
                   <div>{t.suite.tool1.f1}</div>
@@ -1147,12 +1154,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.98 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="glass-panel rounded-[8px] max-w-5xl w-full h-[85vh] flex flex-col shadow-2xl overflow-hidden"
+              className={`glass-panel rounded-[8px] w-full flex flex-col shadow-2xl overflow-hidden ${
+                activeMap.id === 'dhaka-metro' ? 'max-w-[96vw] xl:max-w-[1540px] h-[92vh]' : 'max-w-5xl h-[85vh]'
+              }`}
               role="dialog"
               aria-modal="true"
             >
               {/* Header */}
-              <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm">
+              <div className="p-3.5 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm shrink-0">
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
                   <span className="text-[var(--color-text-tertiary)]">|</span>
@@ -1163,7 +1172,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   {activeMap.id === 'dhaka-metro' && (
                     <span className="px-2 py-0.5 text-[9.5px] font-mono rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      D3.js Vector GIS
+                      D3.js Vector GIS · 86y Temporal DAG
                     </span>
                   )}
                 </div>
@@ -1203,7 +1212,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
                 {activeMap.id === 'dhaka-metro' ? (
                   <div className="flex-1 relative w-full h-full overflow-hidden">
-                    <DhakaD3CadastralMap height="100%" initialSelectedPlotId="dag-1042-dhanmondi" />
+                    <TemporalOwnershipGraphStudio
+                      onClose={() => setIsSiteAnalysisStudioOpen(false)}
+                      defaultViewMode="split"
+                    />
                   </div>
                 ) : (
                   <>

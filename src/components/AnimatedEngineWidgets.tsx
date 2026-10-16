@@ -33,119 +33,193 @@ import { useLanguage } from '../context/LanguageContext';
 // ============================================================================
 // 1. OWNERSHIP GRAPH WIDGET (Engine 01)
 // ============================================================================
-export const OwnershipGraphWidget: React.FC = () => {
+export const OwnershipGraphWidget: React.FC<{ onLaunchStudio?: () => void }> = ({ onLaunchStudio }) => {
   const { isBangla } = useLanguage();
   const [activeNode, setActiveNode] = useState<number | null>(null);
+  const [showCollisionBranch, setShowCollisionBranch] = useState<boolean>(true);
 
   const nodes = [
-    { id: 0, label: 'CS 102', year: '1940', x: 38, y: 72, r: 16, color: '#6b7280' },
-    { id: 1, label: 'SA 102', year: '1962', x: 110, y: 34, r: 16, color: '#38bdf8' },
-    { id: 2, label: 'RS 912', year: '1988', x: 185, y: 104, r: 16, color: '#4ade80' },
-    { id: 3, label: 'BS 1042', year: '2021', x: 265, y: 62, r: 19, color: '#22c55e', isTarget: true },
+    { id: 0, label: 'CS 102', sub: '1940', year: '1940', x: 26, y: 55, r: 13, color: '#64748b', type: 'CS' },
+    { id: 1, label: 'SA 102', sub: '1962', year: '1962', x: 74, y: 32, r: 13, color: '#38bdf8', type: 'SA' },
+    { id: 2, label: 'RS 912', sub: '1988', year: '1988', x: 124, y: 78, r: 14, color: '#4ade80', type: 'RS' },
+    { id: 3, label: 'BS 1042', sub: '2021', year: '2021', x: 178, y: 48, r: 16, color: '#22c55e', isTarget: true, type: 'BS' },
+    { id: 4, label: 'Deed 6102', sub: '2026', year: '2026', x: 236, y: 30, r: 14, color: '#10b981', type: 'DEED' },
+    // Collision Branch Nodes
+    { id: 5, label: 'Deed 9810', sub: 'Fraud', year: '2026', x: 236, y: 84, r: 14, color: '#ef4444', isDispute: true, type: 'FRAUD' },
+    { id: 6, label: 'Lock 794', sub: '72h', year: '2026', x: 288, y: 84, r: 13, color: '#dc2626', isLock: true, type: 'LOCK' },
   ];
 
   return (
-    <div className="relative w-full h-[155px] rounded-[6px] bg-black/45 border border-white/10 overflow-hidden p-3 flex flex-col justify-between select-none">
-      {/* Background Micro-Grid */}
+    <div className="relative w-full rounded-[6px] bg-black/55 border border-white/10 overflow-hidden p-3 flex flex-col justify-between select-none">
+      {/* Background Cartographic Micro-Grid */}
       <div 
         className="absolute inset-0 opacity-15 pointer-events-none"
         style={{
           backgroundImage: 'radial-gradient(circle, #22c55e 1px, transparent 1px)',
-          backgroundSize: '16px 16px',
+          backgroundSize: '14px 14px',
         }}
       />
 
-      {/* Top Status Bar */}
-      <div className="relative z-10 flex items-center justify-between text-[10px] font-mono">
+      {/* Top Status Bar with Collision Toggle */}
+      <div className="relative z-10 flex items-center justify-between text-[10px] font-mono mb-1">
         <div className="flex items-center gap-1.5 text-[var(--color-surface-raised)]">
           <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
           <span className="font-bold tracking-wider">
-            {isBangla ? 'গ্রাফ টপোলজি সক্রিয়' : 'GRAPH TOPOLOGY ACTIVE'}
+            {isBangla ? 'কালানুক্রমিক স্বত্ব টপোলজি' : 'TEMPORAL DAG TOPOLOGY'}
           </span>
         </div>
-        <span className="text-white/60">
-          {isBangla ? '৪টি নোড · ১৪.৫ শতাংশ সংরক্ষিত' : '4 NODES · 14.5 DEC CONSERVED'}
-        </span>
+
+        {/* Quick Collision Branch Toggle */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowCollisionBranch(!showCollisionBranch);
+          }}
+          className={`px-2 py-0.5 rounded-[3px] border transition-colors cursor-pointer flex items-center gap-1 ${
+            showCollisionBranch
+              ? 'bg-red-500/15 border-red-500/40 text-red-400 font-bold'
+              : 'bg-white/5 border-white/10 text-white/60 hover:text-white'
+          }`}
+          title="Toggle Fraud Collision Branch & Soft-Lock"
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${showCollisionBranch ? 'bg-red-500 animate-ping' : 'bg-gray-400'}`} />
+          <span>{isBangla ? (showCollisionBranch ? 'দ্বৈত বিক্রয় সক্রিয়' : 'শুধুমাত্র বৈধ চেইন') : (showCollisionBranch ? 'Dispute Branch: ON' : 'Legit Chain Only')}</span>
+        </button>
       </div>
 
       {/* Interactive Network Canvas */}
-      <div className="relative z-10 w-full h-[88px] flex items-center justify-center">
-        <svg viewBox="0 0 310 130" className="w-full h-full max-h-[110px]">
+      <div className="relative z-10 w-full h-[105px] flex items-center justify-center">
+        <svg viewBox="0 0 310 115" className="w-full h-full max-h-[115px]">
           <defs>
-            <linearGradient id="edge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.6"/>
-              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.9"/>
+            <linearGradient id="edge-grad-legit" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.7"/>
+              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.95"/>
             </linearGradient>
-            <filter id="node-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <linearGradient id="edge-grad-fraud" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#22c55e" stopOpacity="0.8"/>
+              <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.9"/>
+              <stop offset="100%" stopColor="#ef4444" stopOpacity="1"/>
+            </linearGradient>
+            <filter id="node-glow-legit" x="-25%" y="-25%" width="150%" height="150%">
               <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+            <filter id="node-glow-fraud" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3.5" result="blur"/>
               <feComposite in="SourceGraphic" in2="blur" operator="over"/>
             </filter>
           </defs>
 
-          {/* Connection Edges */}
-          <line x1="38" y1="72" x2="110" y2="34" stroke="rgba(255,255,255,0.2)" strokeWidth="1.6" strokeDasharray="3 3"/>
-          <line x1="110" y1="34" x2="185" y2="104" stroke="rgba(255,255,255,0.2)" strokeWidth="1.6" strokeDasharray="3 3"/>
-          <line x1="185" y1="104" x2="265" y2="62" stroke="url(#edge-grad)" strokeWidth="2.2"/>
-          <line x1="110" y1="34" x2="265" y2="62" stroke="rgba(34,197,94,0.3)" strokeWidth="1.2" strokeDasharray="2 4"/>
+          {/* Legitimate Lineage Edges */}
+          <line x1="26" y1="55" x2="74" y2="32" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeDasharray="3 3"/>
+          <line x1="74" y1="32" x2="124" y2="78" stroke="rgba(255,255,255,0.25)" strokeWidth="1.5" strokeDasharray="3 3"/>
+          <line x1="124" y1="78" x2="178" y2="48" stroke="url(#edge-grad-legit)" strokeWidth="2.2"/>
+          <line x1="178" y1="48" x2="236" y2="30" stroke="#10b981" strokeWidth="2.0"/>
 
-          {/* Traveling Energy Pulses */}
-          <circle r="2.8" fill="#38bdf8">
-            <animateMotion path="M 38 72 L 110 34" dur="2.4s" repeatCount="indefinite" />
+          {/* Traveling Legitimate Energy Pulses */}
+          <circle r="2.6" fill="#38bdf8">
+            <animateMotion path="M 26 55 L 74 32" dur="2.2s" repeatCount="indefinite" />
           </circle>
-          <circle r="3" fill="#4ade80">
-            <animateMotion path="M 110 34 L 185 104" dur="2.8s" repeatCount="indefinite" begin="0.8s" />
+          <circle r="2.8" fill="#4ade80">
+            <animateMotion path="M 74 32 L 124 78" dur="2.6s" repeatCount="indefinite" begin="0.6s" />
           </circle>
-          <circle r="3.4" fill="#ffffff" filter="url(#node-glow)">
-            <animateMotion path="M 185 104 L 265 62" dur="2.0s" repeatCount="indefinite" />
+          <circle r="3.2" fill="#ffffff" filter="url(#node-glow-legit)">
+            <animateMotion path="M 124 78 L 178 48" dur="1.8s" repeatCount="indefinite" />
           </circle>
+          <circle r="2.8" fill="#10b981">
+            <animateMotion path="M 178 48 L 236 30" dur="2.0s" repeatCount="indefinite" begin="0.4s" />
+          </circle>
+
+          {/* Disputed Double-Sale Collision Branch */}
+          {showCollisionBranch && (
+            <g className="collision-branch-layer">
+              <path
+                d="M 178 48 C 195 55, 210 75, 236 84"
+                fill="none"
+                stroke="url(#edge-grad-fraud)"
+                strokeWidth="2.4"
+                strokeDasharray="3 3"
+                filter="url(#node-glow-fraud)"
+              />
+              <line x1="236" y1="84" x2="288" y2="84" stroke="#dc2626" strokeWidth="2.6" strokeDasharray="2 3"/>
+
+              {/* Red Collision Pulse Particle */}
+              <circle r="3.4" fill="#ef4444" filter="url(#node-glow-fraud)">
+                <animateMotion path="M 178 48 C 195 55, 210 75, 236 84" dur="1.6s" repeatCount="indefinite" />
+              </circle>
+            </g>
+          )}
 
           {/* Graph Nodes */}
-          {nodes.map((n) => (
-            <g
-              key={n.id}
-              className="cursor-pointer transition-transform duration-200 hover:scale-110"
-              onMouseEnter={() => setActiveNode(n.id)}
-              onMouseLeave={() => setActiveNode(null)}
-            >
-              {/* Target Pulse Halo */}
-              {n.isTarget && (
-                <circle cx={n.x} cy={n.y} r={n.r + 7} fill="none" stroke="#22c55e" strokeWidth="1.2" opacity="0.5">
-                  <animate attributeName="r" values="24;36;24" dur="2.2s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.7;0;0.7" dur="2.2s" repeatCount="indefinite"/>
-                </circle>
-              )}
-              {/* Node Outer Circle */}
-              <circle
-                cx={n.x}
-                cy={n.y}
-                r={n.r}
-                fill="#0d140f"
-                stroke={activeNode === n.id ? '#ffffff' : n.color}
-                strokeWidth={n.isTarget ? 2.4 : 1.6}
-                filter={n.isTarget ? 'url(#node-glow)' : undefined}
-              />
-              {/* Inner Center Pip */}
-              <circle cx={n.x} cy={n.y} r="3" fill={n.color} />
-              {/* Node Labels */}
-              <text x={n.x} y={n.y - 2} textAnchor="middle" fill="#ffffff" fontSize="7.5" fontWeight="700" fontFamily="monospace">
-                {n.label}
-              </text>
-              <text x={n.x} y={n.y + 7} textAnchor="middle" fill={n.color} fontSize="6" fontFamily="monospace">
-                {n.year}
-              </text>
-            </g>
-          ))}
+          {nodes
+            .filter((n) => (!n.isDispute && !n.isLock) || showCollisionBranch)
+            .map((n) => {
+              const isSelected = activeNode === n.id;
+              return (
+                <g
+                  key={n.id}
+                  className="cursor-pointer transition-transform duration-200 hover:scale-115"
+                  onMouseEnter={() => setActiveNode(n.id)}
+                  onMouseLeave={() => setActiveNode(null)}
+                  onClick={() => onLaunchStudio?.()}
+                >
+                  {/* Target / Conflict Glowing Halos */}
+                  {n.isTarget && (
+                    <circle cx={n.x} cy={n.y} r={n.r + 6} fill="none" stroke="#22c55e" strokeWidth="1.2" opacity="0.6">
+                      <animate attributeName="r" values="22;32;22" dur="2.4s" repeatCount="indefinite"/>
+                      <animate attributeName="opacity" values="0.8;0;0.8" dur="2.4s" repeatCount="indefinite"/>
+                    </circle>
+                  )}
+                  {n.isDispute && (
+                    <circle cx={n.x} cy={n.y} r={n.r + 5} fill="none" stroke="#ef4444" strokeWidth="1.4" opacity="0.7">
+                      <animate attributeName="r" values="18;28;18" dur="1.8s" repeatCount="indefinite"/>
+                      <animate attributeName="opacity" values="0.9;0;0.9" dur="1.8s" repeatCount="indefinite"/>
+                    </circle>
+                  )}
+
+                  {/* Node Outer Circle */}
+                  <circle
+                    cx={n.x}
+                    cy={n.y}
+                    r={n.r}
+                    fill={n.isDispute ? '#260a0d' : n.isLock ? '#1e0708' : '#0a121d'}
+                    stroke={isSelected ? '#ffffff' : n.color}
+                    strokeWidth={isSelected ? 2.6 : n.isTarget || n.isDispute ? 2.2 : 1.6}
+                    filter={n.isTarget ? 'url(#node-glow-legit)' : n.isDispute ? 'url(#node-glow-fraud)' : undefined}
+                  />
+
+                  {/* Inner Pip */}
+                  <circle cx={n.x} cy={n.y - 4} r="2.5" fill={n.color} />
+
+                  {/* Node Labels */}
+                  <text x={n.x} y={n.y + 3} textAnchor="middle" fill="#ffffff" fontSize="6.5" fontWeight="700" fontFamily="monospace">
+                    {n.label}
+                  </text>
+                  <text x={n.x} y={n.y + 9} textAnchor="middle" fill={n.color} fontSize="5.5" fontFamily="monospace" fontWeight="600">
+                    {n.sub}
+                  </text>
+                </g>
+              );
+            })}
         </svg>
       </div>
 
       {/* Bottom Live Diagnostic Chip */}
-      <div className="relative z-10 flex items-center justify-between bg-black/60 px-2 py-1 rounded-[3px] border border-white/5 text-[9.5px] font-mono">
-        <span className="text-white/70">
+      <div className="relative z-10 flex items-center justify-between bg-black/75 px-2.5 py-1.5 rounded-[4px] border border-white/10 text-[9.5px] font-mono">
+        <span className="text-white/80 truncate mr-2">
           {activeNode !== null
-            ? (isBangla ? `${nodes[activeNode].label} পরীক্ষা চলছে · খতিয়ান হিস্যা সঠিক` : `Inspecting ${nodes[activeNode].label} · Khatian Partition Verified`)
-            : (isBangla ? 'ধারাবাহিক হস্তান্তর রেকর্ড: ১০০% অক্ষত' : 'Temporal Transfer Lineage: 100% Intact')}
+            ? activeNode === 5
+              ? (isBangla ? 'দলিল ৯৮১০: তেজগাঁওয়ে অবৈধ দ্বৈত বিক্রয় চেষ্টা!' : 'Deed #9810: Illegal Concurrent Conveyance Draft!')
+              : activeNode === 6
+              ? (isBangla ? 'সফট লক #RES-৭৯৪০২১: লেনদেন ৭২ ঘণ্টার জন্য স্থগিত' : 'Soft-Lock #RES-794021: 72h Automated Caveat Active')
+              : (isBangla ? `${nodes[activeNode].label} (${nodes[activeNode].year}) · ১৪.৫০ শতক খতিয়ান সংরক্ষিত` : `Inspecting ${nodes[activeNode].label} (${nodes[activeNode].year}) · 14.50 Dec Intact`)
+            : showCollisionBranch
+            ? (isBangla ? 'সতর্কতা: তেজগাঁওয়ে সমসাময়িক দ্বৈত বিক্রয় প্রতিহত' : 'Alert: Intercepted Concurrent Dual-Sale in Tejgaon')
+            : (isBangla ? 'ধারাবাহিক হস্তান্তর রেকর্ড: ১০০% অক্ষত ও সুরক্ষিত' : 'Temporal Transfer Lineage: 100% Intact')}
         </span>
-        <span className="text-[var(--color-surface-raised)] font-semibold">{isBangla ? 'দাগ ১০৪২ ✓' : 'DAG 1042 ✓'}</span>
+        <span className={`shrink-0 font-bold ${showCollisionBranch ? 'text-red-400' : 'text-emerald-400'}`}>
+          {showCollisionBranch ? (isBangla ? 'লক ৭৯৪ 🔒' : 'LOCK 794 🔒') : (isBangla ? 'দাগ ১০৪২ ✓' : 'DAG 1042 ✓')}
+        </span>
       </div>
     </div>
   );
