@@ -1,6 +1,6 @@
 /**
- * MassLabs Token Architecture & Design System Foundations
- * Standardized for masslabs-archi.com
+ * Probaho Token Architecture & Design System Foundations
+ * Standardized for Probaho — Intelligent Land Fraud Detection
  */
 
 export interface TokenGroup {
@@ -93,7 +93,7 @@ export const MASS_SHADOW_TOKENS = [
   {
     token: 'shadow.1',
     value: 'rgba(0, 0, 0, 0.62) 0px 20px 44px 0px, rgba(34, 197, 94, 0.18) 0px 0px 30px 0px',
-    useCase: 'Elevated architectural model card, inquiry modal backdrop elevation',
+    useCase: 'Elevated investigation card, risk assessment modal backdrop elevation',
   },
 ];
 
@@ -101,7 +101,7 @@ export const MASS_MOTION_TOKENS = [
   { token: 'motion.duration.instant', value: '150ms', useCase: 'Focus ring transition, micro hover feedback' },
   { token: 'motion.duration.fast', value: '200ms', useCase: 'Button active press, color settle curve' },
   { token: 'motion.duration.normal', value: '220ms', useCase: 'Drawer slide, dialog backdrop fade' },
-  { token: 'motion.duration.slow', value: '700ms', useCase: 'Hero ambient fade, architectural model state reveal' },
+  { token: 'motion.duration.slow', value: '700ms', useCase: 'Hero ambient fade, investigation dashboard state reveal' },
 ];
 
 export const MASS_COMPONENT_STATES = [
@@ -115,6 +115,10 @@ export const MASS_COMPONENT_STATES = [
 ] as const;
 
 export type ComponentState = typeof MASS_COMPONENT_STATES[number];
+
+// ============================================================
+// LAND RECORD CASES (replaces ArchitecturalProject)
+// ============================================================
 
 export interface ArchitecturalProject {
   id: string;
@@ -132,45 +136,49 @@ export interface ArchitecturalProject {
 
 export const ARCHITECTURAL_PROJECTS: ArchitecturalProject[] = [
   {
-    id: 'pavilion-09',
-    title: 'Monolith Matrix Pavilion',
-    category: 'Parametric Pavilion',
-    location: 'Vesturland, Iceland',
-    year: '2025',
-    metric: '14,200 m²',
-    metricLabel: 'Parametric Envelope',
-    image: '/src/assets/images/project_monolith_matrix_1791865029772.jpg',
-    summary: 'A responsive structural canopy formed by algorithmic timber louvers and matte basalt steel joints, optimizing seasonal wind deflection and internal thermal accumulation.',
-    dimensions: '64m × 42m × 18m',
-    materials: ['Carbonized Siberian Larch', 'Basalt Composite', 'Structural Steel DX51'],
-  },
-  {
-    id: 'kinetic-facade',
-    title: 'Kinetic Basalt Facade',
-    category: 'Adaptive Envelope',
-    location: 'Zurich, Switzerland',
-    year: '2026',
-    metric: '48.2%',
-    metricLabel: 'Embodied Carbon Drop',
-    image: '/src/assets/images/project_kinetic_facade_1791865030450.jpg',
-    summary: 'Faceted monolithic stone panels integrated with recessed solar-thermal seams. Each facet responds mechanically to micro-climate irradiance fluctuations.',
-    dimensions: '110m Facade Span',
-    materials: ['Extracted Basalt Plates', 'Copper Seams', 'Micro-hydraulic Actuators'],
-  },
-  {
-    id: 'spatial-lab',
-    title: 'Computational Spatial Lab',
-    category: 'Research Facility',
-    location: 'Rotterdam, Netherlands',
+    id: 'case-clean-001',
+    title: 'Verified Ownership Chain — Rajshahi Division',
+    category: 'Clean Case',
+    location: 'Rajshahi, Bangladesh',
     year: '2024',
-    metric: '120 Nodes',
-    metricLabel: 'Real-time Structural Telemetry',
-    image: '/src/assets/images/studio_spatial_lab_1791865031280.jpg',
-    summary: 'Central prototyping studio housing physical scale fabrication tables, robotic wire-bending arms, and live stress-strain computational simulation rigs.',
-    dimensions: '1,850 m² Studio Floor',
-    materials: ['Polished Slag Concrete', 'Smoked Glass 12mm', 'Anodized Black Aluminum'],
+    metric: '100%',
+    metricLabel: 'Ownership Chain Verified',
+    image: '/src/assets/images/map_manhattan_carto_1791915045536.jpg',
+    summary: "All deeds, mutations, and khatian records are consistent. The seller's recorded share fully covers the transfer and no conflicting transactions were detected across the parcel timeline.",
+    dimensions: 'Dag 1452 · Mouza Kantanagar',
+    materials: ['Sale Deed 2019', 'RS Khatian 2015', 'Mutation Record 2020'],
+  },
+  {
+    id: 'case-double-sale',
+    title: 'Double-Sale Fraud — Dhaka Metropolitan',
+    category: 'Double Sale',
+    location: 'Dhaka, Bangladesh',
+    year: '2025',
+    metric: '94.6%',
+    metricLabel: 'Fraud Confidence Score',
+    image: '/src/assets/images/map_tokyo_carto_1791915087818.jpg',
+    summary: "Two conflicting sale deeds dated 12 days apart transfer the same parcel (Dag 3078) to different buyers. The seller's recorded ownership share does not support the second transfer.",
+    dimensions: 'Dag 3078 · Mouza Mirpur',
+    materials: ['Sale Deed A — 2025-01-04', 'Sale Deed B — 2025-01-16', 'RS Porcha 2018'],
+  },
+  {
+    id: 'case-complex-003',
+    title: 'Share Mismatch & Mutation Conflict — Chittagong',
+    category: 'Complex Fraud',
+    location: 'Chittagong, Bangladesh',
+    year: '2026',
+    metric: '3 Alerts',
+    metricLabel: 'Cross-Signal Fraud Triggers',
+    image: '/src/assets/images/map_london_carto_1791915087785.jpg',
+    summary: 'An ownership-share mismatch combined with an inconsistent mutation record and a suspicious document version. The claimed transfer exceeds available shares by 22% and the mutation date predates the original deed.',
+    dimensions: 'Dag 7291 · Mouza Patenga',
+    materials: ['Khatian 2017 (v1)', 'Khatian 2017 (v2 — altered)', 'Mutation 2019', 'Sale Deed 2023'],
   },
 ];
+
+// ============================================================
+// PARCEL MAP DATASETS (Bangladesh districts + global context)
+// ============================================================
 
 export interface UrbanMapDataset {
   id: string;
@@ -185,50 +193,55 @@ export interface UrbanMapDataset {
 
 export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
   {
-    id: 'nyc-manhattan',
-    cityName: 'New York',
-    country: 'United States',
-    coordinates: '40.7128° N, 74.0060° W',
+    id: 'dhaka-metro',
+    cityName: 'Dhaka',
+    country: 'Bangladesh',
+    coordinates: '23.8103° N, 90.4125° E',
     image: '/src/assets/images/map_manhattan_carto_1791915045536.jpg',
-    parcelCount: '18,400 Parcels',
-    layers: 'Building Data 8+ · True-Width Roads · Waterfront Piers',
+    parcelCount: '42,800 Parcels',
+    layers: 'Mouza Boundaries · Khatian Parcels · Ownership Graph',
     accent: '#22c55e',
   },
   {
-    id: 'tokyo-bay',
-    cityName: 'Tokyo',
-    country: 'Japan',
-    coordinates: '35.6762° N, 139.6503° E',
+    id: 'chittagong-div',
+    cityName: 'Chittagong',
+    country: 'Bangladesh',
+    coordinates: '22.3569° N, 91.7832° E',
     image: '/src/assets/images/map_tokyo_carto_1791915087818.jpg',
-    parcelCount: '32,100 Parcels',
-    layers: 'Rail Transit Network · Coastal Bathymetry · 3D Terrain',
+    parcelCount: '28,500 Parcels',
+    layers: 'Dag Plot Registry · RS/SA Survey Overlay · Transfer Timeline',
     accent: '#10b981',
   },
   {
-    id: 'london-core',
-    cityName: 'London',
-    country: 'United Kingdom',
-    coordinates: '51.5072° N, 0.1276° W',
+    id: 'rajshahi-div',
+    cityName: 'Rajshahi',
+    country: 'Bangladesh',
+    coordinates: '24.3745° N, 88.6042° E',
     image: '/src/assets/images/map_london_carto_1791915087785.jpg',
-    parcelCount: '24,600 Parcels',
-    layers: 'River Thames Curves · Historic Envelopes · Urban Fabric',
+    parcelCount: '19,200 Parcels',
+    layers: 'BS/RS Khatian Index · Mutation Records · Area Registry',
     accent: '#16a34a',
   },
   {
-    id: 'cologne-radial',
-    cityName: 'Cologne / Paris',
-    country: 'Germany / France',
-    coordinates: '50.9375° N, 6.9603° E',
+    id: 'sylhet-div',
+    cityName: 'Sylhet',
+    country: 'Bangladesh',
+    coordinates: '24.8949° N, 91.8687° E',
     image: '/src/assets/images/map_cologne_carto_1791915088536.jpg',
-    parcelCount: '19,800 Parcels',
-    layers: 'Radial Boulevards · Riverfront Promenade · Medieval Core',
+    parcelCount: '15,600 Parcels',
+    layers: 'Porcha Registry · Deed Ledger · Boundary Vectors',
     accent: '#15803d',
   },
 ];
 
+// ============================================================
+// FRAUD DETECTION TOOLS (replaces MassLabTool)
+// ============================================================
+
 export interface MassLabTool {
   id: string;
   name: string;
+  shortName?: string;
   kicker: string;
   headline: string;
   meta: string;
@@ -241,54 +254,63 @@ export const MASSLABS_TOOLS: MassLabTool[] = [
   {
     id: 'masslabs',
     name: 'Probaho',
-    kicker: 'Probaho Integrated Platform',
-    headline: 'All Projects in One Place',
-    meta: 'Site analysis · color combinations · laser cutting · global data',
-    description: 'Do it all here, with a single account.',
-    ctaText: 'Start project →',
+    shortName: 'Probaho',
+    kicker: 'Probaho Intelligence Platform',
+    headline: 'Detect Land Fraud Before It Happens',
+    meta: 'Ownership graphs · cross-document analysis · explainable risk scoring · adversarial testing',
+    description: 'Multi-signal fraud detection and evidence intelligence for Bangladesh land records.',
+    ctaText: 'Launch Investigation →',
     iconType: 'masslabs',
   },
   {
     id: 'archimap',
-    name: 'archiMap',
-    kicker: 'Probaho Site Intelligence',
-    headline: 'Site Analysis',
-    meta: '195 countries · 100+ layers · 350+ datasets · building data 8+ · parcel data 5+ · true-width roads · 3D terrain',
-    description: 'Finish your whole site analysis on a single page.',
-    ctaText: 'Start archiMap →',
+    name: 'Ownership Graph',
+    shortName: 'archiMap',
+    kicker: 'Temporal Ownership-Graph Investigation',
+    headline: 'Ownership Chain Analysis',
+    meta: 'Parcel ownership graphs · temporal transfer chains · double-sale detection · share validation · mutation tracking',
+    description: 'Model every parcel, owner, deed and mutation as a connected graph. Track how ownership changes over time and flag impossible transitions.',
+    ctaText: 'Open Ownership Graph →',
     iconType: 'archimap',
   },
   {
     id: 'cologram',
-    name: 'Colorgram',
-    kicker: 'Urban Chromatic Analysis',
-    headline: 'Color & Fabric Analysis',
-    meta: '80+ micro-palettes · heritage zoning rules · daylight simulation · facade reflectance',
-    description: 'Extract contextual urban color identities and solar interaction matrices in seconds.',
-    ctaText: 'Launch Colorgram →',
+    name: 'DocCompare',
+    shortName: 'DocCompare',
+    kicker: 'Cross-Document Contradiction Engine',
+    headline: 'Document Contradiction Analysis',
+    meta: 'Bangla OCR extraction · field-level comparison · dag/plot/area/share conflicts · page references',
+    description: 'Extract structured fields from deeds, khatian and mutation papers. Show exact conflicting fields side by side.',
+    ctaText: 'Analyze Documents →',
     iconType: 'cologram',
   },
   {
     id: 'laserfish',
-    name: 'LaserFish',
-    kicker: 'Automated Laser-Cut Drawings',
-    headline: 'Model Making & Laser-Cut Drawings',
-    meta: 'Automatic contour slicing · kerf tolerance 0.05mm · DXF/SVG flattening · finger-joint generation',
-    description: 'Turn 3D architectural topography into production-ready laser-cut drawings in minutes.',
-    ctaText: 'Explore LaserFish →',
+    name: 'FraudEngine',
+    shortName: 'FraudEngine',
+    kicker: 'Explainable Fraud-Risk Scoring',
+    headline: 'Explainable Risk Assessment',
+    meta: 'Hard rules + anomaly detection · severity scoring · evidence trails · uncertainty measures · rule explanations',
+    description: 'Every alert includes the rule triggered, supporting records, severity, and uncertainty — not just a score.',
+    ctaText: 'Run Risk Analysis →',
     iconType: 'laserfish',
   },
   {
     id: 'globee',
-    name: 'Globee',
-    kicker: 'Planetary Systems Intelligence',
-    headline: 'Global Earth Datasets',
-    meta: 'Population & society · terrain · climate · atmosphere · 50+ planetary datasets from everyday life to outer space',
-    description: 'Become a bee and explore data from every corner of the Earth.',
-    ctaText: 'Open Globee →',
+    name: 'Simulator',
+    shortName: 'Simulator',
+    kicker: 'Adversarial Fraud Simulator',
+    headline: 'Self-Testing Fraud Simulator',
+    meta: 'Fictional fraud scenarios · double sale · altered area · missing links · detection rate · false-positive analysis',
+    description: 'Generate attack scenarios, test detection, measure performance, and prove the system catches real fraud patterns.',
+    ctaText: 'Run Simulation →',
     iconType: 'globee',
   },
 ];
+
+// ============================================================
+// PRICING PLANS (Investigation tiers)
+// ============================================================
 
 export interface PricingPlan {
   id: string;
@@ -305,52 +327,52 @@ export interface PricingPlan {
 export const MASSLABS_PRICING: PricingPlan[] = [
   {
     id: 'starter',
-    name: 'Starter',
+    name: 'Community',
     monthlyPrice: 0,
     annualPrice: 0,
-    description: 'Essential site analysis and basic 2D parcel vectors for students & individual researchers.',
+    description: 'Basic ownership chain verification and single-document analysis for researchers and students.',
     features: [
-      '195 countries base coverage',
-      'Standard 2D map views',
-      'Up to 10 basic GIS layer types',
-      'Standard resolution SVG / PNG export',
+      'Single parcel ownership chain lookup',
+      'Basic khatian/porcha field extraction',
+      'Up to 10 document uploads per month',
+      'Standard fraud risk indicators',
       'Community knowledge base access',
     ],
-    cta: 'Get Started Free',
+    cta: 'Start Free',
   },
   {
     id: 'pro',
-    name: 'Pro Architect',
+    name: 'Investigator',
     badge: 'MOST POPULAR',
     monthlyPrice: 24,
     annualPrice: 19,
     popular: true,
-    description: 'Comprehensive 3D site modeling, full building footprints, and unlimited laser-cut DXF exports.',
+    description: 'Full multi-signal fraud detection, cross-document analysis, and explainable risk scoring.',
     features: [
-      'Full 3D terrain & building height data (LOD 2)',
-      'Cadastral parcel boundaries & true-width roads',
-      'LaserFish automated contour slicing plug-in',
-      'Cologram urban chromatic analysis',
-      'Unlimited vector DXF, GeoJSON & Rhino exports',
-      'High-precision EPSG projection re-mapping',
+      'Full temporal ownership-graph investigation',
+      'Cross-document contradiction engine',
+      'Explainable fraud-risk scoring with evidence trails',
+      'Bangla OCR with field-level confidence values',
+      'Unlimited document uploads and case files',
+      'Counterfactual risk analysis (what-if scenarios)',
     ],
-    cta: 'Start 14-Day Pro Trial',
+    cta: 'Start 14-Day Trial',
   },
   {
     id: 'studio',
-    name: 'Studio Team',
+    name: 'Agency',
     monthlyPrice: 69,
     annualPrice: 55,
-    description: 'For architecture practices, urban design studios, and university faculties.',
+    description: 'For law firms, land offices, and government agencies requiring team-based investigation.',
     features: [
-      'Everything in Pro Architect',
-      '5 Studio seats included with centralized billing',
-      'Live collaborative site analysis sessions',
-      'Custom shapefile and GeoTIFF upload support',
-      'Globee 50+ planetary environmental datasets',
-      'Priority server queue for ultra-dense metropolitan exports',
-      'Dedicated technical support architect',
+      'Everything in Investigator',
+      '5 seats included with centralized billing',
+      'Adversarial fraud scenario simulator',
+      'Batch document ingestion & analysis',
+      'SHA-256 document integrity verification',
+      'Signed audit trail and investigation history',
+      'Priority support with dedicated analyst',
     ],
-    cta: 'Commission Studio License',
+    cta: 'Request Agency License',
   },
 ];

@@ -15,7 +15,7 @@ import {
   X
 } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
-import { ProbahoLogo } from './components/ProbahoLogo';
+import { ProbahoLogo, ProbahoBrand } from './components/ProbahoLogo';
 import { motion, AnimatePresence } from 'motion/react';
 
 function AppContent() {
@@ -60,11 +60,10 @@ function AppContent() {
             {/* Modal Header */}
             <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-md">
               <div className="flex items-center gap-2.5">
-                <ProbahoLogo size={18} className="text-[var(--color-surface-raised)] shrink-0" />
-                <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho</span>
+                <ProbahoBrand size={20} textSize="text-xs" />
                 <span className="text-[var(--color-text-tertiary)]">|</span>
-                <span className="text-xs text-[var(--color-text-primary)] font-semibold">Token Architecture & Component Guidance</span>
-                <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">(probaho.io)</span>
+                <span className="text-xs text-[var(--color-text-primary)] font-semibold">Design System & Component Guidance</span>
+                <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">(probaho.bd)</span>
               </div>
 
               <div className="flex items-center gap-3">

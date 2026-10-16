@@ -11,7 +11,8 @@ import { ArchitecturalBackground } from './ArchitecturalBackground';
 import { MassPricingSection } from './MassPricingSection';
 import { MassAuthModal } from './MassAuthModal';
 import { MassGlassSidebar } from './MassGlassSidebar';
-import { ProbahoLogo } from './ProbahoLogo';
+import { PageTransitionEffect } from './PageTransitionEffect';
+import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import {
   ArrowRight,
   ChevronRight,
@@ -21,6 +22,7 @@ import {
   Globe,
   Sliders,
   Layers,
+  Sparkles,
   MapPin,
   ExternalLink,
   Info,
@@ -177,8 +179,31 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             className="flex items-center gap-3 text-xl font-bold tracking-tight text-[var(--color-text-primary)] whitespace-nowrap hover:opacity-90 transition-opacity group"
           >
             <ProbahoLogo className="w-7 h-7 text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] shrink-0 transition-colors" />
-            <span className="font-bold tracking-tight">Probaho</span>
+            <span className="font-bold tracking-tight font-sans text-white text-xl">Probaho</span>
           </a>
+
+          {/* Desktop Direct Section Navigation */}
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-mono tracking-wider text-[var(--color-text-secondary)]">
+            <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
+              Engines
+            </a>
+            <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
+              Case Studies
+            </a>
+            <a href="#methodology" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
+              Simulator
+            </a>
+            <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
+              Pricing
+            </a>
+            <button
+              onClick={() => setIsSiteAnalysisStudioOpen(true)}
+              className="text-[var(--color-surface-raised)] hover:brightness-110 transition-colors uppercase font-medium cursor-pointer flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Studio</span>
+            </button>
+          </nav>
 
           {/* Right Navigation Controls */}
           <div className="flex items-center gap-4 sm:gap-6 text-xs font-mono tracking-wider text-[var(--color-text-secondary)]">
@@ -336,40 +361,23 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           </AnimatePresence>
         </div>
 
-        {/* 
-          ====================================================================
-          RIGHT VERTICAL PRODUCT SWITCHER DOCK & GLASSMORPHIC SIDEBAR
-          ====================================================================
-        */}
-        <MassGlassSidebar
-          activeToolId={activeToolId}
-          onSelectTool={handleToolSelect}
-          isDay={isDay}
-          currentMapIndex={currentMapIndex}
-          onSelectMap={setCurrentMapIndex}
-          onOpenSiteAnalysis={() => setIsSiteAnalysisStudioOpen(true)}
-          onOpenDesignSystem={onOpenDesignSystem}
-          blueprintZoom={blueprintZoom}
-          onZoomChange={setBlueprintZoom}
-        />
-
         {/* Hero Bottom Bar Info */}
         <div className="relative z-20 px-6 sm:px-10 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11.52px] font-mono text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)]/70 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)]" />
-            <span className="text-[var(--color-text-primary)] font-semibold">Probaho Cartography Core:</span>
+            <span className="text-[var(--color-text-primary)] font-semibold">Probaho Cadastral Core:</span>
             <span>Streaming {activeMap.cityName} ({activeMap.coordinates})</span>
           </div>
 
           <div className="flex items-center gap-6">
             <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">
-              Suite Programs
+              Detection Engines
             </a>
             <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">
               Pricing Plans
             </a>
             <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">
-              Built Projects ↓
+              Case Studies ↓
             </a>
           </div>
         </div>
@@ -474,6 +482,36 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
       {/* 
         ====================================================================
+        PAGE TRANSITION & SECTION NAVIGATOR CONTROLLER
+        Provides smooth professional transitions and scroll progress indicator
+        ====================================================================
+      */}
+      <PageTransitionEffect />
+
+      {/* 
+        ====================================================================
+        VIEWPORT-FIXED GLASSMORPHIC DOCK & TELEMETRY SIDEBAR
+        Positioned fixed in viewport across the entire page
+        ====================================================================
+      */}
+      <MassGlassSidebar
+        activeToolId={activeToolId}
+        onSelectTool={handleToolSelect}
+        isDay={isDay}
+        currentMapIndex={currentMapIndex}
+        onSelectMap={setCurrentMapIndex}
+        onOpenSiteAnalysis={() => setIsSiteAnalysisStudioOpen(true)}
+        onOpenDesignSystem={onOpenDesignSystem}
+        blueprintZoom={blueprintZoom}
+        onZoomChange={setBlueprintZoom}
+        isBlueprintPaused={isBlueprintPaused}
+        onTogglePause={() => setIsBlueprintPaused((prev) => !prev)}
+        blueprintSpeed={blueprintSpeed}
+        onSpeedChange={setBlueprintSpeed}
+      />
+
+      {/* 
+        ====================================================================
         PRODUCT SUITE OVERVIEW (archiMap, LaserFish, Cologram, Globee):
         ====================================================================
       */}
@@ -488,32 +526,32 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <div className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-surface-raised)]">
-              Probaho Integrated Suite
+              Probaho Intelligence Suite
             </div>
             <h2 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
-              Four Specialized Tools. One Unified Workflow.
+              Four Specialized Engines. One Unified Fraud Shield.
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-              Designed from the ground up for contemporary architects, researchers, and parametric designers.
+              Multi-signal fraud detection, cross-document verification, and evidence intelligence for Bangladesh land records.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Tool 1: archiMap */}
+            {/* Tool 1: archiMap / Ownership Graph */}
             <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">01 · SITE INTELLIGENCE</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">195 Countries</span>
+                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">01 · TEMPORAL OWNERSHIP GRAPH</span>
+                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Bangladesh Cadastre</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">archiMap</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Ownership Graph</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Comprehensive 2D and 3D site analysis on a single page. Instant building heights, cadastral parcels, roads with true widths, and 3D terrain topography. Export directly to Rhino, AutoCAD, or Blender.
+                  Model every parcel, owner, deed, and mutation as a temporal connected graph. Automatically detect double-sales, impossible transfer chains, and ownership share proportion deficits across historical records.
                 </p>
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Building Data LOD 2 + True-Width Roads</div>
-                  <div>• 350+ Global Geospatial Datasets</div>
-                  <div>• Direct DXF, Shapefile & SVG Vector Pipe</div>
+                  <div>• Temporal Transfer Chains & Dag Validation</div>
+                  <div>• Double-Sale & Share Deficit Detection</div>
+                  <div>• Interactive Mouza Parcel Graph Vectors</div>
                 </div>
               </div>
               <button
@@ -523,90 +561,90 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 }}
                 className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)]"
               >
-                Launch archiMap →
+                Launch Ownership Graph →
               </button>
             </div>
 
-            {/* Tool 2: LaserFish */}
+            {/* Tool 2: LaserFish / FraudEngine */}
             <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">02 · MODEL MAKING AUTOMATION</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Rhino Plugin & Web</span>
+                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">02 · EXPLAINABLE RISK ENGINE</span>
+                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Hybrid Rule + Anomaly</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">LaserFish</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">FraudEngine</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Automate the tedious manual work of preparing laser-cut drawings for physical architectural models. Automatically slice complex 3D meshes, apply kerf offsets, generate numbering, and lay out sheets.
+                  Combine deterministic legal rules with anomaly detection models. Every alert includes the specific violation rule triggered, supporting evidentiary citations, severity rating, and uncertainty measures.
                 </p>
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Automatic Contour Slicing by Sheet Thickness</div>
-                  <div>• 0.05mm Kerf Precision Compensation</div>
-                  <div>• Production-Ready Nested DXF / SVG Exports</div>
+                  <div>• Legal Rules Engine + Unsupervised Anomaly Scoring</div>
+                  <div>• Verifiable Evidence Dossier with Integrity Hashes</div>
+                  <div>• Counterfactual What-If Risk Analysis Simulator</div>
                 </div>
               </div>
               <button
                 onClick={() => {
                   setActiveToolId('laserfish');
-                  setToastMessage('LaserFish tool activated: Contour slicing pipeline ready.');
+                  setToastMessage('FraudEngine activated: Multi-signal risk assessment pipeline ready.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
                 className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer"
               >
-                Explore LaserFish →
+                Explore FraudEngine →
               </button>
             </div>
 
-            {/* Tool 3: Cologram */}
+            {/* Tool 3: Cologram / DocCompare */}
             <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">03 · CHROMATIC & SOLAR MATRIX</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Urban Palettes</span>
+                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">03 · CONTRADICTION ENGINE</span>
+                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Bangla OCR & LLM Extraction</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Cologram</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">DocCompare</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Extract surrounding architectural color signatures and analyze facade material reflectance. Harmonize proposed envelopes with existing historical and contextual material palettes.
+                  Extract structured fields from deeds, khatian, porcha, and mutation papers. Highlight exact conflicting dag numbers, plot boundaries, seller shares, and dates side-by-side with OCR confidence scores.
                 </p>
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Micro-Palette Extraction from Satellite & Street Views</div>
-                  <div>• Heritage Zoning & Albedo Reflectance Calculations</div>
-                  <div>• Export Swatches to Adobe, Figma & CAD</div>
+                  <div>• Multi-Document Cross-Verification (Deed vs. Khatian)</div>
+                  <div>• Field-Level Discrepancy & Confidence Tagging</div>
+                  <div>• Page-Level Evidence Citations & Discrepancy Reports</div>
                 </div>
               </div>
               <button
                 onClick={() => {
                   setActiveToolId('cologram');
-                  setToastMessage('Cologram urban chromatic analysis ready.');
+                  setToastMessage('DocCompare contradiction analysis engine ready.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
                 className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer"
               >
-                Launch Cologram →
+                Launch DocCompare →
               </button>
             </div>
 
-            {/* Tool 4: Globee */}
+            {/* Tool 4: Globee / Adversarial Simulator */}
             <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">04 · PLANETARY INTELLIGENCE</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">50+ Datasets</span>
+                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">04 · ADVERSARIAL SIMULATOR</span>
+                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Attack Benchmark</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Globee</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Adversarial Simulator</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Planetary scale environmental datasets covering population density, terrain elevation, wind vectors, seasonal climate shifts, and atmospheric metrics across the entire globe.
+                  Simulate synthetic fraud attacks—such as double-selling, forged mutation timelines, and altered land areas—to benchmark detection performance, stress-test rules, and minimize false positives.
                 </p>
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Real-Time Climate & Atmospheric Monitoring</div>
-                  <div>• Global Population Dispersion & Nighttime Irradiance</div>
-                  <div>• Free to access during initial public release</div>
+                  <div>• Synthetic Attack Vector Injection & Stress-Testing</div>
+                  <div>• Benchmark Detection Rate & Precision-Recall Metrics</div>
+                  <div>• Continuous Defense Hardening for Registry Security</div>
                 </div>
               </div>
               <button
                 onClick={() => setIsNoticeOpen(true)}
                 className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)]"
               >
-                Open Globee →
+                Open Adversarial Simulator →
               </button>
             </div>
           </div>
@@ -638,20 +676,20 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--color-border-subtle)] pb-6">
             <div>
               <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono mb-1">
-                Monograph & Built Works
+                Investigated Records & Fraud Cases
               </div>
               <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">
-                Physical Architecture & Structural Topologies
+                Land Record Verifications & Detected Fraud Scenarios
               </h2>
             </div>
 
             {/* Filter Buttons */}
             <div className="flex items-center gap-1.5 p-1 glass-pill rounded-[6px]">
               {[
-                { id: 'all', label: 'All Projects' },
-                { id: 'pavilion', label: 'Pavilions' },
-                { id: 'envelope', label: 'Envelopes' },
-                { id: 'facility', label: 'Labs' },
+                { id: 'all', label: 'All Cases' },
+                { id: 'clean', label: 'Clean Verified' },
+                { id: 'double', label: 'Double Sale' },
+                { id: 'complex', label: 'Complex Fraud' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -715,7 +753,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     onClick={() => setSelectedProject(project)}
                     className="w-full py-2.5 text-xs font-mono text-[var(--color-text-primary)] glass-tile border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] hover:text-[var(--color-surface-raised)] rounded-[3px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>Inspect Monograph Spec</span>
+                    <span>Inspect Investigation Dossier</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -741,50 +779,50 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="max-w-2xl space-y-3">
             <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono">
-              Algorithmic Workflow
+              Detection Methodology
             </div>
             <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">
-              Site Analysis to Physical Fabrication Pipeline
+              Multi-Signal Ingestion to Cryptographic Evidence Pipeline
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-              From global planetary GIS layers in archiMap down to laser-cut structural prototypes in LaserFish, Probaho bridges computational mathematics and tangible architecture.
+              From unstandardized Bangla land documents and physical porchas to graph-based ownership verification and adversarial robustness testing, Probaho provides end-to-end evidence intelligence.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
               <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                01. Planetary Site Intelligence
+                01. Ingestion & Structured OCR
               </div>
               <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
-                archiMap & Globee Datasets
+                Deed, Khatian & Mutation Digitization
               </h3>
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Stream 350+ GIS datasets, cadastral parcels, and 3D terrain contours across 195 countries in real time without manual shapefile stitching.
+                Process legacy RS, SA, CS, and BS khatian records alongside modern digital deeds. Extract key legal fields with specialized Bangla OCR and record field confidence scores.
               </p>
             </div>
 
             <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
               <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                02. Urban Fabric & Palette
+                02. Graph Analysis & Cross-Verification
               </div>
               <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
-                Cologram Solar & Chromatic Study
+                Temporal Graph & Contradiction Engine
               </h3>
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Derive geological material pigments and solar radiation absorption profiles based on surrounding historic and contemporary built context.
+                Construct directed temporal graphs representing ownership transfers over time. Cross-verify party names, transfer shares, and dag boundaries to flag legal impossibilities.
               </p>
             </div>
 
             <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
               <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                03. Automated Laser Fabrication
+                03. Explainable Risk & Evidence
               </div>
               <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
-                LaserFish Vector Preparation
+                Rule Justifications & Cryptographic Dossier
               </h3>
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Flatten complex 3D topography into precision-sliced acrylic, timber, and museum board sheets with automatic kerf offset computation.
+                Produce explainable risk assessments combining deterministic legal rules with anomaly detection. Export cryptographically verified audit trails with SHA-256 hashes.
               </p>
             </div>
           </div>
@@ -808,27 +846,27 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono">
-                Studio Commission
+                Institutional Investigation
               </div>
               <h2 className="text-3xl font-semibold tracking-tight text-[var(--color-text-primary)]">
-                Commission an architectural feasibility study.
+                Request a land fraud audit or parcel investigation.
               </h2>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Probaho accepts a select cohort of civic, cultural, and private architectural commissions each cycle. Our research partners and lead architects review all inquiries within 48 business hours.
+                Probaho partners with land registry offices, legal practices, banking institutions, and municipal authorities to audit high-risk land parcels and uncover fraudulent transfer claims.
               </p>
 
               <div className="space-y-3 font-mono text-xs text-[var(--color-text-secondary)]">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
-                  <span>Direct architectural principal review</span>
+                  <span>Direct analysis by senior land fraud intelligence team</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
-                  <span>Comprehensive embodied carbon report with initial envelope study</span>
+                  <span>Cryptographic SHA-256 evidence package with cross-document audit</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
-                  <span>Confidential NDA executed upon inquiry confirmation</span>
+                  <span>Strict confidentiality & institutional data isolation protocols</span>
                 </div>
               </div>
             </div>
@@ -839,10 +877,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="py-8 text-center space-y-4">
                   <CheckCircle className="w-12 h-12 text-[var(--color-surface-raised)] mx-auto" />
                   <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
-                    Commission Inquiry Dispatched
+                    Investigation Request Dispatched
                   </h3>
                   <p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto leading-relaxed">
-                    Thank you. The Probaho principal team has received your project briefing for <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span>. A partner will correspond directly via {inquiryEmail}.
+                    Thank you. The Probaho intelligence team has received your parcel inquiry for <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span>. An analyst will correspond directly via {inquiryEmail}.
                   </p>
                   <button
                     onClick={() => {
@@ -852,19 +890,19 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     }}
                     className="px-4 py-2 text-xs font-mono text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] cursor-pointer"
                   >
-                    Submit Another Briefing
+                    Submit Another Inquiry
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleInquirySubmit} className="space-y-5">
                   <div>
                     <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
-                      CORPORATE OR INSTITUTION EMAIL *
+                      OFFICIAL OR INSTITUTIONAL EMAIL *
                     </label>
                     <input
                       type="email"
                       required
-                      placeholder="principal@practice-or-fund.com"
+                      placeholder="analyst@land-registry.gov.bd"
                       value={inquiryEmail}
                       onChange={(e) => setInquiryEmail(e.target.value)}
                       className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
@@ -873,27 +911,27 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
                   <div>
                     <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
-                      COMMISSION TYPOLOGY
+                      INVESTIGATION TYPOLOGY
                     </label>
                     <select
                       value={inquiryScope}
                       onChange={(e) => setInquiryScope(e.target.value)}
                       className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
                     >
-                      <option value="Parametric Enclosure">Parametric Civic Enclosure</option>
-                      <option value="Adaptive Facade Engineering">Adaptive Kinetic Facade Engineering</option>
-                      <option value="Monumental Pavilion">Monumental Research Pavilion</option>
-                      <option value="Spatial Lab Masterplan">Spatial Lab Masterplan</option>
+                      <option value="Commercial / High-Value Parcel Audit">Commercial / High-Value Parcel Audit</option>
+                      <option value="Institutional Registry Bulk Verification">Institutional Registry Bulk Verification</option>
+                      <option value="Double-Sale Legal Dispute Dossier">Double-Sale Legal Dispute Dossier</option>
+                      <option value="Inheritance & Mutation Conflict Investigation">Inheritance & Mutation Conflict Investigation</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
-                      SITE LOCATION & PRELIMINARY SCOPE
+                      PARCEL LOCATION, DAG & KHATIAN DETAILS
                     </label>
                     <textarea
                       rows={3}
-                      placeholder="Outline approximate square meters, geographic jurisdiction, and programmatic intent..."
+                      placeholder="Specify District, Mouza name, Dag/Plot numbers, Khatian identifiers, and estimated parcel area..."
                       value={inquiryNotes}
                       onChange={(e) => setInquiryNotes(e.target.value)}
                       className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
@@ -914,10 +952,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     {formState === 'loading' ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin text-current" />
-                        <span>Transmitting Briefing...</span>
+                        <span>Transmitting Inquiry...</span>
                       </>
                     ) : (
-                      <span>Transmit Architectural Commission Brief</span>
+                      <span>Transmit Investigation Request</span>
                     )}
                   </button>
                 </form>
@@ -936,19 +974,16 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="flex items-center gap-2.5">
-                <ProbahoLogo size={20} className="text-[var(--color-surface-raised)]" />
-                <div className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight">Probaho</div>
-              </div>
+              <ProbahoBrand size={24} textSize="text-lg" />
               <p className="text-[11.52px] mt-1 text-[var(--color-text-secondary)] max-w-sm">
-                Site analysis, model making & laser-cut drawings. Standardized under probaho.io.
+                Intelligent land fraud detection & evidence intelligence for Bangladesh. Standardized under probaho.bd.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-6 text-[11.52px] font-mono">
-              <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">Programs</a>
+              <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">Engines</a>
               <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">Pricing</a>
-              <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">Projects</a>
+              <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">Cases</a>
               <a href="#methodology" className="hover:text-[var(--color-text-primary)] transition-colors">Methodology</a>
               <button onClick={() => setIsAuthModalOpen(true)} className="hover:text-[var(--color-text-primary)] transition-colors cursor-pointer">Account</button>
             </div>
@@ -956,7 +991,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
           <div className="pt-6 border-t border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10.56px]">
             <div>
-              © {new Date().getFullYear()} Probaho Architectural Laboratory. All rights reserved.
+              © {new Date().getFullYear()} Probaho Intelligence Laboratory. All rights reserved.
             </div>
             <div className="flex items-center gap-4 text-[var(--color-text-tertiary)]">
               <span>WCAG 2.2 Level AA & AAA Verified</span>
@@ -969,12 +1004,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
       {/* 
         ====================================================================
-        POPUP / NOTICE MODAL (From Video at 0:26! "Globee is live"):
-        ====================================================================
-      */}
-      {/* 
-        ====================================================================
-        POPUP / NOTICE MODAL (From Video at 0:26! "Globee is live"):
+        POPUP / NOTICE MODAL: Adversarial Simulator is Live
         ====================================================================
       */}
       <AnimatePresence>
@@ -997,9 +1027,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               {/* Modal Header */}
               <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
                 <div className="flex items-center gap-2 text-xs font-mono text-[var(--color-text-secondary)]">
-                  <span className="text-[var(--color-surface-raised)] font-bold">NOTICE</span>
+                  <span className="text-[var(--color-surface-raised)] font-bold">SYSTEM NOTICE</span>
                   <span>·</span>
-                  <span>Probaho · Globee</span>
+                  <span>Probaho · Adversarial Simulator</span>
                 </div>
                 <button
                   onClick={() => setIsNoticeOpen(false)}
@@ -1014,13 +1044,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <div className="relative aspect-[16/9] rounded-[2px] overflow-hidden border border-[var(--color-border-subtle)] bg-black">
                 <img
                   src="/src/assets/images/map_tokyo_carto_1791915087818.jpg"
-                  alt="Globee Planetary GIS Grid"
+                  alt="Adversarial Fraud Simulation Grid"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex items-end p-4">
                   <div className="text-sm font-semibold text-white">
-                    Global Planetary Intelligence Grid
+                    Synthetic Attack & Fraud Stress-Testing Engine
                   </div>
                 </div>
               </div>
@@ -1028,16 +1058,16 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               {/* Notice Body Text */}
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
-                  Globee is live
+                  Adversarial Simulator is Live
                 </h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Population & society · terrain · climate · atmosphere — 50+ datasets, from everyday life to outer space.
+                  Double-sale injection · altered mutation dates · share deficit attacks — benchmark detection rates and prove robustness against real-world fraud schemes.
                 </p>
                 <p className="text-xs text-[var(--color-text-primary)] leading-relaxed">
-                  Become a bee and explore data from every corner of the Earth. Free to use until October 31.
+                  Test and validate your rules with synthetic and historical land record anomaly datasets. Public preview enabled for verified organizations.
                 </p>
                 <div className="text-[10px] font-mono text-[var(--color-text-tertiary)] pt-1">
-                  Posted: October 13, 2026 · Probaho Core
+                  Posted: October 14, 2026 · Probaho Core
                 </div>
               </div>
 
@@ -1055,7 +1085,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                   className="px-4 py-2 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] flex items-center gap-1.5 font-mono cursor-pointer shadow-sm"
                 >
-                  <span>Open →</span>
+                  <span>Launch Simulator →</span>
                 </button>
               </div>
             </motion.div>
@@ -1088,9 +1118,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             {/* Header */}
             <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">archiMap STUDIO</span>
+                <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
                 <span className="text-[var(--color-text-tertiary)]">|</span>
-                <span className="text-xs text-[var(--color-text-primary)] font-semibold">{activeMap.cityName} Urban Site Analysis</span>
+                <span className="text-xs text-[var(--color-text-primary)] font-semibold">{activeMap.cityName} Cadastral & Ownership Graph Studio</span>
                 <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeMap.coordinates})</span>
               </div>
 
@@ -1141,8 +1171,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
                 {/* HUD Overlay */}
                 <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
-                  <div className="text-[var(--color-surface-raised)] font-semibold">Active Dataset: {activeMap.layers}</div>
-                  <div className="text-[10px] text-[var(--color-text-secondary)]">Scale: 1:2500 · Projection: EPSG:3857 · Elevation: +12.4m</div>
+                  <div className="text-[var(--color-surface-raised)] font-semibold">Active Registry: {activeMap.layers}</div>
+                  <div className="text-[10px] text-[var(--color-text-secondary)]">Division: {activeMap.cityName} · CRS: EPSG:3857 · Cadastre: {activeMap.parcelCount}</div>
                 </div>
               </div>
 
@@ -1150,15 +1180,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <div className="w-full lg:w-72 glass-tile border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
                 <div>
                   <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
-                    SITE ANALYSIS GIS LAYERS
+                    CADASTRAL & EVIDENCE GIS LAYERS
                   </div>
                   <div className="space-y-2">
                     {[
-                      { key: 'buildings' as const, label: 'Building Footprints (8+ levels)' },
-                      { key: 'parcels' as const, label: 'Cadastral Parcel Boundaries' },
-                      { key: 'roads' as const, label: 'True-Width Road Polygons' },
-                      { key: 'terrain' as const, label: '3D Topographic Contours' },
-                      { key: 'solar' as const, label: 'Solar Irradiance Analysis' },
+                      { key: 'buildings' as const, label: 'Mouza Cadastral Parcels (Dag plots)' },
+                      { key: 'parcels' as const, label: 'Ownership Transfer Graph Edges' },
+                      { key: 'roads' as const, label: 'Flagged Double-Sale Overlays' },
+                      { key: 'terrain' as const, label: 'Mutation Discrepancy Vectors' },
+                      { key: 'solar' as const, label: 'Deed vs Porcha Conflict Markers' },
                     ].map((layer) => (
                       <button
                         key={layer.key}
@@ -1181,18 +1211,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
                   <div className="text-[var(--color-text-primary)] font-semibold">Export Format Supported:</div>
                   <div>• GeoJSON, Shapefile, DXF, SVG Vector</div>
-                  <div>• Rhino Grasshopper Mesh Direct Pipe</div>
+                  <div>• Cryptographic SHA-256 Evidence Report</div>
                 </div>
 
                 <div className="pt-2">
                   <button
                     onClick={() => {
-                      setToastMessage(`Exported site analysis vector package for ${activeMap.cityName}.`);
+                      setToastMessage(`Exported cadastral evidence package for ${activeMap.cityName}.`);
                       setTimeout(() => setToastMessage(null), 4000);
                     }}
                     className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] transition-colors cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
                   >
-                    Export Vector Package (.DXF)
+                    Export Evidence Dossier (.PDF)
                   </button>
                 </div>
               </div>
@@ -1222,7 +1252,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             >
               <div className="sticky top-0 bg-black/40 backdrop-blur-md p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between z-10">
                 <div className="text-xs font-mono text-[var(--color-text-secondary)]">
-                  MONOGRAPH SPECIFICATION · {selectedProject.id.toUpperCase()}
+                  INVESTIGATION DOSSIER · {selectedProject.id.toUpperCase()}
                 </div>
                 <button
                   onClick={() => setSelectedProject(null)}
@@ -1255,13 +1285,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.metric} ({selectedProject.metricLabel})</div>
                   </div>
                   <div>
-                    <div className="text-[var(--color-text-secondary)]">Spatial Footprint</div>
+                    <div className="text-[var(--color-text-secondary)]">Parcel Identifier</div>
                     <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.dimensions}</div>
                   </div>
                 </div>
 
                 <div>
-                  <div className="text-xs font-mono text-[var(--color-text-secondary)] mb-2">SPECIFIED MATERIAL PALETTE</div>
+                  <div className="text-xs font-mono text-[var(--color-text-secondary)] mb-2">SUPPORTING DOCUMENTARY EVIDENCE</div>
                   <div className="flex flex-wrap gap-2">
                     {selectedProject.materials.map((mat, i) => (
                       <span
@@ -1279,7 +1309,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     onClick={() => setSelectedProject(null)}
                     className="px-4 py-2 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
                   >
-                    Close Monograph
+                    Close Dossier
                   </button>
                   <button
                     onClick={() => {
@@ -1288,7 +1318,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     }}
                     className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
                   >
-                    Commission Similar Envelope
+                    Request Similar Parcel Audit
                   </button>
                 </div>
               </div>
@@ -1317,7 +1347,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             >
               <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
                 <div className="text-xs font-mono text-[var(--color-surface-raised)] font-bold">
-                  DIRECT STUDIO COMMISSION INQUIRY
+                  DIRECT TITLE INVESTIGATION INQUIRY
                 </div>
                 <button
                   onClick={() => setIsInquiryModalOpen(false)}
@@ -1329,14 +1359,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               </div>
 
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Connect directly with Probaho partners for structural feasibility and carbon reduction modeling.
+                Connect directly with Probaho analysts for title verification and contradiction audits.
               </p>
 
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   setIsInquiryModalOpen(false);
-                  setToastMessage('Thank you. Your architectural inquiry has been sent to Probaho.');
+                  setToastMessage('Thank you. Your parcel investigation inquiry has been dispatched to Probaho.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
                 className="space-y-4"
@@ -1348,18 +1378,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   <input
                     type="email"
                     required
-                    placeholder="name@organization.com"
+                    placeholder="name@organization.gov.bd"
                     className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1">
-                    PROJECT LOCATION & TARGET TIMELINE
+                    PARCEL LOCATION & TARGET TIMELINE
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Zurich Canton · Q4 2026"
+                    placeholder="e.g. Mouza Mirpur · Dag 3078 · Dhaka"
                     className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
                   />
                 </div>
@@ -1376,7 +1406,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     type="submit"
                     className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
                   >
-                    Send Briefing
+                    Send Investigation Brief
                   </button>
                 </div>
               </form>

@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React from 'react';
 
 interface ProbahoLogoProps {
@@ -15,15 +10,12 @@ interface ProbahoLogoProps {
 /**
  * Probaho Architectural Logo Mark
  *
- * Conceptualized around "Probaho" (flow, current, fluid dynamics):
- * Blends architectural structural cantilever precision with aerodynamic streamlines,
- * fluid contour vectors, and the signature emerald green accent node.
+ * Combines the architectural "P" monogram frame with an upward 
+ * fluid spline and energetic emerald green flow node.
  */
 export const ProbahoLogo: React.FC<ProbahoLogoProps> = ({
   className = 'w-7 h-7 text-[var(--color-text-primary)]',
   size,
-  variant = 'mark',
-  animated = true,
 }) => {
   return (
     <div
@@ -39,7 +31,14 @@ export const ProbahoLogo: React.FC<ProbahoLogoProps> = ({
       >
         <defs>
           {/* Gradient for the fluid stream ribbon */}
-          <linearGradient id="probaho-flow-grad" x1="4" y1="26" x2="28" y2="6" gradientUnits="userSpaceOnUse">
+          <linearGradient
+            id="probaho-flow-grad"
+            x1="4"
+            y1="26"
+            x2="28"
+            y2="6"
+            gradientUnits="userSpaceOnUse"
+          >
             <stop offset="0%" stopColor="currentColor" stopOpacity="0.4" />
             <stop offset="60%" stopColor="var(--color-surface-raised, #22c55e)" stopOpacity="0.9" />
             <stop offset="100%" stopColor="var(--color-surface-raised, #22c55e)" />
@@ -52,7 +51,7 @@ export const ProbahoLogo: React.FC<ProbahoLogoProps> = ({
           </radialGradient>
         </defs>
 
-        {/* Ambient Flow Guide Line (Secondary Contour Stream) */}
+        {/* Ambient Flow Guide Line (Subtle bottom horizontal baseline) */}
         <path
           d="M 4 23 C 8.5 23 11 18 15.5 18 C 20 18 22.5 21.5 28 21.5"
           stroke="currentColor"
@@ -61,7 +60,7 @@ export const ProbahoLogo: React.FC<ProbahoLogoProps> = ({
           className="opacity-30 group-hover:opacity-50 transition-opacity"
         />
 
-        {/* Primary Architectural Cantilever Frame (Monogram P & Structural Arch) */}
+        {/* Primary Monogram "P" Structural Frame */}
         <path
           d="M 8 26 V 8 C 8 5.79 9.79 4 12 4 H 18 C 22.42 4 26 7.58 26 12 C 26 16.42 22.42 20 18 20 H 8"
           stroke="currentColor"
@@ -71,7 +70,7 @@ export const ProbahoLogo: React.FC<ProbahoLogoProps> = ({
           className="transition-colors group-hover:text-[var(--color-text-primary)]"
         />
 
-        {/* Dynamic Wave Spline (Probaho Fluid Stream) */}
+        {/* Dynamic Wave Spline (Green Fluid Stream) */}
         <path
           d="M 11.5 20 C 14.2 15.2 17.8 11.8 23 11.8 C 25.2 11.8 26.8 12.6 28.5 13.8"
           stroke="url(#probaho-flow-grad)"
@@ -96,6 +95,28 @@ export const ProbahoLogo: React.FC<ProbahoLogoProps> = ({
           className="transition-transform duration-300 group-hover:scale-110 origin-center"
         />
       </svg>
+    </div>
+  );
+};
+
+export const ProbahoBrand: React.FC<{
+  size?: number | string;
+  className?: string;
+  textSize?: string;
+}> = ({
+  size,
+  className = '',
+  textSize = 'text-xl',
+}) => {
+  return (
+    <div className={`flex items-center gap-3 whitespace-nowrap group ${className}`}>
+      <ProbahoLogo
+        size={size}
+        className="w-7 h-7 text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] shrink-0 transition-colors"
+      />
+      <span className={`font-bold tracking-tight font-sans text-white ${textSize}`}>
+        Probaho
+      </span>
     </div>
   );
 };

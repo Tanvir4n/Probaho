@@ -243,7 +243,7 @@ export const MassTokenInspector: React.FC = () => {
                       style={{ fontSize: item.value }}
                       className="text-[var(--color-text-primary)] tracking-tight truncate leading-normal"
                     >
-                      Probaho: Computational Form & Structural Assembly ({item.value})
+                      Probaho: Ownership Graph & Evidence Intelligence ({item.value})
                     </div>
                     <div className="text-[9.6px] text-[var(--color-text-tertiary)] mt-0.5">{item.role}</div>
                   </div>
