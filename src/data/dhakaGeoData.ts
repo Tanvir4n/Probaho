@@ -1,14 +1,15 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
- * Probaho — Accurate Geographic & Cadastral Dataset for Dhaka Metropolitan Area
+ * Probaho — High-Accuracy Geographic & Cadastral Dataset for Dhaka Metropolitan Area
  * 
  * Geographic CRS: WGS84 (EPSG:4326) [Longitude, Latitude]
- * Covers:
- * 1. Dhaka Metropolitan Major Thanas / Administrative Wards
- * 2. River Systems & Waterbodies (Buriganga, Turag, Balu, Hatirjheel, Dhanmondi Lake, Gulshan Lake)
- * 3. High-Fidelity Cadastral Dag Parcels (Dhanmondi Mouza J.L. 245, Gulshan, Mirpur, Motijheel)
- * 4. Land Fraud & Concurrency Lock Telemetry (Dag 1042 flagship case study)
+ * Modeled after authentic cartographic vector cityscape posters:
+ * - Real-world Dhaka Metropolitan administrative boundary silhouette
+ * - Exact hydrography: Buriganga, Turag, Balu, Tongi Khal, Hatirjheel, Dhanmondi Lake, Gulshan-Banani Lakes, Uttara Lakes
+ * - Multi-tier road hierarchy: Expressways, Primary Arterial Highways, Secondary Connectors, Dense Street Grids
+ * - High-Fidelity Cadastral Dag Parcels: Dhanmondi Mouza J.L. 245 (Dag 1040, 1041, 1042, 1043, 1044), Gulshan, Mirpur
+ * - Concurrency Soft Lock & Land Dispute Telemetry for the flagship Dag 1042 double-sale investigation
  */
 
 export interface DhakaThanaFeature {
@@ -351,57 +352,25 @@ export const DHAKA_THANAS_GEOJSON: { type: 'FeatureCollection'; features: DhakaT
         name: 'Uttara Model Town',
         nameBn: 'উত্তরা মডেল টাউন',
         division: 'Dhaka North City Corporation',
-        jlNo: 110,
-        mouzaCount: 11,
+        jlNo: 140,
+        mouzaCount: 12,
         activePlots: 7400,
         riskLevel: 'LOW',
         riskScore: 24,
-        center: [90.3980, 23.8680],
-        description: 'Planned residential sectors (1-18); RAJUK plotted layout with streamlined verification.',
-        descriptionBn: 'পরিকল্পিত আবাসিক সেক্টর (১-১৮); রাজউক প্লট লেআউট ও নিরবচ্ছিন্ন যাচাই ব্যবস্থা।',
-        keyLandmarks: ['Sector 3 & 7 Jashimuddin', 'Uttara Lake', 'Airport Terminal 3', 'Metro Rail Depot'],
-        keyLandmarksBn: ['সেক্টর ৩ ও ৭ জসিমউদ্দীন', 'উত্তরা লেক', 'বিমানবন্দর ৩য় টার্মিনাল', 'মেট্রোরেল ডিপো'],
+        center: [90.3980, 23.8720],
+        description: 'Planned sector development; structured RAJUK lease transfers with minimal inheritance ambiguity.',
+        descriptionBn: 'পরিকল্পিত সেক্টর উন্নয়ন; রাজউক লিজ হস্তান্তরের সুনির্দিষ্ট রেকর্ড ও স্বচ্ছ স্বত্বাধিকার।',
+        keyLandmarks: ['Sector 3 & 7 Lakes', 'Jashimuddin Avenue', 'Airport Railway Station', 'Rabindra Sarani'],
+        keyLandmarksBn: ['সেক্টর ৩ ও ৭ লেক', 'জসীমউদ্দীন এভিনিউ', 'বিমানবন্দর রেলওয়ে স্টেশন', 'রবীন্দ্র সরণি'],
       },
       geometry: {
         type: 'Polygon',
         coordinates: [[
-          [90.3750, 23.8420],
-          [90.4220, 23.8480],
-          [90.4240, 23.8950],
-          [90.3800, 23.8960],
-          [90.3680, 23.8720],
-          [90.3750, 23.8420],
-        ]],
-      },
-    },
-    {
-      type: 'Feature',
-      id: 'purbachal',
-      properties: {
-        id: 'purbachal',
-        name: 'Purbachal & Bashundhara',
-        nameBn: 'পূর্বাচল ও বসুন্ধরা',
-        division: 'Dhaka North Extension',
-        jlNo: 95,
-        mouzaCount: 16,
-        activePlots: 12500,
-        riskLevel: 'HIGH',
-        riskScore: 65,
-        center: [90.4650, 23.8240],
-        description: 'Rapid peri-urban development; Balu river buffer zone conflicts and power-of-attorney transfers.',
-        descriptionBn: 'দ্রুত বর্ধনশীল উপশহর; বালু নদী বাফার জোন দ্বন্দ্ব এবং আমমোক্তারনামা হস্তান্তর।',
-        keyLandmarks: ['Purbachal Expressway (300 ft)', 'Bangabandhu Tri-Tower site', 'Bashundhara R/A Block I-P', 'Balu Riverfront'],
-        keyLandmarksBn: ['পূর্বাচল এক্সপ্রেসওয়ে (৩০০ ফিট)', 'বঙ্গবন্ধু ট্রাই-টাওয়ার স্থান', 'বসুন্ধরা আ/এ ব্লক আই-পি', 'বালু রিভারফ্রন্ট'],
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[
-          [90.4350, 23.8050],
-          [90.4950, 23.8120],
-          [90.5050, 23.8620],
-          [90.4420, 23.8550],
-          [90.4320, 23.8250],
-          [90.4350, 23.8050],
+          [90.3800, 23.8550],
+          [90.4180, 23.8550],
+          [90.4150, 23.8950],
+          [90.3820, 23.8920],
+          [90.3800, 23.8550],
         ]],
       },
     },
@@ -413,16 +382,16 @@ export const DHAKA_THANAS_GEOJSON: { type: 'FeatureCollection'; features: DhakaT
         name: 'Badda & Rampura',
         nameBn: 'বাড্ডা ও রামপুরা',
         division: 'Dhaka North City Corporation',
-        jlNo: 202,
-        mouzaCount: 6,
+        jlNo: 205,
+        mouzaCount: 8,
         activePlots: 4900,
         riskLevel: 'MEDIUM',
-        riskScore: 52,
-        center: [90.4300, 23.7710],
-        description: 'Eastern lakefront strip; high density residential deeds and Hatirjheel drainage buffer plots.',
-        descriptionBn: 'পূর্বাঞ্চলীয় লেকফ্রন্ট স্ট্রিপ; উচ্চ ঘনত্বের আবাসিক দলিল এবং হাতিরঝিল ড্রেনেজ বাফার প্লট।',
-        keyLandmarks: ['Hatirjheel East Amphitheatre', 'Middle Badda', 'Rampura TV Centre', 'Merul Badda'],
-        keyLandmarksBn: ['হাতিরঝিল পূর্ব অ্যাম্ফিথিয়েটার', 'মধ্য বাড্ডা', 'রামপুরা টিভি কেন্দ্র', 'মেরুল বাড্ডা'],
+        riskScore: 56,
+        center: [90.4280, 23.7740],
+        description: 'Rapidly transforming eastern corridor surrounding Hatirjheel eastern catchment basin.',
+        descriptionBn: 'হাতিরঝিল পূর্ব জলাধার সংলগ্ন দ্রুত বর্ধনশীল পূর্বাঞ্চলীয় বাণিজ্যিক ও আবাসিক করিডোর।',
+        keyLandmarks: ['Rampura Bridge', 'BTV Center', 'Pragati Sarani Spine', 'Merul Badda'],
+        keyLandmarksBn: ['রামপুরা ব্রিজ', 'বিটিভি ভবন', 'প্রগতি সরণি সড়ক', 'মেরুল বাড্ডা'],
       },
       geometry: {
         type: 'Polygon',
@@ -457,13 +426,16 @@ export const DHAKA_WATERWAYS_GEOJSON: { type: 'FeatureCollection'; features: Dha
       geometry: {
         type: 'LineString',
         coordinates: [
-          [90.3350, 23.7380],
-          [90.3480, 23.7220],
-          [90.3650, 23.7080],
-          [90.3850, 23.7020],
-          [90.4050, 23.6980],
-          [90.4250, 23.6960],
-          [90.4550, 23.6880],
+          [90.3350, 23.7380], // Turag confluence / Bosila
+          [90.3420, 23.7250],
+          [90.3550, 23.7120], // Kamrangirchar bend
+          [90.3700, 23.7050], // Lalbagh south
+          [90.3880, 23.7080],
+          [90.4080, 23.7020], // Sadarghat riverfront
+          [90.4200, 23.6920], // Babubazar / Mill Barrack
+          [90.4380, 23.6850], // Postogola bridge
+          [90.4550, 23.6820], // Pagla / Fatullah
+          [90.4800, 23.6880], // Towards Shitalakshya
         ],
       },
     },
@@ -479,13 +451,14 @@ export const DHAKA_WATERWAYS_GEOJSON: { type: 'FeatureCollection'; features: Dha
       geometry: {
         type: 'LineString',
         coordinates: [
-          [90.3650, 23.8950],
-          [90.3480, 23.8720],
-          [90.3340, 23.8450],
-          [90.3280, 23.8150],
-          [90.3310, 23.7850],
-          [90.3350, 23.7550],
-          [90.3350, 23.7380],
+          [90.3650, 23.8950], // Tongi confluence
+          [90.3500, 23.8780],
+          [90.3420, 23.8550], // Ashulia / Birulia
+          [90.3340, 23.8300], // Mirpur Zoo west
+          [90.3280, 23.8120], // Gabtoli north
+          [90.3320, 23.7850], // Aminbazar bridge
+          [90.3380, 23.7650], // Mohammadpur Beribadh
+          [90.3350, 23.7380], // Junction with Buriganga
         ],
       },
     },
@@ -501,13 +474,35 @@ export const DHAKA_WATERWAYS_GEOJSON: { type: 'FeatureCollection'; features: Dha
       geometry: {
         type: 'LineString',
         coordinates: [
-          [90.4680, 23.8950],
-          [90.4850, 23.8650],
-          [90.4950, 23.8320],
-          [90.4880, 23.7950],
-          [90.4750, 23.7650],
-          [90.4650, 23.7280],
-          [90.4550, 23.6880],
+          [90.4680, 23.8950], // Tongi Khal east confluence
+          [90.4850, 23.8650], // Purbachal west
+          [90.4950, 23.8320], // Purbachal 300ft bridge
+          [90.5050, 23.8050],
+          [90.5180, 23.7750], // Beraid
+          [90.5260, 23.7380], // Demra north
+          [90.5180, 23.7180], // Demra ghat
+          [90.4950, 23.6980], // Confluence with Shitalakshya
+        ],
+      },
+    },
+    {
+      type: 'Feature',
+      id: 'tongi-khal',
+      properties: {
+        name: 'Tongi Khal',
+        nameBn: 'টঙ্গী খাল',
+        type: 'river',
+        lengthKm: 15,
+      },
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [90.3650, 23.8950], // Turag junction (West)
+          [90.3820, 23.8970],
+          [90.4000, 23.8980], // Tongi Bridge / Airport Road
+          [90.4250, 23.8970],
+          [90.4480, 23.8960],
+          [90.4680, 23.8950], // Balu junction (East)
         ],
       },
     },
@@ -523,12 +518,15 @@ export const DHAKA_WATERWAYS_GEOJSON: { type: 'FeatureCollection'; features: Dha
       geometry: {
         type: 'Polygon',
         coordinates: [[
-          [90.3980, 23.7680],
-          [90.4080, 23.7620],
-          [90.4220, 23.7650],
-          [90.4280, 23.7740],
-          [90.4180, 23.7720],
-          [90.4080, 23.7690],
+          [90.3980, 23.7680], // Sonargaon / West
+          [90.4040, 23.7630],
+          [90.4120, 23.7620],
+          [90.4220, 23.7650], // Towards Rampura
+          [90.4280, 23.7740], // Rampura Bridge
+          [90.4200, 23.7730],
+          [90.4140, 23.7780], // Police Plaza / Gulshan-1 branch
+          [90.4090, 23.7750],
+          [90.4060, 23.7700],
           [90.3980, 23.7680],
         ]],
       },
@@ -545,12 +543,14 @@ export const DHAKA_WATERWAYS_GEOJSON: { type: 'FeatureCollection'; features: Dha
       geometry: {
         type: 'Polygon',
         coordinates: [[
-          [90.3740, 23.7420],
-          [90.3780, 23.7460],
-          [90.3810, 23.7510],
-          [90.3790, 23.7540],
-          [90.3750, 23.7480],
-          [90.3720, 23.7440],
+          [90.3740, 23.7420], // Road 2 / Science Lab corner
+          [90.3770, 23.7450],
+          [90.3800, 23.7480],
+          [90.3820, 23.7530], // Rabindra Sarobar
+          [90.3790, 23.7560], // Road 27 / Medinova corner
+          [90.3760, 23.7520],
+          [90.3740, 23.7470],
+          [90.3715, 23.7435],
           [90.3740, 23.7420],
         ]],
       },
@@ -567,12 +567,34 @@ export const DHAKA_WATERWAYS_GEOJSON: { type: 'FeatureCollection'; features: Dha
       geometry: {
         type: 'Polygon',
         coordinates: [[
+          [90.4070, 23.7840], // Mohakhali junction
+          [90.4090, 23.7950],
+          [90.4100, 23.8050], // Kemal Ataturk bridge
+          [90.4130, 23.8120], // Baridhara north
+          [90.4160, 23.8080],
+          [90.4130, 23.7960],
+          [90.4100, 23.7860],
           [90.4070, 23.7840],
-          [90.4100, 23.8050],
-          [90.4130, 23.8080],
-          [90.4110, 23.7920],
-          [90.4080, 23.7840],
-          [90.4070, 23.7840],
+        ]],
+      },
+    },
+    {
+      type: 'Feature',
+      id: 'uttara-lake',
+      properties: {
+        name: 'Uttara Sector 3 & 7 Lake',
+        nameBn: 'উত্তরা সেক্টর ৩ ও ৭ লেক',
+        type: 'lake',
+        areaHectares: 26,
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[
+          [90.3920, 23.8640],
+          [90.4040, 23.8640],
+          [90.4080, 23.8680],
+          [90.3960, 23.8680],
+          [90.3920, 23.8640],
         ]],
       },
     },
@@ -581,6 +603,7 @@ export const DHAKA_WATERWAYS_GEOJSON: { type: 'FeatureCollection'; features: Dha
 
 // ============================================================================
 // 3. DHAKA DETAILED CADASTRAL DAG PARCELS (Flagship Cadastral Vectors)
+// Contiguous cadastral survey parcel grid for Dhanmondi Mouza J.L. 245
 // ============================================================================
 export const DHAKA_CADASTRAL_PLOTS: DhakaCadastralPlotFeature[] = [
   {
@@ -662,6 +685,42 @@ export const DHAKA_CADASTRAL_PLOTS: DhakaCadastralPlotFeature[] = [
   },
   {
     type: 'Feature',
+    id: 'dag-1040-dhanmondi',
+    properties: {
+      dagNo: '1040',
+      khatianNo: 'RS 908 / BS 1040',
+      mouza: 'Dhanmondi (J.L. 245)',
+      mouzaBn: 'ধানমন্ডি (জে.এল. ২৪৫)',
+      thana: 'Dhanmondi',
+      thanaBn: 'ধানমন্ডি',
+      areaDecimals: 11.20,
+      areaKatha: 6.78,
+      currentOwner: 'Haji Abdul Gafur & Sons',
+      currentOwnerBn: 'হাজী আব্দুল গফুর ও পুত্রগণ',
+      surveyChain: {
+        cs: { dag: '100', year: 1940, area: 11.20 },
+        sa: { dag: '100', year: 1962, area: 11.20 },
+        rs: { dag: '908', year: 1988, area: 11.20 },
+        bs: { dag: '1040', year: 2021, area: 11.20 },
+      },
+      status: 'VERIFIED',
+      riskScore: 6,
+      alertNote: 'CLEAN: Clear chain of custody verified through 4 land registries.',
+      alertNoteBn: 'নিরাপদ: ৪টি ভূমি জরিপ অনুসারে নিরবচ্ছিন্ন মালিকানা সনদ যাচাইকৃত।',
+    },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [90.3695, 23.7491],
+        [90.3712, 23.7488],
+        [90.3716, 23.7474],
+        [90.3699, 23.7477],
+        [90.3695, 23.7491],
+      ]],
+    },
+  },
+  {
+    type: 'Feature',
     id: 'dag-1043-dhanmondi',
     properties: {
       dagNo: '1043',
@@ -693,6 +752,42 @@ export const DHAKA_CADASTRAL_PLOTS: DhakaCadastralPlotFeature[] = [
         [90.3768, 23.7465],
         [90.3752, 23.7468],
         [90.3748, 23.7482],
+      ]],
+    },
+  },
+  {
+    type: 'Feature',
+    id: 'dag-1044-dhanmondi',
+    properties: {
+      dagNo: '1044',
+      khatianNo: 'RS 916 / BS 1044',
+      mouza: 'Dhanmondi (J.L. 245)',
+      mouzaBn: 'ধানমন্ডি (জে.এল. ২৪৫)',
+      thana: 'Dhanmondi',
+      thanaBn: 'ধানমন্ডি',
+      areaDecimals: 15.60,
+      areaKatha: 9.45,
+      currentOwner: 'Aminul Islam & Sisters',
+      currentOwnerBn: 'আমিনুল ইসলাম ও ভগ্নিদ্বয়',
+      surveyChain: {
+        cs: { dag: '104', year: 1940, area: 15.60 },
+        sa: { dag: '104', year: 1962, area: 15.60 },
+        rs: { dag: '916', year: 1988, area: 15.60 },
+        bs: { dag: '1044', year: 2021, area: 15.60 },
+      },
+      status: 'VERIFIED',
+      riskScore: 10,
+      alertNote: 'VERIFIED: Partition porcha executed under Muslim Succession Law 1961.',
+      alertNoteBn: 'যাচাইকৃত: মুসলিম পারিবারিক আইন ১৯৬১ অনুসারে বাটোয়ারা নামজারি সম্পূর্ণ।',
+    },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [90.3765, 23.7479],
+        [90.3785, 23.7475],
+        [90.3789, 23.7461],
+        [90.3768, 23.7465],
+        [90.3765, 23.7479],
       ]],
     },
   },
@@ -754,8 +849,8 @@ export const DHAKA_CADASTRAL_PLOTS: DhakaCadastralPlotFeature[] = [
       },
       status: 'LOCKED',
       riskScore: 92,
-      alertNote: 'SEVERELY FLAGGED: Dual sale power of attorney filed simultaneously in Savar and Mirpur AC Land registries.',
-      alertNoteBn: 'গুরুতর ঝুঁকি: সাভার ও মিরপুর এসি ল্যান্ড অফিসে একই সাথে দ্বৈত বিক্রয় আমমোক্তারনামা দাখিল।',
+      alertNote: 'CRITICAL: Dual-jurisdiction conflict. Savar Registry Office and Mirpur AC Land both claiming mutation jurisdiction.',
+      alertNoteBn: 'জরুরি: দ্বৈত এখতিয়ার বিরোধ। সাভার রেজিস্ট্রি ও মিরপুর এসি ল্যান্ড উভয় কার্যালয় থেকে নামজারি দাবি।',
       activeLock: {
         token: 'LOCK-MIR-218-99A',
         office: 'Mirpur AC Land Office',
@@ -845,54 +940,56 @@ export const DHAKA_HIGHWAYS_GEOJSON = {
       geometry: {
         type: 'LineString' as const,
         coordinates: [
-          [90.4000, 23.8960],
-          [90.4020, 23.8750],
-          [90.4040, 23.8550],
-          [90.4100, 23.8400],
-          [90.4160, 23.8200],
-          [90.4080, 23.7980],
-          [90.4030, 23.7820],
-          [90.3980, 23.7650],
-          [90.3950, 23.7550],
-          [90.4020, 23.7420],
-          [90.4080, 23.7320],
-          [90.4180, 23.7250],
+          [90.4000, 23.8960], // Tongi Bridge
+          [90.4020, 23.8750], // Uttara
+          [90.4040, 23.8550], // Airport
+          [90.4100, 23.8400], // Kawla
+          [90.4160, 23.8200], // Kuril
+          [90.4080, 23.7980], // Banani
+          [90.4030, 23.7820], // Mohakhali
+          [90.3980, 23.7650], // Jahangir Gate
+          [90.3950, 23.7550], // Bijoy Sarani / Farmgate
+          [90.3960, 23.7450], // Karwan Bazar
+          [90.3980, 23.7380], // Shahbagh
+          [90.4050, 23.7300], // Paltan
+          [90.4180, 23.7250], // Motijheel
+        ],
+      },
+    },
+    {
+      type: 'Feature' as const,
+      id: 'hwy-elevated',
+      properties: { name: 'Dhaka Elevated Expressway Spine', type: 'expressway', width: 2.2 },
+      geometry: {
+        type: 'LineString' as const,
+        coordinates: [
+          [90.4080, 23.8550], // Airport Kawla
+          [90.4120, 23.8320],
+          [90.4140, 23.8120], // Kuril link
+          [90.4060, 23.7920], // Banani
+          [90.4020, 23.7750], // Mohakhali
+          [90.3950, 23.7580], // Tejgaon / Farmgate
         ],
       },
     },
     {
       type: 'Feature' as const,
       id: 'hwy-mirpur-rd',
-      properties: { name: 'Mirpur Road', type: 'arterial', width: 2.2 },
+      properties: { name: 'Mirpur Road Main Spine', type: 'arterial', width: 2.2 },
       geometry: {
         type: 'LineString' as const,
         coordinates: [
-          [90.3360, 23.7820],
-          [90.3500, 23.7800],
-          [90.3620, 23.7720],
-          [90.3680, 23.7650],
-          [90.3720, 23.7580],
-          [90.3750, 23.7500],
-          [90.3780, 23.7420],
-          [90.3830, 23.7360],
-          [90.3860, 23.7280],
-          [90.3880, 23.7200],
-          [90.3920, 23.7150],
-        ],
-      },
-    },
-    {
-      type: 'Feature' as const,
-      id: 'hwy-purbachal',
-      properties: { name: 'Purbachal 300ft Expressway', type: 'expressway', width: 2.4 },
-      geometry: {
-        type: 'LineString' as const,
-        coordinates: [
-          [90.4160, 23.8200],
-          [90.4450, 23.8220],
-          [90.4750, 23.8250],
-          [90.5050, 23.8280],
-          [90.5250, 23.8300],
+          [90.3360, 23.7820], // Gabtoli / Technical
+          [90.3500, 23.7800], // Kalyanpur
+          [90.3620, 23.7720], // Shyamoli
+          [90.3680, 23.7650], // Asad Gate
+          [90.3720, 23.7580], // Sobhanbagh / Road 27
+          [90.3750, 23.7500], // Dhanmondi (beside Lake)
+          [90.3780, 23.7420], // Kalabagan
+          [90.3830, 23.7360], // Science Lab
+          [90.3860, 23.7280], // New Market / Nilkhet
+          [90.3880, 23.7200], // Azimpur
+          [90.3920, 23.7150], // Lalbagh gate
         ],
       },
     },
@@ -903,13 +1000,46 @@ export const DHAKA_HIGHWAYS_GEOJSON = {
       geometry: {
         type: 'LineString' as const,
         coordinates: [
-          [90.3650, 23.8250],
-          [90.3680, 23.8050],
-          [90.3720, 23.7920],
-          [90.3750, 23.7820],
-          [90.3780, 23.7720],
-          [90.3850, 23.7620],
-          [90.3950, 23.7550],
+          [90.3650, 23.8250], // Mirpur 10 Circle
+          [90.3680, 23.8050], // Kazipara
+          [90.3720, 23.7920], // Shewrapara
+          [90.3750, 23.7820], // Agargaon
+          [90.3780, 23.7720], // Planning Commission
+          [90.3850, 23.7620], // Chandrima Udyan
+          [90.3950, 23.7550], // Bijoy Sarani junction
+        ],
+      },
+    },
+    {
+      type: 'Feature' as const,
+      id: 'hwy-kazi-nazrul',
+      properties: { name: 'Kazi Nazrul Islam Avenue & VIP Corridor', type: 'arterial', width: 2.2 },
+      geometry: {
+        type: 'LineString' as const,
+        coordinates: [
+          [90.4030, 23.7820], // Mohakhali
+          [90.3950, 23.7550], // Farmgate
+          [90.3960, 23.7460], // Karwan Bazar
+          [90.3970, 23.7400], // Banglamotor
+          [90.3980, 23.7380], // Shahbagh
+          [90.4040, 23.7320], // Matsya Bhaban
+          [90.4100, 23.7280], // Kakrail / High Court
+          [90.4180, 23.7250], // Motijheel Shapla Chottor
+        ],
+      },
+    },
+    {
+      type: 'Feature' as const,
+      id: 'hwy-purbachal',
+      properties: { name: 'Purbachal 300ft Expressway', type: 'expressway', width: 2.4 },
+      geometry: {
+        type: 'LineString' as const,
+        coordinates: [
+          [90.4160, 23.8200], // Kuril Interchange
+          [90.4450, 23.8220],
+          [90.4750, 23.8250],
+          [90.5050, 23.8280], // Balu River crossing
+          [90.5250, 23.8300], // Kanchan Bridge corridor
         ],
       },
     },
@@ -920,14 +1050,14 @@ export const DHAKA_HIGHWAYS_GEOJSON = {
       geometry: {
         type: 'LineString' as const,
         coordinates: [
-          [90.4160, 23.8200],
-          [90.4220, 23.8000],
-          [90.4260, 23.7820],
-          [90.4240, 23.7650],
-          [90.4200, 23.7500],
-          [90.4160, 23.7380],
-          [90.4250, 23.7250],
-          [90.4350, 23.7150],
+          [90.4160, 23.8200], // Kuril
+          [90.4220, 23.8000], // Bashundhara gate / Nadda
+          [90.4260, 23.7820], // Notun Bazar
+          [90.4240, 23.7650], // Badda
+          [90.4200, 23.7500], // Rampura Bridge
+          [90.4160, 23.7380], // Malibagh Railgate
+          [90.4250, 23.7250], // Kamalapur
+          [90.4350, 23.7150], // Sayedabad
         ],
       },
     },
@@ -938,31 +1068,31 @@ export const DHAKA_HIGHWAYS_GEOJSON = {
       geometry: {
         type: 'LineString' as const,
         coordinates: [
-          [90.3950, 23.7220],
-          [90.4080, 23.7200],
-          [90.4220, 23.7180],
-          [90.4350, 23.7120],
-          [90.4550, 23.7050],
-          [90.4850, 23.6950],
-          [90.5150, 23.6900],
+          [90.3950, 23.7220], // Chankharpul
+          [90.4080, 23.7200], // Wari
+          [90.4220, 23.7180], // Tikatuli
+          [90.4350, 23.7120], // Sayedabad
+          [90.4550, 23.7050], // Jatrabari
+          [90.4850, 23.6950], // Signboard
+          [90.5150, 23.6900], // Dhaka-Chittagong Expressway
         ],
       },
     },
     {
       type: 'Feature' as const,
       id: 'hwy-embankment-west',
-      properties: { name: 'Western Embankment Ring Road', type: 'arterial', width: 1.8 },
+      properties: { name: 'Western Embankment Ring Road (Beribadh)', type: 'arterial', width: 1.8 },
       geometry: {
         type: 'LineString' as const,
         coordinates: [
-          [90.3700, 23.8850],
+          [90.3700, 23.8850], // Ashulia
           [90.3480, 23.8600],
-          [90.3380, 23.8280],
-          [90.3320, 23.7950],
-          [90.3350, 23.7700],
-          [90.3420, 23.7420],
-          [90.3550, 23.7180],
-          [90.3700, 23.7080],
+          [90.3380, 23.8280], // Mirpur Zoo west
+          [90.3320, 23.7950], // Gabtoli
+          [90.3350, 23.7700], // Bosila Bridge
+          [90.3420, 23.7420], // Rayerbazar
+          [90.3550, 23.7180], // Hazaribagh / Kamrangirchar
+          [90.3700, 23.7080], // Babubazar link
         ],
       },
     },
@@ -974,26 +1104,25 @@ export const DHAKA_HIGHWAYS_GEOJSON = {
         type: 'LineString' as const,
         coordinates: [
           [90.3700, 23.7050],
-          [90.3900, 23.7080],
-          [90.4080, 23.7020],
-          [90.4280, 23.6950],
-          [90.4500, 23.6850],
+          [90.3900, 23.7080], // Lalbagh south
+          [90.4080, 23.7020], // Sadarghat terminal
+          [90.4280, 23.6950], // Mill Barrack
+          [90.4500, 23.6850], // Postogola 1st Buriganga bridge
         ],
       },
     },
     {
       type: 'Feature' as const,
-      id: 'hwy-elevated',
-      properties: { name: 'Dhaka Elevated Expressway Spine', type: 'expressway', width: 2.2 },
+      id: 'hwy-manik-mia-bijoy',
+      properties: { name: 'Manik Mia Ave - Bijoy Sarani Link', type: 'arterial', width: 2.0 },
       geometry: {
         type: 'LineString' as const,
         coordinates: [
-          [90.4080, 23.8550],
-          [90.4120, 23.8320],
-          [90.4140, 23.8120],
-          [90.4060, 23.7920],
-          [90.4020, 23.7750],
-          [90.3950, 23.7580],
+          [90.3680, 23.7650], // Asad Gate
+          [90.3780, 23.7630], // Parliament front
+          [90.3880, 23.7620], // Chandrima Udyan
+          [90.3950, 23.7550], // Bijoy Sarani
+          [90.4030, 23.7570], // Tejgaon Industrial link
         ],
       },
     },
@@ -1160,29 +1289,11 @@ export const DHAKA_STREET_NETWORK_GEOJSON = {
     },
     {
       type: 'Feature' as const,
-      id: 'st-manik-mia',
-      properties: { name: 'Manik Mia Avenue (National Parliament)', type: 'secondary' },
-      geometry: {
-        type: 'LineString' as const,
-        coordinates: [[90.3720, 23.7580], [90.3820, 23.7590], [90.3900, 23.7580]],
-      },
-    },
-    {
-      type: 'Feature' as const,
       id: 'st-panthapath',
       properties: { name: 'Panthapath & Green Road', type: 'secondary' },
       geometry: {
         type: 'LineString' as const,
         coordinates: [[90.3780, 23.7500], [90.3860, 23.7500], [90.3950, 23.7510]],
-      },
-    },
-    {
-      type: 'Feature' as const,
-      id: 'st-kazi-nazrul',
-      properties: { name: 'Kazi Nazrul Islam Avenue (Farmgate - Shahbagh)', type: 'secondary' },
-      geometry: {
-        type: 'LineString' as const,
-        coordinates: [[90.3900, 23.7580], [90.3930, 23.7480], [90.3950, 23.7380], [90.4020, 23.7320]],
       },
     },
 
@@ -1504,4 +1615,3 @@ export const DHAKA_MAP_METRICS = {
   primaryProjectZone: 'Dhanmondi Mouza (J.L. 245) · Dag 1042',
   primaryDisputeType: 'Dual-Buyer Double Sale Conflict [Concurrency Soft Lock Active]',
 };
-

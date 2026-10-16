@@ -1,14 +1,18 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
- * Probaho — D3.js Accurate Cadastral GIS Map of Dhaka Metropolitan Area
+ * Probaho — D3.js High-Accuracy Cadastral GIS Map of Dhaka Metropolitan Area
  * 
  * Styled after authentic cartographic vector cityscape posters:
  * - Day Poster Mode (White land silhouette, charcoal highways, cyan waterways)
  * - Night Poster Mode (Obsidian black land silhouette, crisp white highways, midnight blue waterways)
  * - Complete metropolitan administrative boundary silhouette
  * - High-density highway, arterial avenue, and neighborhood street grid networks
- * - Clearly denotes the project areas:
+ * - Fully responsive auto-fit using d3.geoMercator().fitExtent()
+ * - Hardware-accelerated 60fps D3 zoom without React stutter
+ * - Vector-effect: non-scaling-stroke on ALL lines (never blow up when zooming in)
+ * - Counter-scaled markers & callout banners (remain 1:1 screen size at any zoom level)
+ * - Clearly denotes project areas:
  *   * PRIMARY CORE: Dhanmondi Mouza (J.L. 245) · Dag 1042 (Flagship Double-Sale Dispute & Soft Lock)
  *   * SECONDARY NODES: Mirpur (J.L. 102 · Dag 218), Gulshan (J.L. 182 · Dag 450), Lalbagh (J.L. 310 · CS 1910), Tejgaon, Motijheel
  */
@@ -21,24 +25,15 @@ import {
   RotateCcw,
   Layers,
   Search,
-  ShieldAlert,
-  ShieldCheck,
-  AlertTriangle,
   Lock,
   MapPin,
-  ExternalLink,
   Eye,
   EyeOff,
   Crosshair,
-  Compass,
-  FileText,
-  Info,
-  Maximize2,
   X,
   Sun,
   Moon,
   Target,
-  Sparkles,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -53,8 +48,6 @@ import {
   DhakaProjectZone,
   DhakaThanaFeature,
   DhakaCadastralPlotFeature,
-  DhakaWaterwayFeature,
-  DHAKA_MAP_METRICS,
 } from '../data/dhakaGeoData';
 
 interface DhakaD3CadastralMapProps {
@@ -76,6 +69,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
   const { isBangla } = useLanguage();
 
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const mapRootRef = useRef<SVGGElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Poster Style Override: 'auto' | 'day' | 'night'
@@ -95,7 +89,6 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     cadastralPlots: true,
     projectZones: true,
     posterHeader: true,
-    riskHeatmap: true,
     labels: true,
     gridMesh: true,
   });
@@ -122,9 +115,12 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
 
   // Search input state
   const [searchQuery, setSearchQuery] = useState('');
-  const [zoomTransformState, setZoomTransformState] = useState<d3.ZoomTransform>(d3.zoomIdentity);
+  
+  // Current zoom scale (updated on zoom end or throttled, avoids re-rendering SVG during gestures)
+  const [currentZoomK, setCurrentZoomK] = useState<number>(1.0);
 
-  // Zoom behavior reference for programmatic zooming
+  // D3 zoom transform reference for instantaneous calculations
+  const currentTransformRef = useRef<d3.ZoomTransform>(d3.zoomIdentity);
   const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
 
   // Handle Resize
@@ -134,7 +130,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         if (width > 0 && height > 0) {
-          setDimensions({ width, height });
+          setDimensions({ width: Math.round(width), height: Math.round(height) });
         }
       }
     });
@@ -142,78 +138,118 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // Compute Projection based on current container size
-  // Dhaka Center: 90.4120° E, 23.7850° N
+  // Compute Projection mathematically fitted to the exact Dhaka Metropolitan Boundary
   const projection = useMemo(() => {
-    const scale = Math.min(dimensions.width, dimensions.height) * 190;
-    return d3
-      .geoMercator()
-      .center([90.4120, 23.7850])
-      .scale(scale)
-      .translate([dimensions.width / 2, dimensions.height / 2]);
+    const proj = d3.geoMercator();
+    const padX = Math.max(28, dimensions.width * 0.05);
+    const padY = Math.max(28, dimensions.height * 0.05);
+
+    proj.fitExtent(
+      [
+        [padX, padY],
+        [dimensions.width - padX, dimensions.height - padY],
+      ],
+      DHAKA_METRO_BOUNDARY_GEOJSON as any
+    );
+    return proj;
   }, [dimensions.width, dimensions.height]);
 
   const pathGenerator = useMemo(() => {
     return d3.geoPath().projection(projection);
   }, [projection]);
 
-  // Setup D3 Zoom on the SVG
-  useEffect(() => {
+  // Synchronize counter-scale elements on zoom
+  const updateCounterScaledElements = useCallback((transform: d3.ZoomTransform) => {
     if (!svgRef.current) return;
+    const invScale = 1 / transform.k;
+    d3.select(svgRef.current)
+      .selectAll<SVGGElement, unknown>('.counter-scale-group')
+      .attr('transform', function () {
+        const px = this.getAttribute('data-px') || '0';
+        const py = this.getAttribute('data-py') || '0';
+        return `translate(${px}, ${py}) scale(${invScale})`;
+      });
+  }, []);
+
+  // Setup D3 Zoom on the SVG with smooth decoupling from React re-renders
+  useEffect(() => {
+    if (!svgRef.current || !mapRootRef.current) return;
     const svg = d3.select(svgRef.current);
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.6, 45]) // Allows zooming in deep to individual Cadastral Dag plots
+      .scaleExtent([0.7, 40]) // Allows zooming from metropolitan overview down to individual Dag parcel plots
+      .wheelDelta((event) => -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.0018))
       .on('zoom', (event) => {
-        setZoomTransformState(event.transform);
-        svg.select('g.map-root-layer').attr('transform', event.transform);
+        currentTransformRef.current = event.transform;
+        
+        // 1. Hardware accelerated GPU transformation on the map root layer
+        if (mapRootRef.current) {
+          d3.select(mapRootRef.current).attr('transform', event.transform);
+        }
+
+        // 2. Instant counter-scaling on project badges & callout groups (stays 1:1 screen pixel size!)
+        updateCounterScaledElements(event.transform);
+      })
+      .on('end', (event) => {
+        // Sync React state on gesture end for HUD telemetry and threshold toggles
+        setCurrentZoomK(event.transform.k);
       });
 
     zoomBehaviorRef.current = zoom;
     svg.call(zoom);
-  }, [dimensions.width, dimensions.height, projection]);
+
+    // Apply initial transform if present
+    if (currentTransformRef.current !== d3.zoomIdentity) {
+      d3.select(mapRootRef.current).attr('transform', currentTransformRef.current.toString());
+      updateCounterScaledElements(currentTransformRef.current);
+    }
+  }, [dimensions.width, dimensions.height, projection, updateCounterScaledElements]);
 
   // Zoom Button Handlers
   const handleZoomIn = useCallback(() => {
     if (!svgRef.current || !zoomBehaviorRef.current) return;
     d3.select(svgRef.current)
       .transition()
-      .duration(350)
-      .call(zoomBehaviorRef.current.scaleBy, 1.45);
+      .duration(380)
+      .ease(d3.easeCubicOut)
+      .call(zoomBehaviorRef.current.scaleBy, 1.55);
   }, []);
 
   const handleZoomOut = useCallback(() => {
     if (!svgRef.current || !zoomBehaviorRef.current) return;
     d3.select(svgRef.current)
       .transition()
-      .duration(350)
-      .call(zoomBehaviorRef.current.scaleBy, 0.68);
+      .duration(380)
+      .ease(d3.easeCubicOut)
+      .call(zoomBehaviorRef.current.scaleBy, 0.65);
   }, []);
 
   const handleResetZoom = useCallback(() => {
     if (!svgRef.current || !zoomBehaviorRef.current) return;
     d3.select(svgRef.current)
       .transition()
-      .duration(600)
+      .duration(650)
+      .ease(d3.easeCubicOut)
       .call(zoomBehaviorRef.current.transform, d3.zoomIdentity);
     setSelectedPlot(null);
     setSelectedThana(null);
     onPlotSelect?.(null);
   }, [onPlotSelect]);
 
-  // Zoom to a specific coordinate
+  // Smooth Zoom to a specific coordinate
   const zoomToCoords = useCallback(
-    (lon: number, lat: number, scale = 4.5) => {
+    (lon: number, lat: number, targetScale = 6.0) => {
       if (!svgRef.current || !zoomBehaviorRef.current) return;
       const [x, y] = projection([lon, lat]) || [dimensions.width / 2, dimensions.height / 2];
       const transform = d3.zoomIdentity
-        .translate(dimensions.width / 2 - x * scale, dimensions.height / 2 - y * scale)
-        .scale(scale);
+        .translate(dimensions.width / 2 - x * targetScale, dimensions.height / 2 - y * targetScale)
+        .scale(targetScale);
 
       d3.select(svgRef.current)
         .transition()
-        .duration(700)
+        .duration(750)
+        .ease(d3.easeCubicOut)
         .call(zoomBehaviorRef.current.transform, transform);
     },
     [projection, dimensions.width, dimensions.height]
@@ -226,8 +262,21 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     const plot = DHAKA_CADASTRAL_PLOTS[0];
     setSelectedPlot(plot);
     onPlotSelect?.(plot);
-    zoomToCoords(primary.center[0], primary.center[1], 8.5);
+    zoomToCoords(primary.center[0], primary.center[1], 10.0);
   }, [zoomToCoords, onPlotSelect]);
+
+  // Double Click on map to zoom in at that point
+  const handleDoubleClick = (event: React.MouseEvent<SVGSVGElement>) => {
+    if (!svgRef.current || !zoomBehaviorRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const [clickX, clickY] = [event.clientX - rect.left, event.clientY - rect.top];
+
+    d3.select(svgRef.current)
+      .transition()
+      .duration(400)
+      .ease(d3.easeCubicOut)
+      .call(zoomBehaviorRef.current.scaleBy, 1.8, [clickX, clickY]);
+  };
 
   // Search Submission
   const handleSearch = (e: React.FormEvent) => {
@@ -245,7 +294,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     );
     if (matchedProject) {
       setSelectedProjectArea(matchedProject);
-      zoomToCoords(matchedProject.center[0], matchedProject.center[1], 7.0);
+      zoomToCoords(matchedProject.center[0], matchedProject.center[1], 8.0);
       return;
     }
 
@@ -261,7 +310,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
       setSelectedPlot(matchedPlot);
       onPlotSelect?.(matchedPlot);
       const centroid = d3.geoCentroid(matchedPlot as any);
-      zoomToCoords(centroid[0], centroid[1], 12);
+      zoomToCoords(centroid[0], centroid[1], 14.0);
       return;
     }
 
@@ -275,7 +324,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     if (matchedThana) {
       setSelectedThana(matchedThana);
       const [lon, lat] = matchedThana.properties.center;
-      zoomToCoords(lon, lat, 4.5);
+      zoomToCoords(lon, lat, 5.0);
       return;
     }
   };
@@ -286,8 +335,8 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     const rect = svgRef.current.getBoundingClientRect();
     const [clientX, clientY] = [event.clientX - rect.left, event.clientY - rect.top];
 
-    // Invert zoom transform to find canvas coordinates
-    const [canvasX, canvasY] = zoomTransformState.invert([clientX, clientY]);
+    // Invert current zoom transform to find canvas coordinates
+    const [canvasX, canvasY] = currentTransformRef.current.invert([clientX, clientY]);
     const geo = projection.invert?.([canvasX, canvasY]);
     if (geo) {
       setCursorGeoCoords([geo[0], geo[1]]);
@@ -302,21 +351,22 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
         background: '#ffffff',
         landFill: '#f8fafc',
         landStroke: '#94a3b8',
-        highwayStroke: '#1e293b',
+        highwayStroke: '#0f172a',
         highwayWidth: 2.2,
-        streetStroke: 'rgba(100, 116, 139, 0.55)',
-        streetWidth: 0.9,
+        streetStroke: 'rgba(100, 116, 139, 0.45)',
+        streetWidth: 0.85,
         waterwayFill: '#bae6fd',
         waterwayStroke: '#0284c7',
+        waterwayWidth: 3.2,
         thanaFill: 'rgba(0, 0, 0, 0.015)',
         thanaStroke: 'rgba(100, 116, 139, 0.22)',
         thanaHover: 'rgba(22, 163, 74, 0.12)',
         thanaSelected: 'rgba(22, 163, 74, 0.22)',
-        gridLine: 'rgba(15, 23, 42, 0.04)',
+        gridLine: 'rgba(15, 23, 42, 0.035)',
         posterTitle: '#0f172a',
         posterSub: '#64748b',
         posterAccent: '#16a34a',
-        frameBorder: 'rgba(15, 23, 42, 0.15)',
+        frameBorder: 'rgba(15, 23, 42, 0.18)',
         primaryProjectBeacon: '#16a34a',
         primaryProjectHalo: 'rgba(22, 163, 74, 0.25)',
       };
@@ -324,14 +374,15 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
       // Night Poster Mode (matches Image 2: 2HB5YBP.jpg)
       return {
         background: '#07090d',
-        landFill: '#131620',
+        landFill: '#111622',
         landStroke: 'rgba(255, 255, 255, 0.35)',
         highwayStroke: '#ffffff',
         highwayWidth: 2.2,
-        streetStroke: 'rgba(203, 213, 225, 0.55)',
-        streetWidth: 0.9,
-        waterwayFill: '#0e1828',
-        waterwayStroke: '#1d3557',
+        streetStroke: 'rgba(203, 213, 225, 0.45)',
+        streetWidth: 0.85,
+        waterwayFill: '#0d1b2a',
+        waterwayStroke: '#1e3a8a',
+        waterwayWidth: 3.2,
         thanaFill: 'rgba(255, 255, 255, 0.02)',
         thanaStroke: 'rgba(255, 255, 255, 0.14)',
         thanaHover: 'rgba(34, 197, 94, 0.18)',
@@ -346,11 +397,6 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
       };
     }
   }, [isPosterDay]);
-
-  // Coordinates for Primary Project Area (Dhanmondi Mouza Dag 1042)
-  const primaryProjectCoords = useMemo(() => {
-    return projection(DHAKA_PROJECT_AREAS[0].center) || [0, 0];
-  }, [projection]);
 
   return (
     <div
@@ -390,11 +436,11 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
           <span>
             {cursorGeoCoords
               ? `${cursorGeoCoords[1].toFixed(4)}° N, ${cursorGeoCoords[0].toFixed(4)}° E`
-              : '23.7850° N, 90.4120° E'}
+              : '23.7850° N, 90.4070° E'}
           </span>
           <span className="text-[var(--color-border-subtle)]">|</span>
           <span className="text-[var(--color-surface-raised)] font-semibold">
-            {zoomTransformState.k.toFixed(1)}x {isBangla ? 'জুম' : 'Zoom'}
+            {currentZoomK.toFixed(1)}x {isBangla ? 'জুম' : 'Zoom'}
           </span>
         </div>
 
@@ -445,18 +491,18 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
             </button>
 
             {/* Dropdown menu */}
-            <div className="absolute right-0 top-full mt-1 w-60 p-2.5 rounded-[4px] border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)] shadow-2xl text-[11px] font-mono space-y-1.5 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
+            <div className="absolute right-0 top-full mt-1 w-64 p-2.5 rounded-[4px] border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)] shadow-2xl text-[11px] font-mono space-y-1.5 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
               <div className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider pb-1 border-b border-[var(--color-border-subtle)]">
                 {isBangla ? 'ক্যাডাস্ট্রাল মানচিত্র স্তর' : 'Cartographic GIS Layers'}
               </div>
 
               {[
                 { key: 'projectZones' as const, label: isBangla ? 'চিহ্নিত প্রকল্প এলাকা (ধানমন্ডি-মিরপুর)' : 'Denoted Project Areas' },
-                { key: 'highways' as const, label: isBangla ? 'মহাসড়ক ও এক্সপ্রেসওয়ে (সাদা/কালো)' : 'Primary Highways' },
+                { key: 'highways' as const, label: isBangla ? 'মহাসড়ক ও এক্সপ্রেসওয়ে' : 'Primary Highways & Expressways' },
                 { key: 'streets' as const, label: isBangla ? 'রাস্তা ও আবাসিক গ্রিড নেটওয়ার্ক' : 'Secondary Streets & Grids' },
                 { key: 'boundary' as const, label: isBangla ? 'ঢাকা মেট্রো প্রশাসনিক সীমানা' : 'Dhaka Metro Boundary' },
                 { key: 'waterways' as const, label: isBangla ? 'নদী ও লেক (বুড়িগঙ্গা-তুরাগ)' : 'Rivers & Waterways' },
-                { key: 'cadastralPlots' as const, label: isBangla ? 'ক্যাডাস্ট্রাল দাগ প্লট (১০৪২)' : 'Cadastral Dag Plots' },
+                { key: 'cadastralPlots' as const, label: isBangla ? 'ক্যাডাস্ট্রাল দাগ প্লট (১০৪০-১০৪৪)' : 'Cadastral Dag Plots' },
                 { key: 'posterHeader' as const, label: isBangla ? 'ঢাকা পোস্টার শিরোনাম' : 'Dhaka Poster Title' },
               ].map((l) => (
                 <button
@@ -486,7 +532,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
         <span className="text-[var(--color-text-tertiary)] uppercase font-semibold shrink-0 pr-1">
           {isBangla ? 'প্রকল্প নোডসমূহ:' : 'Project Nodes:'}
         </span>
-        {DHAKA_PROJECT_AREAS.map((area, idx) => {
+        {DHAKA_PROJECT_AREAS.map((area) => {
           const isSelected = selectedProjectArea?.id === area.id;
           const isPrimary = area.role === 'PRIMARY_CORE';
 
@@ -499,7 +545,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                   const plot = DHAKA_CADASTRAL_PLOTS[0];
                   setSelectedPlot(plot);
                   onPlotSelect?.(plot);
-                  zoomToCoords(area.center[0], area.center[1], 8.5);
+                  zoomToCoords(area.center[0], area.center[1], 10.0);
                 } else {
                   zoomToCoords(area.center[0], area.center[1], 6.5);
                 }
@@ -529,6 +575,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
           ref={svgRef}
           className="w-full h-full cursor-grab active:cursor-grabbing"
           onMouseMove={handleMouseMove}
+          onDoubleClick={handleDoubleClick}
           onMouseLeave={() => setCursorGeoCoords(null)}
         >
           <defs>
@@ -550,7 +597,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
 
             {/* Diagonal Hatching pattern for Flagged Dag 1042 / Dhanmondi Mouza */}
             <pattern id="d3-hatch-dispute" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(239, 68, 68, 0.55)" strokeWidth="1.5" />
+              <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(239, 68, 68, 0.65)" strokeWidth="1.5" />
             </pattern>
           </defs>
 
@@ -579,8 +626,8 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
             className="pointer-events-none opacity-60"
           />
 
-          {/* Map Root Layer (transformed by d3.zoom) */}
-          <g className="map-root-layer">
+          {/* Map Root Layer (hardware-accelerated transform via d3.zoom) */}
+          <g ref={mapRootRef} className="map-root-layer">
             {/* 1. DHAKA METROPOLITAN ADMINISTRATIVE BOUNDARY SILHOUETTE */}
             {layers.boundary && (
               <g className="boundary-silhouette-layer">
@@ -592,8 +639,9 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                       d={pathD}
                       fill={colors.landFill}
                       stroke={colors.landStroke}
-                      strokeWidth={1.5}
+                      strokeWidth={1.4}
                       strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
                       className="transition-colors duration-300"
                     >
                       <title>{isBangla ? feature.properties.nameBn : feature.properties.name}</title>
@@ -628,17 +676,20 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                       fill={fillColor}
                       stroke={strokeColor}
                       strokeWidth={isSelected ? 1.8 : 0.8}
-                      strokeDasharray={isSelected ? 'none' : '4 2'}
+                      strokeDasharray={isSelected ? undefined : '4 2'}
+                      vectorEffect="non-scaling-stroke"
                       className="transition-colors duration-200 cursor-pointer"
                       onClick={() => {
                         setSelectedThana(feature);
                         const [lon, lat] = feature.properties.center;
-                        zoomToCoords(lon, lat, 4.5);
+                        zoomToCoords(lon, lat, 5.0);
                       }}
                       onMouseEnter={() => {
                         setHoveredFeature({
                           title: isBangla ? feature.properties.nameBn : feature.properties.name,
-                          sub: isBangla ? `${feature.properties.mouzaCount}টি মৌজা · ${feature.properties.activePlots}টি প্লট` : `${feature.properties.mouzaCount} Mouzas · ${feature.properties.activePlots} Active Plots`,
+                          sub: isBangla
+                            ? `${feature.properties.mouzaCount}টি মৌজা · ${feature.properties.activePlots}টি প্লট`
+                            : `${feature.properties.mouzaCount} Mouzas · ${feature.properties.activePlots} Active Plots`,
                           risk: feature.properties.riskScore,
                           status: feature.properties.riskLevel,
                           coords: feature.properties.center,
@@ -651,7 +702,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
               </g>
             )}
 
-            {/* 3. RIVER & HYDROGRAPHIC WATERWAYS (Buriganga, Turag, Balu, Lakes) */}
+            {/* 3. RIVER & HYDROGRAPHIC WATERWAYS (Buriganga, Turag, Balu, Tongi Khal, Lakes) */}
             {layers.waterways && (
               <g className="waterways-layer">
                 {DHAKA_WATERWAYS_GEOJSON.features.map((waterway) => {
@@ -664,9 +715,10 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                       d={pathD}
                       fill={isLake ? colors.waterwayFill : 'none'}
                       stroke={colors.waterwayStroke}
-                      strokeWidth={isLake ? 1.5 : 4.0}
+                      strokeWidth={isLake ? 1.2 : colors.waterwayWidth}
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
                       className="transition-colors duration-200"
                     >
                       <title>{isBangla ? waterway.properties.nameBn : waterway.properties.name}</title>
@@ -690,6 +742,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                       strokeWidth={colors.streetWidth}
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
                     >
                       <title>{street.properties.name}</title>
                     </path>
@@ -712,6 +765,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                       strokeWidth={colors.highwayWidth}
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
                       className="drop-shadow-sm"
                     >
                       <title>{hwy.properties.name}</title>
@@ -721,7 +775,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
               </g>
             )}
 
-            {/* 6. CADASTRAL DAG PARCELS */}
+            {/* 6. CADASTRAL DAG PARCELS (Continuous Dhanmondi J.L. 245 Cadastre) */}
             {layers.cadastralPlots && (
               <g className="cadastral-plots-layer">
                 {DHAKA_CADASTRAL_PLOTS.map((plot) => {
@@ -748,7 +802,8 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                         d={pathD}
                         fill={fill}
                         stroke={stroke}
-                        strokeWidth={isSelected ? 3.0 : 1.8}
+                        strokeWidth={isSelected ? 2.8 : 1.6}
+                        vectorEffect="non-scaling-stroke"
                         className="cursor-pointer transition-all duration-200 hover:brightness-125"
                         onClick={() => {
                           setSelectedPlot(plot);
@@ -759,8 +814,12 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                         onMouseEnter={() => {
                           const centroid = d3.geoCentroid(plot as any);
                           setHoveredFeature({
-                            title: isBangla ? `দাগ নং ${plot.properties.dagNo} (${plot.properties.mouzaBn})` : `Dag #${plot.properties.dagNo} (${plot.properties.mouza})`,
-                            sub: isBangla ? `মালিক: ${plot.properties.currentOwnerBn} · ${plot.properties.areaDecimals} শতক` : `Owner: ${plot.properties.currentOwner} · ${plot.properties.areaDecimals} Dec`,
+                            title: isBangla
+                              ? `দাগ নং ${plot.properties.dagNo} (${plot.properties.mouzaBn})`
+                              : `Dag #${plot.properties.dagNo} (${plot.properties.mouza})`,
+                            sub: isBangla
+                              ? `মালিক: ${plot.properties.currentOwnerBn} · ${plot.properties.areaDecimals} শতক`
+                              : `Owner: ${plot.properties.currentOwner} · ${plot.properties.areaDecimals} Dec`,
                             risk: plot.properties.riskScore,
                             status: plot.properties.status,
                             coords: centroid as [number, number],
@@ -774,69 +833,78 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
               </g>
             )}
 
-            {/* 7. PROJECT AREAS DENOTATION OVERLAY (The Core Requirement!) */}
+            {/* 
+              ====================================================================
+              7. PROJECT AREAS DENOTATION OVERLAY (Counter-Scaled Markers!)
+              These markers use .counter-scale-group so they NEVER balloon or distort
+              when the user zooms in or out!
+              ====================================================================
+            */}
             {layers.projectZones && (
               <g className="project-zones-denotation-layer">
                 {DHAKA_PROJECT_AREAS.map((area) => {
                   const [px, py] = projection(area.center) || [0, 0];
                   const isPrimary = area.role === 'PRIMARY_CORE';
-                  const isSelected = selectedProjectArea?.id === area.id;
+                  const invScale = 1 / Math.max(0.1, currentZoomK);
 
                   return (
                     <g
                       key={`zone-marker-${area.id}`}
-                      className="cursor-pointer group"
+                      className="counter-scale-group cursor-pointer group"
+                      data-px={px}
+                      data-py={py}
+                      transform={`translate(${px}, ${py}) scale(${invScale})`}
                       onClick={() => {
                         setSelectedProjectArea(area);
                         if (isPrimary) {
                           const plot = DHAKA_CADASTRAL_PLOTS[0];
                           setSelectedPlot(plot);
                           onPlotSelect?.(plot);
-                          zoomToCoords(area.center[0], area.center[1], 9);
+                          zoomToCoords(area.center[0], area.center[1], 10.0);
                         } else {
                           zoomToCoords(area.center[0], area.center[1], 6.5);
                         }
                       }}
                     >
-                      {/* Radiating Radar Rings */}
+                      {/* Radiating Radar Ring */}
                       <circle
-                        cx={px}
-                        cy={py}
-                        r={isPrimary ? 24 : 14}
+                        cx={0}
+                        cy={0}
+                        r={isPrimary ? 20 : 12}
                         fill="none"
                         stroke={isPrimary ? '#22c55e' : '#38bdf8'}
                         strokeWidth="1.5"
-                        opacity="0.7"
+                        opacity="0.8"
                       >
                         <animate
                           attributeName="r"
-                          values={isPrimary ? '12;36;12' : '8;22;8'}
-                          dur={isPrimary ? '2.4s' : '3.2s'}
+                          values={isPrimary ? '10;28;10' : '6;18;6'}
+                          dur={isPrimary ? '2.2s' : '3.0s'}
                           repeatCount="indefinite"
                         />
                         <animate
                           attributeName="opacity"
                           values="0.9;0.1;0.9"
-                          dur={isPrimary ? '2.4s' : '3.2s'}
+                          dur={isPrimary ? '2.2s' : '3.0s'}
                           repeatCount="indefinite"
                         />
                       </circle>
 
                       {/* Middle Halo Circle */}
                       <circle
-                        cx={px}
-                        cy={py}
-                        r={isPrimary ? 12 : 7}
-                        fill={isPrimary ? 'rgba(34, 197, 94, 0.25)' : 'rgba(56, 189, 248, 0.25)'}
+                        cx={0}
+                        cy={0}
+                        r={isPrimary ? 10 : 6}
+                        fill={isPrimary ? 'rgba(34, 197, 94, 0.28)' : 'rgba(56, 189, 248, 0.28)'}
                         stroke={isPrimary ? '#22c55e' : '#38bdf8'}
-                        strokeWidth={isPrimary ? 2 : 1.2}
+                        strokeWidth={isPrimary ? 1.8 : 1.2}
                       />
 
                       {/* Center Point */}
                       <circle
-                        cx={px}
-                        cy={py}
-                        r={isPrimary ? 4.5 : 3}
+                        cx={0}
+                        cy={0}
+                        r={isPrimary ? 4 : 2.5}
                         fill={isPrimary ? '#22c55e' : '#ffffff'}
                         stroke="#000000"
                         strokeWidth="1"
@@ -847,7 +915,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
                         <g className="callout-tag transition-transform group-hover:scale-105">
                           {/* Leader Line */}
                           <path
-                            d={`M ${px} ${py} L ${px - 25} ${py - 25} L ${px - 165} ${py - 25}`}
+                            d="M 0 0 L -24 -24 L -140 -24"
                             fill="none"
                             stroke={isPosterDay ? '#16a34a' : '#22c55e'}
                             strokeWidth="1.5"
@@ -856,21 +924,21 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
 
                           {/* Callout Box */}
                           <rect
-                            x={px - 265}
-                            y={py - 54}
-                            width="240"
+                            x={-285}
+                            y={-50}
+                            width="270"
                             height="44"
                             rx="4"
                             fill={isPosterDay ? 'rgba(255, 255, 255, 0.95)' : 'rgba(15, 23, 42, 0.95)'}
                             stroke={isPosterDay ? '#16a34a' : '#22c55e'}
                             strokeWidth="1.5"
-                            filter="drop-shadow(0 4px 12px rgba(0,0,0,0.3))"
+                            filter="drop-shadow(0 4px 12px rgba(0,0,0,0.35))"
                           />
 
                           {/* Callout Title */}
                           <text
-                            x={px - 255}
-                            y={py - 37}
+                            x={-275}
+                            y={-33}
                             fontSize="9.5"
                             fontWeight="bold"
                             fill={isPosterDay ? '#15803d' : '#4ade80'}
@@ -881,28 +949,28 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
 
                           {/* Callout Subtitle */}
                           <text
-                            x={px - 255}
-                            y={py - 21}
+                            x={-275}
+                            y={-17}
                             fontSize="8"
                             fill={isPosterDay ? '#334155' : '#cbd5e1'}
                             fontFamily="monospace"
                           >
-                            {isBangla ? 'দ্বৈত-বিক্রয় দ্বন্দ্ব · সক্রিয় ক্রিপ্টো সফট লক' : 'Dual-Sale Dispute · Active Soft Lock'}
+                            {isBangla ? 'দ্বৈত-বিক্রয় আপস বণ্টন দ্বন্দ্ব · সফট লক সক্রিয়' : 'Dual-Sale Partition Dispute · Soft Lock Active'}
                           </text>
                         </g>
                       )}
 
                       {/* Small Label for Secondary Nodes */}
-                      {!isPrimary && zoomTransformState.k < 8 && (
+                      {!isPrimary && (
                         <text
-                          x={px}
-                          y={py + 15}
+                          x={0}
+                          y={15}
                           textAnchor="middle"
                           fontSize="8.5"
                           fontWeight="600"
                           fontFamily="monospace"
                           fill={colors.posterTitle}
-                          className="opacity-90 select-none"
+                          className="opacity-90 select-none drop-shadow-sm"
                         >
                           {isBangla ? area.nameBn.split(' ')[0] : area.name.split(' ')[0]}
                         </text>
@@ -913,42 +981,49 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
               </g>
             )}
 
-            {/* 8. LABELS AND ANNOTATIONS */}
-            {layers.labels && (
+            {/* 8. CADASTRAL DAG LABELS (Counter-Scaled when Zoomed In) */}
+            {layers.labels && currentZoomK >= 4.0 && (
               <g className="labels-layer pointer-events-none">
-                {/* Cadastral Dag Plot Number Labels (shown when zoomed in) */}
-                {zoomTransformState.k >= 3.5 &&
-                  DHAKA_CADASTRAL_PLOTS.map((plot) => {
-                    const centroid = d3.geoCentroid(plot as any);
-                    const [px, py] = projection(centroid) || [0, 0];
+                {DHAKA_CADASTRAL_PLOTS.map((plot) => {
+                  const centroid = d3.geoCentroid(plot as any);
+                  const [px, py] = projection(centroid) || [0, 0];
+                  const invScale = 1 / Math.max(0.1, currentZoomK);
 
-                    return (
-                      <g key={`dag-label-${plot.id}`}>
-                        <text
-                          x={px}
-                          y={py - 3}
-                          textAnchor="middle"
-                          fill={colors.posterTitle}
-                          fontSize="9"
-                          fontWeight="bold"
-                          fontFamily="monospace"
-                          className="select-none"
-                        >
-                          {isBangla ? `দাগ ${plot.properties.dagNo}` : `DAG ${plot.properties.dagNo}`}
-                        </text>
-                        <text
-                          x={px}
-                          y={py + 7}
-                          textAnchor="middle"
-                          fill="var(--color-surface-raised)"
-                          fontSize="7.5"
-                          fontFamily="monospace"
-                        >
-                          {isBangla ? `${plot.properties.areaDecimals} শতক` : `${plot.properties.areaDecimals} dec`}
-                        </text>
-                      </g>
-                    );
-                  })}
+                  return (
+                    <g
+                      key={`dag-label-${plot.id}`}
+                      className="counter-scale-group"
+                      data-px={px}
+                      data-py={py}
+                      transform={`translate(${px}, ${py}) scale(${invScale})`}
+                    >
+                      <text
+                        x={0}
+                        y={-3}
+                        textAnchor="middle"
+                        fill={colors.posterTitle}
+                        fontSize="9.5"
+                        fontWeight="bold"
+                        fontFamily="monospace"
+                        className="select-none drop-shadow-sm"
+                      >
+                        {isBangla ? `দাগ ${plot.properties.dagNo}` : `DAG ${plot.properties.dagNo}`}
+                      </text>
+                      <text
+                        x={0}
+                        y={8}
+                        textAnchor="middle"
+                        fill="var(--color-surface-raised)"
+                        fontSize="8"
+                        fontWeight="600"
+                        fontFamily="monospace"
+                        className="select-none"
+                      >
+                        {isBangla ? `${plot.properties.areaDecimals} শতক` : `${plot.properties.areaDecimals} dec`}
+                      </text>
+                    </g>
+                  );
+                })}
               </g>
             )}
           </g>
@@ -1088,8 +1163,8 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
             <span>{isBangla ? 'প্রধান মহাসড়ক ও এক্সপ্রেসওয়ে' : 'Primary Highways (High-Density)'}</span>
           </div>
           <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
-            <span className="w-3 h-1 bg-[#38bdf8]" />
-            <span>{isBangla ? 'নদী (বুড়িগঙ্গা, তুরাগ, বালু)' : 'River Network (Buriganga, Turag)'}</span>
+            <span className="w-3 h-1 bg-[#0284c7]" />
+            <span>{isBangla ? 'নদী (বুড়িগঙ্গা, তুরাগ, বালু, টঙ্গী খাল)' : 'Rivers (Buriganga, Turag, Balu)'}</span>
           </div>
         </div>
       </div>
