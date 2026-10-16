@@ -73,8 +73,8 @@ export const OwnershipGraphWidget: React.FC = () => {
         <svg viewBox="0 0 310 130" className="w-full h-full max-h-[110px]">
           <defs>
             <linearGradient id="edge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.6"/>
-              <stop offset="100%" stop-color="#22c55e" stop-opacity="0.9"/>
+              <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.6"/>
+              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.9"/>
             </linearGradient>
             <filter id="node-glow" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="3" result="blur"/>
@@ -83,10 +83,10 @@ export const OwnershipGraphWidget: React.FC = () => {
           </defs>
 
           {/* Connection Edges */}
-          <line x1="38" y1="72" x2="110" y2="34" stroke="rgba(255,255,255,0.2)" stroke-width="1.6" stroke-dasharray="3 3"/>
-          <line x1="110" y1="34" x2="185" y2="104" stroke="rgba(255,255,255,0.2)" stroke-width="1.6" stroke-dasharray="3 3"/>
-          <line x1="185" y1="104" x2="265" y2="62" stroke="url(#edge-grad)" stroke-width="2.2"/>
-          <line x1="110" y1="34" x2="265" y2="62" stroke="rgba(34,197,94,0.3)" stroke-width="1.2" stroke-dasharray="2 4"/>
+          <line x1="38" y1="72" x2="110" y2="34" stroke="rgba(255,255,255,0.2)" strokeWidth="1.6" strokeDasharray="3 3"/>
+          <line x1="110" y1="34" x2="185" y2="104" stroke="rgba(255,255,255,0.2)" strokeWidth="1.6" strokeDasharray="3 3"/>
+          <line x1="185" y1="104" x2="265" y2="62" stroke="url(#edge-grad)" strokeWidth="2.2"/>
+          <line x1="110" y1="34" x2="265" y2="62" stroke="rgba(34,197,94,0.3)" strokeWidth="1.2" strokeDasharray="2 4"/>
 
           {/* Traveling Energy Pulses */}
           <circle r="2.8" fill="#38bdf8">
@@ -109,7 +109,7 @@ export const OwnershipGraphWidget: React.FC = () => {
             >
               {/* Target Pulse Halo */}
               {n.isTarget && (
-                <circle cx={n.x} cy={n.y} r={n.r + 7} fill="none" stroke="#22c55e" stroke-width="1.2" opacity="0.5">
+                <circle cx={n.x} cy={n.y} r={n.r + 7} fill="none" stroke="#22c55e" strokeWidth="1.2" opacity="0.5">
                   <animate attributeName="r" values="24;36;24" dur="2.2s" repeatCount="indefinite"/>
                   <animate attributeName="opacity" values="0.7;0;0.7" dur="2.2s" repeatCount="indefinite"/>
                 </circle>
@@ -121,7 +121,7 @@ export const OwnershipGraphWidget: React.FC = () => {
                 r={n.r}
                 fill="#0d140f"
                 stroke={activeNode === n.id ? '#ffffff' : n.color}
-                stroke-width={n.isTarget ? 2.4 : 1.6}
+                strokeWidth={n.isTarget ? 2.4 : 1.6}
                 filter={n.isTarget ? 'url(#node-glow)' : undefined}
               />
               {/* Inner Center Pip */}
@@ -375,18 +375,18 @@ export const AdversarialSimulatorWidget: React.FC = () => {
         <svg viewBox="0 0 280 65" className="w-full h-full">
           <defs>
             <linearGradient id="shield-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#22c55e" stop-opacity="0.3"/>
-              <stop offset="100%" stop-color="#22c55e" stop-opacity="0.0"/>
+              <stop offset="0%" stopColor="#22c55e" stopOpacity="0.3"/>
+              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.0"/>
             </linearGradient>
           </defs>
 
           {/* Oscilloscope Grid Lines */}
-          <line x1="0" y1="32" x2="280" y2="32" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="2 4"/>
-          <line x1="140" y1="0" x2="140" y2="65" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="2 4"/>
+          <line x1="0" y1="32" x2="280" y2="32" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="2 4"/>
+          <line x1="140" y1="0" x2="140" y2="65" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="2 4"/>
 
           {/* Defense Firewall Barrier at Center */}
-          <line x1="140" y1="6" x2="140" y2="59" stroke="#22c55e" stroke-width="2.2" stroke-dasharray="4 2"/>
-          <circle cx="140" cy="32" r="16" fill="url(#shield-grad)" stroke="#22c55e" stroke-width="1" opacity="0.8">
+          <line x1="140" y1="6" x2="140" y2="59" stroke="#22c55e" strokeWidth="2.2" strokeDasharray="4 2"/>
+          <circle cx="140" cy="32" r="16" fill="url(#shield-grad)" stroke="#22c55e" strokeWidth="1" opacity="0.8">
             <animate attributeName="r" values="12;20;12" dur="2s" repeatCount="indefinite"/>
             <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
           </circle>
@@ -408,7 +408,7 @@ export const AdversarialSimulatorWidget: React.FC = () => {
             d="M 140 32 Q 160 12 180 32 T 220 32 T 260 32 T 280 32"
             fill="none"
             stroke="#22c55e"
-            stroke-width="1.8"
+            strokeWidth="1.8"
             className="animate-pulse"
           />
         </svg>

@@ -13,6 +13,7 @@ import { MassAuthModal } from './MassAuthModal';
 import { MassGlassSidebar } from './MassGlassSidebar';
 import { PageTransitionEffect } from './PageTransitionEffect';
 import { JomiChainSection } from './JomiChainSection';
+import { RiskAnalyticsDashboard } from './RiskAnalyticsDashboard';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
 import {
@@ -24,6 +25,7 @@ import {
 } from './AnimatedEngineWidgets';
 import {
   ShieldCheck,
+  TrendingUp,
   ArrowRight,
   ChevronRight,
   X,
@@ -199,8 +201,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               {t.nav.engines}
             </a>
             <a
-              href="#jomichain"
+              href="#risk-analytics"
               className="text-[var(--color-surface-raised)] hover:brightness-110 transition-colors uppercase font-bold flex items-center gap-1.5"
+            >
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span>{isBangla ? 'ঝুঁকি অ্যানালিটিক্স' : 'Risk Analytics'}</span>
+            </a>
+            <a
+              href="#jomichain"
+              className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium flex items-center gap-1.5"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>{t.nav.jomichain}</span>
@@ -654,6 +663,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         ====================================================================
       */}
       <JomiChainSection />
+
+      {/* 
+        ====================================================================
+        RISK ANALYTICS DASHBOARD SECTION (Recharts Land Ownership Fraud Scores & Trends)
+        High-Risk Zones in Dhaka, Anomaly Vectors, and Disputed Cadastral Dags
+        ====================================================================
+      */}
+      <RiskAnalyticsDashboard id="risk-analytics" />
 
       {/* 
         ====================================================================
