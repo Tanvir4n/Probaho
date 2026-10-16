@@ -44,9 +44,11 @@ import {
   Check,
   X,
   FileCode2,
+  Compass,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
+import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
 
 // ============================================================================
 // DATA MODELS & SYNTHETIC DATA (Complies with Rulebook Synthetic Data Rule)
@@ -352,7 +354,7 @@ export const JomiChainSection: React.FC = () => {
   const { isDay } = useTheme();
   const { isBangla, t } = useLanguage();
   const [selectedPlotId, setSelectedPlotId] = useState<string>('plot-1042');
-  const [activeTab, setActiveTab] = useState<'story' | 'lineage' | 'ledger' | 'lock' | 'fuzzy' | 'report'>('story');
+  const [activeTab, setActiveTab] = useState<'story' | 'dhakamap' | 'lineage' | 'ledger' | 'lock' | 'fuzzy' | 'report'>('story');
   
   // 5-Minute Live Story State Controller
   const [storyStep, setStoryStep] = useState<number>(1);
@@ -457,6 +459,7 @@ export const JomiChainSection: React.FC = () => {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-[var(--color-border-subtle)]">
           {[
             { id: 'story', label: isBangla ? '🎬 ৫ মিনিটের লাইভ ডেমো' : '🎬 5-Minute Live Story', badge: 'DEMO' },
+            { id: 'dhakamap', label: isBangla ? '🗺️ ঢাকা ক্যাডাস্ট্রাল ম্যাপ' : '🗺️ Dhaka Cadastral Map', badge: 'D3.js' },
             { id: 'lineage', label: isBangla ? '১. জরিপ-ধারাবাহিকতা গ্রাফ' : '1. Survey-Lineage Graph', badge: 'CS→BS' },
             { id: 'ledger', label: isBangla ? '২. হ্যাশ-চেইন্ড লেজার' : '2. Hash-Chained Ledger', badge: 'Ed25519' },
             { id: 'lock', label: isBangla ? '৩. দ্বৈত-বিক্রয় সফট লক' : '3. Double-Sale Lock', badge: 'Real-Time' },
@@ -566,6 +569,13 @@ export const JomiChainSection: React.FC = () => {
                       >
                         <FileText className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
                         <span>Open Citizen Trust Report</span>
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('dhakamap')}
+                        className="px-3 py-1.5 rounded-[3px] text-xs font-mono font-semibold glass-tile border border-[var(--color-surface-raised)]/50 text-[var(--color-surface-raised)] flex items-center gap-1.5 cursor-pointer hover:bg-[var(--color-surface-raised)]/10"
+                      >
+                        <Compass className="w-3.5 h-3.5" />
+                        <span>{isBangla ? 'ঢাকা ডি৩ ম্যাপে প্লট দেখুন →' : 'View Plot on Dhaka D3 Map →'}</span>
                       </button>
                       <button
                         onClick={() => setStoryStep(2)}
@@ -806,6 +816,44 @@ export const JomiChainSection: React.FC = () => {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ==================================================================== */}
+        {/* TAB: DHAKA D3 CADASTRAL GIS MAP (WGS84 Accurately Mapped) */}
+        {/* ==================================================================== */}
+        {activeTab === 'dhakamap' && (
+          <div className="space-y-4 animate-in fade-in duration-300">
+            <div className="glass-card p-5 rounded-[8px] border border-[var(--color-border-subtle)] space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="text-[10px] font-mono text-[var(--color-surface-raised)] uppercase tracking-wider font-bold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
+                    <span>{isBangla ? 'ডি৩ ভৌগোলিক তথ্য ব্যবস্থা (GIS) ইঞ্জিন' : 'D3.js Cadastral Geographic Information System Engine'}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
+                    {isBangla ? 'ঢাকা মেট্রোপলিটন ক্যাডাস্ট্রাল দাগ ও জালিয়াতি ঝুঁকি মানচিত্র' : 'Dhaka Metropolitan Cadastral Dag & Fraud Risk GIS Map'}
+                  </h3>
+                  <p className="text-xs text-[var(--color-text-secondary)]">
+                    {isBangla
+                      ? 'বুড়িগঙ্গা ও তুরাগ নদী সংলগ্ন বাস্তব WGS84 স্থানাঙ্কে থানা, মৌজা ও দাগ ১০৪২ (ধানমন্ডি) দ্বৈত-বিক্রয় ঝুঁকি পরিদর্শন করুন।'
+                      : 'Explore authentic WGS84 GIS boundaries of Dhaka Thanas, Buriganga & Turag rivers, and inspect Dag 1042 double-sale concurrency lock.'}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--color-surface-raised)]/10 text-[var(--color-surface-raised)] border border-[var(--color-surface-raised)]/30 font-bold">
+                    WGS84 / EPSG:4326
+                  </span>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/30 font-bold">
+                    {isBangla ? 'দাগ ১০৪২ ধানমন্ডি' : 'Dag 1042 Dhanmondi'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[8px] overflow-hidden border border-[var(--color-border-subtle)] shadow-2xl glass-panel h-[640px]">
+              <DhakaD3CadastralMap height="100%" initialSelectedPlotId="dag-1042-dhanmondi" />
             </div>
           </div>
         )}

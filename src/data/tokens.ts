@@ -227,7 +227,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     coordinates: '23.8103° N, 90.4125° E',
     image: '/src/assets/images/map_manhattan_carto_1791915045536.jpg',
     parcelCount: '42,800 Parcels',
-    layers: 'Mouza Boundaries · Khatian Parcels · Ownership Graph',
+    layers: 'D3 Vector Cadastre · 11 Thanas · River Corridors · Dag Plots',
     accent: '#22c55e',
   },
   {

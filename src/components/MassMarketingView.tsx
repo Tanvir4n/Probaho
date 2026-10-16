@@ -14,6 +14,7 @@ import { MassGlassSidebar } from './MassGlassSidebar';
 import { PageTransitionEffect } from './PageTransitionEffect';
 import { JomiChainSection } from './JomiChainSection';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
+import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
 import {
   OwnershipGraphWidget,
   FraudEngineGaugeWidget,
@@ -516,6 +517,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               </div>
               <button
                 onClick={() => {
+                  setCurrentMapIndex(0);
                   setActiveToolId('archimap');
                   setIsSiteAnalysisStudioOpen(true);
                 }}
@@ -1141,6 +1143,12 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     {isBangla ? `${activeMap.cityName} ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ স্টুডিও` : `${activeMap.cityName} Cadastral & Ownership Graph Studio`}
                   </span>
                   <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeMap.coordinates})</span>
+                  {activeMap.id === 'dhaka-metro' && (
+                    <span className="px-2 py-0.5 text-[9.5px] font-mono rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      D3.js Vector GIS
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -1149,12 +1157,17 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       <button
                         key={m.id}
                         onClick={() => setCurrentMapIndex(idx)}
-                        className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer ${idx === currentMapIndex
+                        className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer flex items-center gap-1.5 ${idx === currentMapIndex
                             ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                             : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                           }`}
                       >
-                        {m.cityName}
+                        <span>{m.cityName}</span>
+                        {m.id === 'dhaka-metro' && (
+                          <span className={`text-[8px] px-1 py-0.2 rounded font-bold ${idx === currentMapIndex ? 'bg-white/25 text-white' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                            D3
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -1171,83 +1184,91 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
               {/* Workspace: Map Viewport + Layer Control Panel */}
               <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-                {/* Map Canvas */}
-                <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
-                  <img
-                    src={activeMap.image}
-                    alt={activeMap.cityName}
-                    className={`w-full h-full object-cover ${isDay ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]' : 'contrast-[1.12] brightness-[1.08]'
-                      }`}
-                    referrerPolicy="no-referrer"
-                  />
-
-                  {/* Simulated GIS layer vectors on top */}
-                  {activeGisLayers.buildings && (
-                    <div className="absolute inset-0 pointer-events-none border border-[var(--color-surface-raised)]/30" />
-                  )}
-
-                  {/* HUD Overlay */}
-                  <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
-                    <div className="text-[var(--color-surface-raised)] font-semibold">
-                      {isBangla ? 'সক্রিয় রেজিস্ট্রি:' : 'Active Registry:'} {activeMap.layers}
-                    </div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)]">
-                      {isBangla ? 'বিভাগ' : 'Division'}: {activeMap.cityName} · CRS: EPSG:3857 · {isBangla ? 'ক্যাডাস্ট্রে' : 'Cadastre'}: {activeMap.parcelCount}
-                    </div>
+                {activeMap.id === 'dhaka-metro' ? (
+                  <div className="flex-1 relative w-full h-full overflow-hidden">
+                    <DhakaD3CadastralMap height="100%" initialSelectedPlotId="dag-1042-dhanmondi" />
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* Map Canvas for other regions */}
+                    <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
+                      <img
+                        src={activeMap.image}
+                        alt={activeMap.cityName}
+                        className={`w-full h-full object-cover ${isDay ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]' : 'contrast-[1.12] brightness-[1.08]'
+                          }`}
+                        referrerPolicy="no-referrer"
+                      />
 
-                {/* Layer Controls Sidebar */}
-                <div className="w-full lg:w-72 glass-tile border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
-                  <div>
-                    <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
-                      {t.studio.layersTitle}
+                      {/* Simulated GIS layer vectors on top */}
+                      {activeGisLayers.buildings && (
+                        <div className="absolute inset-0 pointer-events-none border border-[var(--color-surface-raised)]/30" />
+                      )}
+
+                      {/* HUD Overlay */}
+                      <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
+                        <div className="text-[var(--color-surface-raised)] font-semibold">
+                          {isBangla ? 'সক্রিয় রেজিস্ট্রি:' : 'Active Registry:'} {activeMap.layers}
+                        </div>
+                        <div className="text-[10px] text-[var(--color-text-secondary)]">
+                          {isBangla ? 'বিভাগ' : 'Division'}: {activeMap.cityName} · CRS: EPSG:3857 · {isBangla ? 'ক্যাডাস্ট্রে' : 'Cadastre'}: {activeMap.parcelCount}
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      {[
-                        { key: 'buildings' as const, label: isBangla ? 'মৌজা ক্যাডাস্ট্রাল প্লট (দাগ নকশা)' : 'Mouza Cadastral Parcels (Dag plots)' },
-                        { key: 'parcels' as const, label: isBangla ? 'মালিকানা হস্তান্তর গ্রাফ এজ' : 'Ownership Transfer Graph Edges' },
-                        { key: 'roads' as const, label: isBangla ? 'চিহ্নিত দ্বৈত-বিক্রয় ওভারলে' : 'Flagged Double-Sale Overlays' },
-                        { key: 'terrain' as const, label: isBangla ? 'নামজারি অসঙ্গতি ভেক্টর' : 'Mutation Discrepancy Vectors' },
-                        { key: 'solar' as const, label: isBangla ? 'দলিল বনাম পর্চা বিরোধ মার্কার' : 'Deed vs Porcha Conflict Markers' },
-                      ].map((layer) => (
+
+                    {/* Layer Controls Sidebar */}
+                    <div className="w-full lg:w-72 glass-tile border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
+                      <div>
+                        <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                          {t.studio.layersTitle}
+                        </div>
+                        <div className="space-y-2">
+                          {[
+                            { key: 'buildings' as const, label: isBangla ? 'মৌজা ক্যাডাস্ট্রাল প্লট (দাগ নকশা)' : 'Mouza Cadastral Parcels (Dag plots)' },
+                            { key: 'parcels' as const, label: isBangla ? 'মালিকানা হস্তান্তর গ্রাফ এজ' : 'Ownership Transfer Graph Edges' },
+                            { key: 'roads' as const, label: isBangla ? 'চিহ্নিত দ্বৈত-বিক্রয় ওভারলে' : 'Flagged Double-Sale Overlays' },
+                            { key: 'terrain' as const, label: isBangla ? 'নামজারি অসঙ্গতি ভেক্টর' : 'Mutation Discrepancy Vectors' },
+                            { key: 'solar' as const, label: isBangla ? 'দলিল বনাম পর্চা বিরোধ মার্কার' : 'Deed vs Porcha Conflict Markers' },
+                          ].map((layer) => (
+                            <button
+                              key={layer.key}
+                              onClick={() => toggleGisLayer(layer.key)}
+                              className={`w-full p-2.5 rounded-[3px] border text-left flex items-center justify-between transition-colors cursor-pointer ${activeGisLayers[layer.key]
+                                  ? 'bg-[var(--color-surface-raised)]/15 border-[var(--color-surface-raised)] text-[var(--color-text-primary)] font-medium'
+                                  : 'glass-tile border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-surface-raised)]/50'
+                                }`}
+                            >
+                              <span>{layer.label}</span>
+                              {activeGisLayers[layer.key] && (
+                                <Check className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
+                        <div className="text-[var(--color-text-primary)] font-semibold">
+                          {isBangla ? 'সমর্থিত এক্সপোর্ট ফরম্যাট:' : 'Export Format Supported:'}
+                        </div>
+                        <div>{isBangla ? '• জিওজেএসন, শেপফাইল, ডিএক্সএফ, এসভিজি' : '• GeoJSON, Shapefile, DXF, SVG Vector'}</div>
+                        <div>{isBangla ? '• ক্রিপ্টোগ্রাফিক SHA-256 প্রমাণ রিপোর্ট' : '• Cryptographic SHA-256 Evidence Report'}</div>
+                      </div>
+
+                      <div className="pt-2">
                         <button
-                          key={layer.key}
-                          onClick={() => toggleGisLayer(layer.key)}
-                          className={`w-full p-2.5 rounded-[3px] border text-left flex items-center justify-between transition-colors cursor-pointer ${activeGisLayers[layer.key]
-                              ? 'bg-[var(--color-surface-raised)]/15 border-[var(--color-surface-raised)] text-[var(--color-text-primary)] font-medium'
-                              : 'glass-tile border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-surface-raised)]/50'
-                            }`}
+                          onClick={() => {
+                            setToastMessage(isBangla ? `${activeMap.cityName} এর ক্যাডাস্ট্রাল প্রমাণ প্যাকেজ ডাউনলোড সম্পন্ন।` : `Exported cadastral evidence package for ${activeMap.cityName}.`);
+                            setTimeout(() => setToastMessage(null), 4000);
+                          }}
+                          className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] transition-colors cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
                         >
-                          <span>{layer.label}</span>
-                          {activeGisLayers[layer.key] && (
-                            <Check className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
-                          )}
+                          {t.studio.exportBtn}
                         </button>
-                      ))}
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
-                    <div className="text-[var(--color-text-primary)] font-semibold">
-                      {isBangla ? 'সমর্থিত এক্সপোর্ট ফরম্যাট:' : 'Export Format Supported:'}
-                    </div>
-                    <div>{isBangla ? '• জিওজেএসন, শেপফাইল, ডিএক্সএফ, এসভিজি' : '• GeoJSON, Shapefile, DXF, SVG Vector'}</div>
-                    <div>{isBangla ? '• ক্রিপ্টোগ্রাফিক SHA-256 প্রমাণ রিপোর্ট' : '• Cryptographic SHA-256 Evidence Report'}</div>
-                  </div>
-
-                  <div className="pt-2">
-                    <button
-                      onClick={() => {
-                        setToastMessage(isBangla ? `${activeMap.cityName} এর ক্যাডাস্ট্রাল প্রমাণ প্যাকেজ ডাউনলোড সম্পন্ন।` : `Exported cadastral evidence package for ${activeMap.cityName}.`);
-                        setTimeout(() => setToastMessage(null), 4000);
-                      }}
-                      className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] transition-colors cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
-                    >
-                      {t.studio.exportBtn}
-                    </button>
-                  </div>
-                </div>
+                  </>
+                )}
               </div>
             </motion.div>
           </motion.div>
