@@ -1,6 +1,6 @@
 {
-  "name": "MassLabs Architecture & Design System",
-  "description": "Implementation-ready token-driven UI guidance, architectural marketing surface, and interactive component specification for MassLabs.",
+  "name": "Probaho — Intelligent Land Fraud Detection",
+  "description": "Explainable, multi-signal land fraud detection and evidence intelligence system for Bangladesh. Ownership graphs, cross-document contradiction analysis, counterfactual risk testing and adversarial fraud simulation.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
