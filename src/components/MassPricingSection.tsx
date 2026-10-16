@@ -14,16 +14,16 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
 
   const faqs = [
     {
-      q: 'Which land document formats and registries are supported?',
-      a: 'Probaho analyzes sale deeds, RS/BS/SA/CS Khatians, Porchas, Mutation records, and Mouza map sheets. Both digital PDFs and scanned or photographed documents in Bangla and English are processed via our specialized Bangla OCR engine.',
+      q: 'Which CAD / 3D software applications are supported?',
+      a: 'Probaho exports standard DXF, SVG, GeoJSON, and Shapefile geometry natively compatible with Rhino 7/8, Grasshopper, AutoCAD, Revit, SketchUp, ArchiCAD, and Blender.',
     },
     {
-      q: 'How does the Ownership Graph detect double-sales?',
-      a: 'The graph engine models each parcel as a node and every legal transaction as a directed edge with temporal, share, and party attributes. It identifies overlapping sales within the same timeline where the seller had already relinquished legal title.',
+      q: 'How does LaserFish model-making work?',
+      a: 'LaserFish automatically slices 3D terrain into stepped contour layers at chosen material thicknesses (e.g. 1mm, 2mm, 3mm), adds automatic laser kerf tolerance offsets (0.05mm), and nests parts onto standard laser cutting sheet sizes.',
     },
     {
-      q: 'Can evidence reports be used for legal and regulatory proceedings?',
-      a: 'Yes. All generated investigation reports include cryptographic SHA-256 integrity hashes, verbatim cross-document contradiction tables with page citations, and transparent rule-justification logs admissible as evidence dossiers.',
+      q: 'Are site analysis datasets permitted for commercial architectural client presentations?',
+      a: 'Yes. All datasets and vector exports generated with Pro Architect and Studio plans include full worldwide commercial licensing rights for client proposals, planning applications, and monographs.',
     },
     {
       q: 'Can I cancel or switch subscriptions at any time?',
@@ -44,13 +44,13 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-surface-raised)]">
-            Transparent Pricing For Investigations
+            Transparent Pricing For Architects
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
-            One subscription. Complete fraud intelligence suite.
+            One subscription. All architectural tools.
           </h2>
           <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-            Access Ownership Graph, DocCompare, FraudEngine, and Adversarial Simulator under a unified intelligence membership. No hidden data fees.
+            Access archiMap, LaserFish, Cologram, and Globee under a unified studio membership. No hidden data fees.
           </p>
 
           {/* Billing Cycle Switcher */}
@@ -164,10 +164,10 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
         <div className="p-8 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="space-y-1">
             <h4 className="text-base font-semibold text-[var(--color-text-primary)]">
-              Land Registry Office, Legal Practice, or Financial Institution?
+              Academic Faculty or Large Global Architecture Office?
             </h4>
             <p className="text-xs text-[var(--color-text-secondary)]">
-              We offer institutional deployment, on-premise document vaults, and high-throughput batch APIs for registry audits.
+              We offer campus-wide university licenses and dedicated compute clusters for large practices.
             </p>
           </div>
           <button
@@ -185,7 +185,7 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
               Frequently Asked Questions
             </div>
             <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">
-              Common Investigation Questions
+              Common Architectural Questions
             </h3>
           </div>
 

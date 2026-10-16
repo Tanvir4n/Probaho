@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle2, Lock, Mail, User, ArrowRight } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
+import { ProbahoLogo } from './ProbahoLogo';
 import { motion } from 'motion/react';
 
 interface MassAuthModalProps {
@@ -29,7 +29,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
-      setError('Please provide a valid investigator or institutional email address.');
+      setError('Please provide a valid architect or institutional email address.');
       return;
     }
     if (password.length < 6) {
@@ -63,7 +63,12 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-4">
-          <ProbahoBrand size={22} textSize="text-base" />
+          <div className="flex items-center gap-2">
+            <ProbahoLogo size={20} className="text-[var(--color-surface-raised)]" />
+            <span className="font-bold tracking-tight text-sm font-mono uppercase text-[var(--color-text-primary)]">
+              Probaho Account
+            </span>
+          </div>
           <button
             onClick={onClose}
             className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-[3px] cursor-pointer"
@@ -115,7 +120,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="e.g. Dhaka Land Registry & Legal Practice"
+                  placeholder="e.g. Maya Lin Architecture Studio"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
@@ -132,7 +137,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
               <input
                 type="email"
                 required
-                placeholder="investigator@land-registry.gov.bd"
+                placeholder="architect@studio-practice.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
@@ -208,7 +213,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           <button
             type="button"
             onClick={() => {
-              onLoginSuccess({ email: 'analyst@probaho.bd', name: 'Registry Officer' });
+              onLoginSuccess({ email: 'google.architect@practice.com', name: 'Studio Partner' });
               onClose();
             }}
             className="py-2 px-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] text-xs font-mono text-[var(--color-text-primary)] flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -218,7 +223,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           <button
             type="button"
             onClick={() => {
-              onLoginSuccess({ email: 'developer@probaho.bd', name: 'Intelligence Lead' });
+              onLoginSuccess({ email: 'github.dev@rhino-tools.org', name: 'Computational Lead' });
               onClose();
             }}
             className="py-2 px-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] text-xs font-mono text-[var(--color-text-primary)] flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -228,7 +233,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
         </div>
 
         <div className="text-[10px] text-center text-[var(--color-text-tertiary)] font-mono leading-relaxed">
-          By signing in, you agree to Probaho Terms of Service and Land Record Privacy Policy.
+          By signing in, you agree to Probaho Terms of Service and Architectural Data Privacy Policy.
         </div>
       </motion.div>
     </div>

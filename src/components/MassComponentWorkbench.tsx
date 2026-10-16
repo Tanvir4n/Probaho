@@ -21,7 +21,7 @@ export const MassComponentWorkbench: React.FC = () => {
   const [selectedState, setSelectedState] = useState<ComponentState>('default');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [interactiveCounter, setInteractiveCounter] = useState<number>(0);
-  const [inputValue, setInputValue] = useState<string>('investigator@probaho.bd');
+  const [inputValue, setInputValue] = useState<string>('contact@probaho.io');
   const [keyboardLog, setKeyboardLog] = useState<string[]>([]);
 
   const handleCopyCode = (code: string, id: string) => {
@@ -391,9 +391,9 @@ export const MassComponentWorkbench: React.FC = () => {
                     Error: Enter a valid corporate or studio email domain (e.g. name@practice.archi)
                   </span>
                 ) : selectedState === 'loading' ? (
-                  <span className="text-[var(--color-text-secondary)]">Validating parcel address with Probaho registry...</span>
+                  <span className="text-[var(--color-text-secondary)]">Validating address with Probaho registry...</span>
                 ) : (
-                  <span className="text-[var(--color-text-secondary)]">Direct dispatch to Probaho fraud intelligence team</span>
+                  <span className="text-[var(--color-text-secondary)]">Direct dispatch to Probaho principal architects</span>
                 )}
               </div>
             </div>

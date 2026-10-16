@@ -58,12 +58,12 @@ export const MassSpecDocument: React.FC = () => {
   const completedCount = Object.values(checkedItems).filter(Boolean).length;
 
   const markdownContent = `# Probaho Design System Specification (v1.0.0)
-URL: https://probaho.bd/
-Audience: Land officers, legal teams, and fraud investigators
-Product Surface: Land fraud intelligence portal & evidence investigation interface
+URL: https://probaho.io/
+Audience: Buyers, teams, and decision-makers
+Product Surface: Marketing site & Architectural interface
 
 ## 1. Context & Design Intent
-Probaho provides implementation-ready, token-driven UI guidance optimized for consistency, accessibility, and high-velocity delivery across all marketing surfaces and fraud investigation interfaces.
+Probaho provides implementation-ready, token-driven UI guidance optimized for consistency, accessibility, and high-velocity delivery across all marketing surfaces and architectural interfaces.
 
 ## 2. Style Foundations & Design Tokens
 ### Typography Stack
@@ -161,7 +161,7 @@ Every interactive element must provide testable styles and behaviors for:
             Implementation-Ready UI Guidance
           </h1>
           <p className="mt-2 text-[var(--color-text-secondary)] text-sm max-w-2xl leading-relaxed">
-            Standardized design manual for engineering and design teams building the Probaho fraud intelligence surface.
+            Standardized design manual for engineering and design teams building the Probaho architectural marketing surface.
           </p>
         </div>
 
@@ -197,13 +197,13 @@ Every interactive element must provide testable styles and behaviors for:
             </h2>
             <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed space-y-3">
               <p>
-                <strong className="text-[var(--color-text-primary)]">Mission:</strong> Create implementation-ready, token-driven UI guidance for Probaho that is optimized for consistency, accessibility, and fast delivery across marketing and investigation sites.
+                <strong className="text-[var(--color-text-primary)]">Mission:</strong> Create implementation-ready, token-driven UI guidance for Probaho that is optimized for consistency, accessibility, and fast delivery across marketing sites.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[var(--color-surface-base)]/60 rounded-[2px] border border-[var(--color-border-subtle)] font-mono text-xs">
                 <div>• Brand: <span className="text-[var(--color-text-primary)]">Probaho</span></div>
-                <div>• Canonical URL: <span className="text-[var(--color-surface-raised)]">probaho.bd</span></div>
-                <div>• Primary Audience: <span className="text-[var(--color-text-primary)]">Land officers, legal teams & investigators</span></div>
-                <div>• Product Surface: <span className="text-[var(--color-text-primary)]">Investigation portal & Evidence Dossier</span></div>
+                <div>• Canonical URL: <span className="text-[var(--color-surface-raised)]">probaho.io</span></div>
+                <div>• Primary Audience: <span className="text-[var(--color-text-primary)]">Buyers, teams & decision-makers</span></div>
+                <div>• Product Surface: <span className="text-[var(--color-text-primary)]">Marketing site & Monograph</span></div>
               </div>
             </div>
           </div>

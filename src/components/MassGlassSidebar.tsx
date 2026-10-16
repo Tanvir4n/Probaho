@@ -63,7 +63,7 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
   return (
     <aside
       aria-label="Glassmorphic Architectural Sidebar & Tool Suite"
-      className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex items-center select-none"
+      className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-40 flex items-center select-none"
     >
       {/* 
         ========================================================================
@@ -132,9 +132,9 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
             <div className="flex items-center justify-between text-[10.5px] font-mono text-[var(--color-text-secondary)]">
               <span className="flex items-center gap-1.5 uppercase font-medium">
                 <MapPin className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
-                <span>Cadastral Projection</span>
+                <span>Urban Projection</span>
               </span>
-              <span className="text-[9px] text-[var(--color-surface-raised)]">4 REGIONS</span>
+              <span className="text-[9px] text-[var(--color-surface-raised)]">4 CITIES</span>
             </div>
 
             <div className="grid grid-cols-2 gap-1.5">
@@ -259,17 +259,6 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
               <span>Launch {activeTool.name} Studio</span>
             </button>
 
-            <button
-              onClick={() => {
-                const el = document.getElementById('tools');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="w-full py-1.5 px-3 rounded-[3px] font-mono text-[10.5px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.08] border border-[var(--color-border-subtle)] flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <ChevronRight className="w-3 h-3 rotate-90 text-[var(--color-surface-raised)]" />
-              <span>Scroll to Engines Section</span>
-            </button>
-
             {onOpenDesignSystem && (
               <button
                 onClick={() => {
@@ -344,14 +333,7 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
           return (
             <button
               key={tool.id}
-              onClick={() => {
-                if (isActive && isExpanded) {
-                  setIsExpanded(false);
-                } else {
-                  onSelectTool(tool.id);
-                  setIsExpanded(true);
-                }
-              }}
+              onClick={() => onSelectTool(tool.id)}
               className={`w-[60px] h-[64px] flex flex-col items-center justify-center gap-1.5 rounded-[4px] transition-all duration-200 group relative cursor-pointer select-none ${
                 isActive
                   ? isDay
@@ -370,10 +352,11 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
                 }`}
               />
 
-              {/* 1. Probaho dynamic emblem */}
+              {/* 1. Probaho dynamic architectural emblem */}
               {tool.id === 'masslabs' && (
                 <ProbahoLogo
-                  className={`w-5 h-5 transition-colors drop-shadow-sm ${
+                  size={20}
+                  className={`transition-colors drop-shadow-sm ${
                     isActive
                       ? isDay ? 'text-[#111113]' : 'text-[#eceae6]'
                       : isDay ? 'text-[#374151] group-hover:text-[#111113]' : 'text-[#8a8a86] group-hover:text-[#eceae6]'
@@ -381,41 +364,37 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
                 />
               )}
 
-              {/* 2. Ownership Graph connected nodes */}
+              {/* 2. archiMap 4-quadrant pastel grid */}
               {tool.id === 'archimap' && (
-                <div className="w-5 h-5 flex items-center justify-center">
-                  <svg className="w-5 h-5 drop-shadow-sm" viewBox="0 0 24 24" fill="none">
-                    <circle cx="6" cy="6" r="3" fill="#22c55e" />
-                    <circle cx="18" cy="18" r="3" fill="#3b82f6" />
-                    <circle cx="18" cy="6" r="3" fill="#eab308" />
-                    <path d="M6 6L18 6M6 6L18 18" stroke="currentColor" strokeOpacity="0.5" strokeWidth="1.5" />
-                  </svg>
+                <div className="w-5 h-5 rounded-[2px] overflow-hidden grid grid-cols-2 grid-rows-2 gap-[1px] bg-black/60 p-[1px] border border-white/40 shadow-sm">
+                  <div className="bg-[#93c5fd]" />
+                  <div className="bg-[#fda4af]" />
+                  <div className="bg-[#86efac]" />
+                  <div className="bg-[#fef08a]" />
                 </div>
               )}
 
-              {/* 3. DocCompare contradiction / split document view */}
+              {/* 3. Colorgram radial fan swatch (with architectural greens) */}
               {tool.id === 'cologram' && (
-                <div className="w-5 h-5 flex items-center justify-center">
-                  <svg className="w-5 h-5 drop-shadow-sm" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="3" width="8" height="18" rx="1.5" fill="#3b82f6" fillOpacity="0.85" />
-                    <rect x="13" y="3" width="8" height="18" rx="1.5" fill="#ef4444" fillOpacity="0.85" />
-                    <path d="M5 8h4M5 12h4M15 8h4M15 12h4" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </div>
+                <svg className="w-5 h-5 drop-shadow-sm" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 21L6 14A8 8 0 0 1 18 14L12 21Z" fill="#16a34a" fillOpacity="0.85" />
+                  <path d="M12 21L3 17A9 9 0 0 1 9 9L12 21Z" fill="#15803d" fillOpacity="0.9" />
+                  <path d="M12 21L15 9A9 9 0 0 1 21 17L12 21Z" fill="#22c55e" fillOpacity="0.9" />
+                  <circle cx="12" cy="20" r="1.5" fill="#ffffff" />
+                </svg>
               )}
 
-              {/* 4. FraudEngine risk scoring pulse */}
+              {/* 4. LaserFish geometric origami fish */}
               {tool.id === 'laserfish' && (
-                <div className="w-5 h-5 flex items-center justify-center">
-                  <svg className="w-5 h-5 drop-shadow-sm" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z" fill="#f59e0b" fillOpacity="0.9" />
-                    <path d="M12 8v5M12 16h.01" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
+                <svg className="w-5 h-4 drop-shadow-sm" viewBox="0 0 28 20" fill="none">
+                  <path d="M4 10L14 3L22 10L14 17L4 10Z" fill="#d4a373" />
+                  <path d="M22 10L27 5V15L22 10Z" fill="#bc6c25" />
+                  <circle cx="8" cy="10" r="1.5" fill="#000000" />
+                </svg>
               )}
 
-              <span className="text-[9.5px] font-mono tracking-tight leading-none text-center font-medium max-w-[54px] truncate">
-                {tool.shortName || tool.name}
+              <span className="text-[9.5px] font-mono tracking-tight leading-none text-center font-medium">
+                {tool.name}
               </span>
 
               {/* Active right tab indicator pip matching image */}
