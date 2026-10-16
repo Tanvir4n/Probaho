@@ -170,11 +170,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           Right: PRICING · LOGIN · 9+ Bell · LANGUAGE dropdown · DAY/NIGHT TOGGLE
           ====================================================================
         */}
-        <header className={`relative z-30 px-6 sm:px-10 py-4 flex items-center justify-between border-b transition-colors duration-200 backdrop-blur-2xl backdrop-saturate-180 ${
-          isDay
+        <header className={`relative z-30 px-6 sm:px-10 py-4 flex items-center justify-between border-b transition-colors duration-200 backdrop-blur-2xl backdrop-saturate-180 ${isDay
             ? 'bg-white/60 border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.95)]'
             : 'bg-[#0b0d0e]/60 border-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.12)]'
-        }`}>
+          }`}>
           {/* Brand Logo & Emblem */}
           <a
             href="/"
@@ -283,9 +282,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                         setSelectedLanguage(lang.code as any);
                         setIsLangDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-1.5 hover:bg-[var(--color-surface-muted)] transition-colors flex items-center justify-between cursor-pointer ${
-                        selectedLanguage === lang.code ? 'text-[var(--color-surface-raised)] font-bold' : 'text-[var(--color-text-secondary)]'
-                      }`}
+                      className={`w-full text-left px-3 py-1.5 hover:bg-[var(--color-surface-muted)] transition-colors flex items-center justify-between cursor-pointer ${selectedLanguage === lang.code ? 'text-[var(--color-surface-raised)] font-bold' : 'text-[var(--color-text-secondary)]'
+                        }`}
                     >
                       <span>{lang.label}</span>
                       <span className="text-[9.6px]">{lang.code}</span>
@@ -624,11 +622,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setFilterCategory(tab.id)}
-                  className={`px-3 py-1.5 text-[11.52px] font-mono transition-colors rounded-[3px] whitespace-nowrap shrink-0 cursor-pointer ${
-                    filterCategory === tab.id
+                  className={`px-3 py-1.5 text-[11.52px] font-mono transition-colors rounded-[3px] whitespace-nowrap shrink-0 cursor-pointer ${filterCategory === tab.id
                       ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-md'
                       : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
-                  }`}
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -1045,118 +1042,115 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               role="dialog"
               aria-modal="true"
             >
-            {/* Header */}
-            <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
-                <span className="text-[var(--color-text-tertiary)]">|</span>
-                <span className="text-xs text-[var(--color-text-primary)] font-semibold">{activeMap.cityName} Cadastral & Ownership Graph Studio</span>
-                <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeMap.coordinates})</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1 glass-pill p-1 rounded-[4px]">
-                  {URBAN_MAP_DATASETS.map((m, idx) => (
-                    <button
-                      key={m.id}
-                      onClick={() => setCurrentMapIndex(idx)}
-                      className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer ${
-                        idx === currentMapIndex
-                          ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
-                          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
-                      }`}
-                    >
-                      {m.cityName}
-                    </button>
-                  ))}
+              {/* Header */}
+              <div className="p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
+                  <span className="text-[var(--color-text-tertiary)]">|</span>
+                  <span className="text-xs text-[var(--color-text-primary)] font-semibold">{activeMap.cityName} Cadastral & Ownership Graph Studio</span>
+                  <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeMap.coordinates})</span>
                 </div>
 
-                <button
-                  onClick={() => setIsSiteAnalysisStudioOpen(false)}
-                  className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
-                  aria-label="Close Studio"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Workspace: Map Viewport + Layer Control Panel */}
-            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-              {/* Map Canvas */}
-              <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
-                <img
-                  src={activeMap.image}
-                  alt={activeMap.cityName}
-                  className={`w-full h-full object-cover ${
-                    isDay ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]' : 'contrast-[1.12] brightness-[1.08]'
-                  }`}
-                  referrerPolicy="no-referrer"
-                />
-
-                {/* Simulated GIS layer vectors on top */}
-                {activeGisLayers.buildings && (
-                  <div className="absolute inset-0 pointer-events-none border border-[var(--color-surface-raised)]/30" />
-                )}
-
-                {/* HUD Overlay */}
-                <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
-                  <div className="text-[var(--color-surface-raised)] font-semibold">Active Registry: {activeMap.layers}</div>
-                  <div className="text-[10px] text-[var(--color-text-secondary)]">Division: {activeMap.cityName} · CRS: EPSG:3857 · Cadastre: {activeMap.parcelCount}</div>
-                </div>
-              </div>
-
-              {/* Layer Controls Sidebar */}
-              <div className="w-full lg:w-72 glass-tile border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
-                <div>
-                  <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
-                    CADASTRAL & EVIDENCE GIS LAYERS
-                  </div>
-                  <div className="space-y-2">
-                    {[
-                      { key: 'buildings' as const, label: 'Mouza Cadastral Parcels (Dag plots)' },
-                      { key: 'parcels' as const, label: 'Ownership Transfer Graph Edges' },
-                      { key: 'roads' as const, label: 'Flagged Double-Sale Overlays' },
-                      { key: 'terrain' as const, label: 'Mutation Discrepancy Vectors' },
-                      { key: 'solar' as const, label: 'Deed vs Porcha Conflict Markers' },
-                    ].map((layer) => (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 glass-pill p-1 rounded-[4px]">
+                    {URBAN_MAP_DATASETS.map((m, idx) => (
                       <button
-                        key={layer.key}
-                        onClick={() => toggleGisLayer(layer.key)}
-                        className={`w-full p-2.5 rounded-[3px] border text-left flex items-center justify-between transition-colors cursor-pointer ${
-                          activeGisLayers[layer.key]
-                            ? 'bg-[var(--color-surface-raised)]/15 border-[var(--color-surface-raised)] text-[var(--color-text-primary)] font-medium'
-                            : 'glass-tile border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-surface-raised)]/50'
-                        }`}
+                        key={m.id}
+                        onClick={() => setCurrentMapIndex(idx)}
+                        className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer ${idx === currentMapIndex
+                            ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
+                          }`}
                       >
-                        <span>{layer.label}</span>
-                        {activeGisLayers[layer.key] && (
-                          <Check className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
-                        )}
+                        {m.cityName}
                       </button>
                     ))}
                   </div>
-                </div>
 
-                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
-                  <div className="text-[var(--color-text-primary)] font-semibold">Export Format Supported:</div>
-                  <div>• GeoJSON, Shapefile, DXF, SVG Vector</div>
-                  <div>• Cryptographic SHA-256 Evidence Report</div>
-                </div>
-
-                <div className="pt-2">
                   <button
-                    onClick={() => {
-                      setToastMessage(`Exported cadastral evidence package for ${activeMap.cityName}.`);
-                      setTimeout(() => setToastMessage(null), 4000);
-                    }}
-                    className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] transition-colors cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
+                    onClick={() => setIsSiteAnalysisStudioOpen(false)}
+                    className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                    aria-label="Close Studio"
                   >
-                    Export Evidence Dossier (.PDF)
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               </div>
-            </div>
+
+              {/* Workspace: Map Viewport + Layer Control Panel */}
+              <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+                {/* Map Canvas */}
+                <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
+                  <img
+                    src={activeMap.image}
+                    alt={activeMap.cityName}
+                    className={`w-full h-full object-cover ${isDay ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]' : 'contrast-[1.12] brightness-[1.08]'
+                      }`}
+                    referrerPolicy="no-referrer"
+                  />
+
+                  {/* Simulated GIS layer vectors on top */}
+                  {activeGisLayers.buildings && (
+                    <div className="absolute inset-0 pointer-events-none border border-[var(--color-surface-raised)]/30" />
+                  )}
+
+                  {/* HUD Overlay */}
+                  <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
+                    <div className="text-[var(--color-surface-raised)] font-semibold">Active Registry: {activeMap.layers}</div>
+                    <div className="text-[10px] text-[var(--color-text-secondary)]">Division: {activeMap.cityName} · CRS: EPSG:3857 · Cadastre: {activeMap.parcelCount}</div>
+                  </div>
+                </div>
+
+                {/* Layer Controls Sidebar */}
+                <div className="w-full lg:w-72 glass-tile border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
+                  <div>
+                    <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
+                      CADASTRAL & EVIDENCE GIS LAYERS
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { key: 'buildings' as const, label: 'Mouza Cadastral Parcels (Dag plots)' },
+                        { key: 'parcels' as const, label: 'Ownership Transfer Graph Edges' },
+                        { key: 'roads' as const, label: 'Flagged Double-Sale Overlays' },
+                        { key: 'terrain' as const, label: 'Mutation Discrepancy Vectors' },
+                        { key: 'solar' as const, label: 'Deed vs Porcha Conflict Markers' },
+                      ].map((layer) => (
+                        <button
+                          key={layer.key}
+                          onClick={() => toggleGisLayer(layer.key)}
+                          className={`w-full p-2.5 rounded-[3px] border text-left flex items-center justify-between transition-colors cursor-pointer ${activeGisLayers[layer.key]
+                              ? 'bg-[var(--color-surface-raised)]/15 border-[var(--color-surface-raised)] text-[var(--color-text-primary)] font-medium'
+                              : 'glass-tile border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-surface-raised)]/50'
+                            }`}
+                        >
+                          <span>{layer.label}</span>
+                          {activeGisLayers[layer.key] && (
+                            <Check className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
+                    <div className="text-[var(--color-text-primary)] font-semibold">Export Format Supported:</div>
+                    <div>• GeoJSON, Shapefile, DXF, SVG Vector</div>
+                    <div>• Cryptographic SHA-256 Evidence Report</div>
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      onClick={() => {
+                        setToastMessage(`Exported cadastral evidence package for ${activeMap.cityName}.`);
+                        setTimeout(() => setToastMessage(null), 4000);
+                      }}
+                      className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] transition-colors cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
+                    >
+                      Export Evidence Dossier (.PDF)
+                    </button>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

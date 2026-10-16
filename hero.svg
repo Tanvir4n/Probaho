@@ -1,0 +1,292 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080c0a"/>
+      <stop offset="50%" stop-color="#0b120e"/>
+      <stop offset="100%" stop-color="#060907"/>
+    </linearGradient>
+
+    <!-- Neon Emerald Brand Gradients -->
+    <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="50%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+
+    <linearGradient id="glass-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142419" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0a120c" stop-opacity="0.95"/>
+    </linearGradient>
+
+    <radialGradient id="beacon-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22c55e" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#22c55e" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="red-beacon-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ef4444" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Cadastral Grid Pattern -->
+    <pattern id="cadastral-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(34, 197, 94, 0.07)" stroke-width="0.8"/>
+    </pattern>
+
+    <!-- Specular Glow Filter -->
+    <filter id="glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <style>
+    .mono { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; }
+    .sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    .glow { filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.5)); }
+  </style>
+
+  <!-- ============================================================== -->
+  <!-- 1. BASE CANVAS & BACKGROUND -->
+  <!-- ============================================================== -->
+  <rect width="1200" height="520" fill="url(#bg-grad)"/>
+  <rect width="1200" height="520" fill="url(#cadastral-grid)"/>
+
+  <!-- Luminous Ambient Orbs -->
+  <circle cx="950" cy="240" r="260" fill="url(#beacon-glow)" opacity="0.65"/>
+  <circle cx="150" cy="100" r="180" fill="url(#beacon-glow)" opacity="0.25"/>
+
+  <!-- Outer Radar Reticles -->
+  <circle cx="950" cy="260" r="230" fill="none" stroke="rgba(34, 197, 94, 0.12)" stroke-width="1.2" stroke-dasharray="4 8"/>
+  <circle cx="950" cy="260" r="160" fill="none" stroke="rgba(34, 197, 94, 0.18)" stroke-width="1"/>
+  <circle cx="950" cy="260" r="90" fill="none" stroke="rgba(34, 197, 94, 0.22)" stroke-width="1" stroke-dasharray="2 4"/>
+
+  <!-- Precision Corner Markers -->
+  <path d="M 25 35 L 25 25 L 35 25" stroke="#22c55e" stroke-width="2" fill="none"/>
+  <path d="M 1175 25 L 1175 35 M 1175 25 L 1165 25" stroke="#22c55e" stroke-width="2" fill="none"/>
+  <path d="M 25 485 L 25 495 L 35 495" stroke="#22c55e" stroke-width="2" fill="none"/>
+  <path d="M 1175 495 L 1175 485 M 1175 495 L 1165 495" stroke="#22c55e" stroke-width="2" fill="none"/>
+
+  <!-- ============================================================== -->
+  <!-- 2. LEFT HERO BRAND LOCKUP & COPY -->
+  <!-- ============================================================== -->
+  <!-- Top Category Tag -->
+  <g transform="translate(60, 65)">
+    <rect width="360" height="26" rx="4" fill="rgba(34, 197, 94, 0.12)" stroke="rgba(34, 197, 94, 0.35)" stroke-width="1"/>
+    <circle cx="14" cy="13" r="3.5" fill="#22c55e" class="glow"/>
+    <text x="26" y="17" fill="#4ade80" class="mono" font-size="10.5" font-weight="700" letter-spacing="1.2">
+      PROBAHO // P3 LAND FRAUD INTELLIGENCE
+    </text>
+  </g>
+
+  <!-- Big Brand Title + Logo Monogram -->
+  <g transform="translate(60, 155)">
+    <!-- Probaho Architectural P Logo Mark -->
+    <g transform="translate(0, -42) scale(1.4)">
+      <rect x="0" y="0" width="32" height="32" rx="7" fill="#142218" stroke="#22c55e" stroke-width="1.8"/>
+      <!-- The P Loop -->
+      <path d="M 8 7 L 18 7 C 22.5 7 24 10.5 24 14 C 24 17.5 22.5 21 18 21 L 8 21 Z" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"/>
+      <!-- Fluid Flow Spline -->
+      <path d="M 8 25 C 13 25 15 17 21 9" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="21" cy="9" r="2.2" fill="#4ade80"/>
+    </g>
+
+    <text x="60" y="-10" fill="#ffffff" class="sans" font-size="52" font-weight="900" letter-spacing="-1.5">
+      Probaho
+    </text>
+    <text x="275" y="-10" fill="#22c55e" class="sans" font-size="34" font-weight="600" opacity="0.9">
+      (প্রবাহ)
+    </text>
+  </g>
+
+  <!-- Tagline -->
+  <g transform="translate(60, 195)">
+    <text x="0" y="0" fill="#4ade80" class="sans" font-size="20" font-weight="700" letter-spacing="-0.3">
+      “Every plot has a story. Make it tamper-proof.”
+    </text>
+    <text x="0" y="28" fill="#9ca3af" class="sans" font-size="13.5" font-weight="400">
+      Built around JomiChain: unified Plot Passports linking CS, SA, RS, and BS
+    </text>
+    <text x="0" y="48" fill="#9ca3af" class="sans" font-size="13.5" font-weight="400">
+      khatians, deeds, mutations, and mortgages with real-time double-sale locks.
+    </text>
+  </g>
+
+  <!-- Five Novelty Badges Grid -->
+  <g transform="translate(60, 275)">
+    <!-- Novelty 1 -->
+    <g transform="translate(0, 0)">
+      <rect width="210" height="32" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <text x="12" y="20" fill="#22c55e" class="mono" font-size="11" font-weight="700">1. Survey-Lineage Graph</text>
+    </g>
+    <!-- Novelty 2 -->
+    <g transform="translate(220, 0)">
+      <rect width="220" height="32" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <text x="12" y="20" fill="#22c55e" class="mono" font-size="11" font-weight="700">2. Hash-Chained Ledger</text>
+    </g>
+    <!-- Novelty 3 -->
+    <g transform="translate(0, 42)">
+      <rect width="210" height="32" rx="4" fill="rgba(34,197,94,0.12)" stroke="rgba(34,197,94,0.35)" stroke-width="1"/>
+      <text x="12" y="20" fill="#4ade80" class="mono" font-size="11" font-weight="700">3. Double-Sale Soft Lock</text>
+    </g>
+    <!-- Novelty 4 -->
+    <g transform="translate(220, 42)">
+      <rect width="220" height="32" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <text x="12" y="20" fill="#22c55e" class="mono" font-size="11" font-weight="700">4. Bangla Fuzzy NLP Match</text>
+    </g>
+    <!-- Novelty 5 -->
+    <g transform="translate(0, 84)">
+      <rect width="440" height="32" rx="4" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <text x="12" y="20" fill="#22c55e" class="mono" font-size="11" font-weight="700">5. Explainable 0-100 Risk Score + Citizen Trust QR</text>
+    </g>
+  </g>
+
+  <!-- Bottom Proof Footers -->
+  <g transform="translate(60, 445)">
+    <line x1="0" y1="0" x2="440" y2="0" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="0" y="24" fill="#6b7280" class="mono" font-size="10">
+      INTEGRITY: SHA-256 + Ed25519
+    </text>
+    <text x="210" y="24" fill="#6b7280" class="mono" font-size="10">
+      DATA: 100% Synthetic Non-PII
+    </text>
+    <text x="440" y="24" text-anchor="end" fill="#22c55e" class="mono" font-size="10" font-weight="700">
+      ✓ ZERO-KNOWLEDGE AUDIT
+    </text>
+  </g>
+
+  <!-- ============================================================== -->
+  <!-- 3. RIGHT HERO ISOMETRIC PLOT PASSPORT VISUALIZATION -->
+  <!-- ============================================================== -->
+  <!-- Tier 1: CS 1940 Base Cadastral Ground Plane -->
+  <g transform="translate(950, 370)">
+    <polygon points="-240,0 0,-70 240,0 0,70" fill="rgba(34,197,94,0.03)" stroke="rgba(34,197,94,0.25)" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <text x="-220" y="5" fill="#6b7280" class="mono" font-size="9">CS 1940 Base (Dag 102 · 29.0 Dec)</text>
+  </g>
+
+  <!-- Tier 2: SA 1962 Partition Plane -->
+  <g transform="translate(950, 315)">
+    <polygon points="-210,0 0,-62 210,0 0,62" fill="rgba(56,189,248,0.04)" stroke="rgba(56,189,248,0.3)" stroke-width="1.2"/>
+    <line x1="0" y1="-62" x2="0" y2="62" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3 3"/>
+    <text x="-190" y="5" fill="#38bdf8" class="mono" font-size="9">SA 1962 (Partition 50/50)</text>
+  </g>
+
+  <!-- Tier 3: RS 1988 Revisional Cadastre -->
+  <g transform="translate(950, 260)">
+    <polygon points="-180,0 0,-54 180,0 0,54" fill="rgba(34,197,94,0.06)" stroke="rgba(34,197,94,0.4)" stroke-width="1.2"/>
+    <text x="-165" y="5" fill="#4ade80" class="mono" font-size="9">RS 1988 (Revisional Dag 912)</text>
+  </g>
+
+  <!-- Tier 4: BS 2021 City Survey Glass Plane (Active Target) -->
+  <g transform="translate(950, 205)">
+    <!-- Main Glass Surface -->
+    <polygon points="-160,0 0,-48 160,0 0,48" fill="url(#glass-grad)" stroke="#22c55e" stroke-width="1.8"/>
+
+    <!-- Active Subdivided Target Plot (Dag 1042) -->
+    <polygon points="-80,0 0,-24 80,0 0,24" fill="rgba(34, 197, 94, 0.35)" stroke="#4ade80" stroke-width="2"/>
+    <circle cx="0" cy="0" r="4.5" fill="#ffffff" class="glow"/>
+
+    <!-- Boundary Corner Pegs -->
+    <circle cx="-80" cy="0" r="2.5" fill="#22c55e"/>
+    <circle cx="80" cy="0" r="2.5" fill="#22c55e"/>
+    <circle cx="0" cy="-24" r="2.5" fill="#22c55e"/>
+    <circle cx="0" cy="24" r="2.5" fill="#22c55e"/>
+  </g>
+
+  <!-- Vertical Elevation Anchor Pillars -->
+  <line x1="950" y1="370" x2="950" y2="205" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+
+  <!-- ============================================================== -->
+  <!-- 4. FLOATING HOLOGRAPHIC PLOT PASSPORT HUD CARD -->
+  <!-- ============================================================== -->
+  <g transform="translate(830, 75)" class="glow">
+    <!-- Card Outer Bezel & Glass Background -->
+    <rect width="250" height="150" rx="8" fill="url(#card-grad)" stroke="#22c55e" stroke-width="1.6"/>
+    
+    <!-- Top Header Ribbon -->
+    <path d="M 0 8 Q 0 0 8 0 L 242 0 Q 250 0 250 8 L 250 28 L 0 28 Z" fill="rgba(34, 197, 94, 0.22)"/>
+    <circle cx="16" cy="14" r="4" fill="#22c55e" class="glow"/>
+    <text x="28" y="18" fill="#4ade80" class="mono" font-size="9" font-weight="700">
+      JOMICHAIN // PLOT PASSPORT
+    </text>
+    
+    <!-- Verified Badge -->
+    <rect x="184" y="6" width="56" height="16" rx="3" fill="#22c55e"/>
+    <text x="212" y="17" text-anchor="middle" fill="#000000" class="mono" font-size="8" font-weight="900">
+      VERIFIED
+    </text>
+
+    <!-- Plot Identity -->
+    <text x="16" y="48" fill="#ffffff" class="mono" font-size="12" font-weight="800">
+      Dag 1042 · Dhanmondi
+    </text>
+    <text x="16" y="64" fill="#9ca3af" class="mono" font-size="9">
+      BS Khatian #1042 · Area: 14.5 Shotok
+    </text>
+
+    <line x1="16" y1="73" x2="234" y2="73" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+
+    <!-- Cryptographic Proof Telemetry -->
+    <text x="16" y="88" fill="#6b7280" class="mono" font-size="8">
+      PREV_HASH: 0x53c2...3fe06
+    </text>
+    <text x="16" y="100" fill="#6b7280" class="mono" font-size="8">
+      DATA_HASH: 0x7f83...26d90
+    </text>
+    <text x="16" y="112" fill="#38bdf8" class="mono" font-size="8">
+      SIG: ed25519_sig_9f3b2184 (Sub-Registry)
+    </text>
+
+    <!-- Concurrency Lock Banner -->
+    <rect x="16" y="121" width="218" height="18" rx="3" fill="rgba(34, 197, 94, 0.15)" stroke="rgba(34, 197, 94, 0.35)" stroke-width="1"/>
+    <circle cx="26" cy="130" r="3" fill="#22c55e"/>
+    <text x="35" y="133" fill="#4ade80" class="mono" font-size="8.5" font-weight="700">
+      SOFT-LOCK ACTIVE: 72h HOLD (0x9f4a)
+    </text>
+  </g>
+
+  <!-- ============================================================== -->
+  <!-- 5. DISTRIBUTED REGISTRY NODES & REAL-TIME COLLISION SENSORS -->
+  <!-- ============================================================== -->
+  <!-- Office A Node (Tejgaon) -->
+  <g transform="translate(730, 160)">
+    <line x1="0" y1="0" x2="100" y2="-40" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <circle cx="0" cy="0" r="16" fill="#0b120e" stroke="#22c55e" stroke-width="1.8"/>
+    <circle cx="0" cy="0" r="6" fill="#22c55e" class="glow"/>
+    <text x="0" y="26" text-anchor="middle" fill="#4ade80" class="mono" font-size="8.5" font-weight="700">
+      Office A (Tejgaon)
+    </text>
+    <text x="0" y="36" text-anchor="middle" fill="#6b7280" class="mono" font-size="7.5">
+      Acquired Lock ✓
+    </text>
+  </g>
+
+  <!-- Office B Node (Gulshan - Blocked Concurrent Attempt) -->
+  <g transform="translate(1120, 160)">
+    <line x1="0" y1="0" x2="-40" y2="-40" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <circle cx="0" cy="0" r="16" fill="#140a0b" stroke="#ef4444" stroke-width="1.8"/>
+    <circle cx="0" cy="0" r="6" fill="#ef4444"/>
+    <text x="0" y="26" text-anchor="middle" fill="#f87171" class="mono" font-size="8.5" font-weight="700">
+      Office B (Gulshan)
+    </text>
+    <text x="0" y="36" text-anchor="middle" fill="#ef4444" class="mono" font-size="7.5" font-weight="700">
+      BLOCKED LIVE ✕
+    </text>
+  </g>
+
+  <!-- Daily Merkle Root Anchor Node -->
+  <g transform="translate(950, 470)">
+    <rect x="-85" y="-12" width="170" height="24" rx="4" fill="rgba(34, 197, 94, 0.15)" stroke="#22c55e" stroke-width="1.2"/>
+    <circle cx="-70" cy="0" r="4" fill="#22c55e" class="glow"/>
+    <text x="-58" y="4" fill="#ffffff" class="mono" font-size="8.5" font-weight="700">
+      DAILY MERKLE ROOT: OK
+    </text>
+  </g>
+</svg>
