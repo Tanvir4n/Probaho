@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   Play,
   Pause,
+  ShieldCheck,
   FileCode2,
   Activity
 } from 'lucide-react';
@@ -257,6 +258,18 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Launch {activeTool.name} Studio</span>
+            </button>
+
+            <button
+              onClick={() => {
+                const el = document.getElementById('jomichain');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                setIsExpanded(false);
+              }}
+              className="w-full py-1.5 px-3 rounded-[3px] font-mono text-[10.5px] text-white bg-[var(--color-surface-raised)]/20 hover:bg-[var(--color-surface-raised)]/35 border border-[var(--color-surface-raised)]/50 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
+              <span>JomiChain Plot Passport</span>
             </button>
 
             <button

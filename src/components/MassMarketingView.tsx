@@ -12,8 +12,10 @@ import { MassPricingSection } from './MassPricingSection';
 import { MassAuthModal } from './MassAuthModal';
 import { MassGlassSidebar } from './MassGlassSidebar';
 import { PageTransitionEffect } from './PageTransitionEffect';
+import { JomiChainSection } from './JomiChainSection';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import {
+  ShieldCheck,
   ArrowRight,
   ChevronRight,
   X,
@@ -187,6 +189,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
               Engines
             </a>
+            <a
+              href="#jomichain"
+              className="text-[var(--color-surface-raised)] hover:brightness-110 transition-colors uppercase font-bold flex items-center gap-1.5"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>JomiChain</span>
+            </a>
             <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
               Case Studies
             </a>
@@ -356,6 +365,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   <span>{activeTool.ctaText}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
+                <a
+                  href="#jomichain"
+                  className="px-6 py-3.5 text-base font-bold text-[var(--color-text-primary)] glass-tile border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[3px] transition-all whitespace-nowrap flex items-center gap-2 cursor-pointer shadow-md backdrop-blur-md"
+                >
+                  <ShieldCheck className="w-4 h-4 text-[var(--color-surface-raised)]" />
+                  <span>JomiChain Plot Passport →</span>
+                </a>
               </div>
             </motion.div>
           </AnimatePresence>
@@ -372,6 +388,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           <div className="flex items-center gap-6">
             <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">
               Detection Engines
+            </a>
+            <a href="#jomichain" className="text-[var(--color-surface-raised)] hover:underline font-bold transition-colors">
+              JomiChain Engine ↓
             </a>
             <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">
               Pricing Plans
@@ -553,6 +572,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           </div>
         </div>
       </motion.section>
+
+      {/* 
+        ====================================================================
+        JOMICHAIN ENGINE SECTION (The Plot Passport & Cryptographic Land Ledger)
+        P3 Fraud Detection, Hash Chains, Double-Sale Concurrency Lock
+        ====================================================================
+      */}
+      <JomiChainSection />
 
       {/* 
         ====================================================================

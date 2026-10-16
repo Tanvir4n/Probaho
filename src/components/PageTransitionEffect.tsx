@@ -18,11 +18,12 @@ export interface SectionMeta {
 
 export const SECTIONS: SectionMeta[] = [
   { id: 'hero', name: 'Overview', num: '01', nextLabel: 'Detection Engines' },
-  { id: 'tools', name: 'Detection Engines', num: '02', nextLabel: 'Evidence Archive' },
-  { id: 'projects', name: 'Evidence Archive', num: '03', nextLabel: 'Adversarial Simulator' },
-  { id: 'methodology', name: 'Adversarial Simulator', num: '04', nextLabel: 'Cadastral Practice' },
-  { id: 'practice', name: 'Cadastral Practice', num: '05', nextLabel: 'Pricing Plans' },
-  { id: 'pricing', name: 'Pricing & Plans', num: '06', nextLabel: 'Back to Top' },
+  { id: 'tools', name: 'Detection Engines', num: '02', nextLabel: 'JomiChain Passport' },
+  { id: 'jomichain', name: 'JomiChain Passport', num: '03', nextLabel: 'Evidence Archive' },
+  { id: 'projects', name: 'Evidence Archive', num: '04', nextLabel: 'Adversarial Simulator' },
+  { id: 'methodology', name: 'Adversarial Simulator', num: '05', nextLabel: 'Cadastral Practice' },
+  { id: 'practice', name: 'Cadastral Practice', num: '06', nextLabel: 'Pricing Plans' },
+  { id: 'pricing', name: 'Pricing & Plans', num: '07', nextLabel: 'Back to Top' },
 ];
 
 interface PageTransitionEffectProps {
@@ -229,7 +230,7 @@ export const PageTransitionEffect: React.FC<PageTransitionEffectProps> = ({
             </span>
             <span className="text-[10px] text-[var(--color-text-tertiary)]">/</span>
             <span className="text-[10px] text-[var(--color-text-secondary)] font-medium">
-              06
+              {String(SECTIONS.length).padStart(2, '0')}
             </span>
             <span className="hidden sm:inline text-xs font-semibold text-[var(--color-text-primary)] pl-1">
               {currentSection.name}
