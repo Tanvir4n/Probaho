@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Loader2, CheckCircle2, Lock, Mail, User, ArrowRight } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import { motion } from 'motion/react';
 
@@ -16,6 +17,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
   onLoginSuccess,
 }) => {
   const { isDay } = useTheme();
+  const { isBangla } = useLanguage();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,11 +31,11 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
-      setError('Please provide a valid investigator or institutional email address.');
+      setError(isBangla ? 'সঠিক প্রাতিষ্ঠানিক অথবা অনুসন্ধানকারী ইমেইল প্রদান করুন।' : 'Please provide a valid investigator or institutional email address.');
       return;
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+      setError(isBangla ? 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।' : 'Password must be at least 6 characters.');
       return;
     }
 
@@ -87,7 +89,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
             }`}
           >
-            Sign In
+            {isBangla ? 'লগইন' : 'Sign In'}
           </button>
           <button
             type="button"
@@ -101,7 +103,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
                 : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
             }`}
           >
-            Create Account
+            {isBangla ? 'অ্যাকাউন্ট তৈরি' : 'Create Account'}
           </button>
         </div>
 
@@ -110,12 +112,12 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           {mode === 'signup' && (
             <div>
               <label className="block text-[11px] font-mono text-[var(--color-text-secondary)] mb-1">
-                FULL NAME / STUDIO NAME
+                {isBangla ? 'পূর্ণ নাম / প্রতিষ্ঠানের নাম' : 'FULL NAME / STUDIO NAME'}
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="e.g. Dhaka Land Registry & Legal Practice"
+                  placeholder={isBangla ? 'যেমন: ঢাকা ল্যান্ড রেজিস্ট্রি ও লিগ্যাল প্র্যাকটিস' : 'e.g. Dhaka Land Registry & Legal Practice'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
@@ -126,7 +128,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
 
           <div>
             <label className="block text-[11px] font-mono text-[var(--color-text-secondary)] mb-1">
-              EMAIL ADDRESS *
+              {isBangla ? 'ইমেইল ঠিকানা *' : 'EMAIL ADDRESS *'}
             </label>
             <div className="relative">
               <input
@@ -143,18 +145,18 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="text-[11px] font-mono text-[var(--color-text-secondary)]">
-                PASSWORD *
+                {isBangla ? 'পাসওয়ার্ড *' : 'PASSWORD *'}
               </label>
               {mode === 'signin' && (
                 <button
                   type="button"
                   onClick={() => {
-                    setInfoMessage('Password reset instructions sent to your email address.');
+                    setInfoMessage(isBangla ? 'আপনার ইমেইলে পাসওয়ার্ড রিসেটের নির্দেশনা পাঠানো হয়েছে।' : 'Password reset instructions sent to your email address.');
                     setError('');
                   }}
                   className="text-[10px] font-mono text-[var(--color-surface-raised)] hover:underline cursor-pointer"
                 >
-                  Forgot password?
+                  {isBangla ? 'পাসওয়ার্ড ভুলে গেছেন?' : 'Forgot password?'}
                 </button>
               )}
             </div>
@@ -190,17 +192,23 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin text-current" />
-                <span>Authenticating...</span>
+                <span>{isBangla ? 'যাচাই করা হচ্ছে...' : 'Authenticating...'}</span>
               </>
             ) : (
-              <span>{mode === 'signin' ? 'Sign In to Probaho' : 'Join Probaho Studio'}</span>
+              <span>
+                {mode === 'signin' 
+                  ? (isBangla ? 'প্রবাহে লগইন করুন' : 'Sign In to Probaho') 
+                  : (isBangla ? 'প্রবাহ স্টুডিওতে যোগ দিন' : 'Join Probaho Studio')}
+              </span>
             )}
           </button>
         </form>
 
         {/* Divider */}
         <div className="relative flex items-center justify-center text-[10px] font-mono text-[var(--color-text-tertiary)] border-t border-[var(--color-border-subtle)] pt-4">
-          <span className="glass-tile px-2 uppercase rounded-[2px]">or continue with</span>
+          <span className="glass-tile px-2 uppercase rounded-[2px]">
+            {isBangla ? 'অথবা এর মাধ্যমে প্রবেশ করুন' : 'or continue with'}
+          </span>
         </div>
 
         {/* Third-party SSO */}
@@ -208,7 +216,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           <button
             type="button"
             onClick={() => {
-              onLoginSuccess({ email: 'analyst@probaho.bd', name: 'Registry Officer' });
+              onLoginSuccess({ email: 'analyst@probaho.bd', name: isBangla ? 'রেজিস্ট্রি কর্মকর্তা' : 'Registry Officer' });
               onClose();
             }}
             className="py-2 px-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] text-xs font-mono text-[var(--color-text-primary)] flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -218,7 +226,7 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
           <button
             type="button"
             onClick={() => {
-              onLoginSuccess({ email: 'developer@probaho.bd', name: 'Intelligence Lead' });
+              onLoginSuccess({ email: 'developer@probaho.bd', name: isBangla ? 'ইন্টেলিজেন্স লিড' : 'Intelligence Lead' });
               onClose();
             }}
             className="py-2 px-3 bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] text-xs font-mono text-[var(--color-text-primary)] flex items-center justify-center gap-2 transition-colors cursor-pointer"
@@ -228,7 +236,9 @@ export const MassAuthModal: React.FC<MassAuthModalProps> = ({
         </div>
 
         <div className="text-[10px] text-center text-[var(--color-text-tertiary)] font-mono leading-relaxed">
-          By signing in, you agree to Probaho Terms of Service and Land Record Privacy Policy.
+          {isBangla 
+            ? 'লগইন করার মাধ্যমে আপনি প্রবাহ ব্যবহারের শর্তাবলী এবং ভূমি রেকর্ড গোপনীয়তা নীতিতে সম্মত হচ্ছেন।' 
+            : 'By signing in, you agree to Probaho Terms of Service and Land Record Privacy Policy.'}
         </div>
       </motion.div>
     </div>

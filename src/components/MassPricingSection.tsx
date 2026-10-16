@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MASSLABS_PRICING, PricingPlan } from '../data/tokens';
 import { Check, ArrowRight, ShieldCheck, HelpCircle } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
 
 interface MassPricingSectionProps {
@@ -10,24 +11,25 @@ interface MassPricingSectionProps {
 
 export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelectPlan }) => {
   const { isDay } = useTheme();
+  const { isBangla, t } = useLanguage();
   const [isAnnual, setIsAnnual] = useState(true);
 
   const faqs = [
     {
-      q: 'Which land document formats and registries are supported?',
-      a: 'Probaho analyzes sale deeds, RS/BS/SA/CS Khatians, Porchas, Mutation records, and Mouza map sheets. Both digital PDFs and scanned or photographed documents in Bangla and English are processed via our specialized Bangla OCR engine.',
+      q: t.pricingFaqs.q1,
+      a: t.pricingFaqs.a1,
     },
     {
-      q: 'How does the Ownership Graph detect double-sales?',
-      a: 'The graph engine models each parcel as a node and every legal transaction as a directed edge with temporal, share, and party attributes. It identifies overlapping sales within the same timeline where the seller had already relinquished legal title.',
+      q: t.pricingFaqs.q2,
+      a: t.pricingFaqs.a2,
     },
     {
-      q: 'Can evidence reports be used for legal and regulatory proceedings?',
-      a: 'Yes. All generated investigation reports include cryptographic SHA-256 integrity hashes, verbatim cross-document contradiction tables with page citations, and transparent rule-justification logs admissible as evidence dossiers.',
+      q: t.pricingFaqs.q3,
+      a: t.pricingFaqs.a3,
     },
     {
-      q: 'Can I cancel or switch subscriptions at any time?',
-      a: 'Yes, you can upgrade, downgrade, or cancel your subscription at any time directly inside your account settings with zero lock-in.',
+      q: t.pricingFaqs.q4,
+      a: t.pricingFaqs.a4,
     },
   ];
 
@@ -44,19 +46,19 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-surface-raised)]">
-            Transparent Pricing For Investigations
+            {t.pricing.tag}
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
-            One subscription. Complete fraud intelligence suite.
+            {t.pricing.heading}
           </h2>
           <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-            Access Ownership Graph, DocCompare, FraudEngine, and Adversarial Simulator under a unified intelligence membership. No hidden data fees.
+            {t.pricing.subheading}
           </p>
 
           {/* Billing Cycle Switcher */}
           <div className="pt-4 flex items-center justify-center gap-3">
             <span className={`text-xs font-mono ${!isAnnual ? 'text-[var(--color-text-primary)] font-bold' : 'text-[var(--color-text-secondary)]'}`}>
-              Monthly
+              {t.pricing.monthly}
             </span>
             <button
               type="button"
@@ -72,10 +74,10 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
             </button>
             <div className="flex items-center gap-1.5 text-xs font-mono">
               <span className={isAnnual ? 'text-[var(--color-text-primary)] font-bold' : 'text-[var(--color-text-secondary)]'}>
-                Annual Billing
+                {t.pricing.annual}
               </span>
               <span className="px-2 py-0.5 text-[10px] glass-pill text-[var(--color-surface-raised)] border border-[var(--color-surface-raised)]/40 rounded-[3px] font-bold shadow-sm">
-                SAVE 20%
+                {isBangla ? '২০% সাশ্রয়ী' : 'SAVE 20%'}
               </span>
             </div>
           </div>
@@ -164,17 +166,17 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
         <div className="p-8 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="space-y-1">
             <h4 className="text-base font-semibold text-[var(--color-text-primary)]">
-              Land Registry Office, Legal Practice, or Financial Institution?
+              {isBangla ? 'ভূমি রেজিস্ট্রি অফিস, আইনি প্রতিষ্ঠান বা আর্থিক সংস্থা?' : 'Land Registry Office, Legal Practice, or Financial Institution?'}
             </h4>
             <p className="text-xs text-[var(--color-text-secondary)]">
-              We offer institutional deployment, on-premise document vaults, and high-throughput batch APIs for registry audits.
+              {isBangla ? 'আমরা রেজিস্ট্রি অডিটের জন্য প্রাতিষ্ঠানিক স্থাপন, অন-প্রিমিস ডকুমেন্ট ভল্ট এবং উচ্চ-ক্ষমতার ব্যাচ এপিআই সরবরাহ করি।' : 'We offer institutional deployment, on-premise document vaults, and high-throughput batch APIs for registry audits.'}
             </p>
           </div>
           <button
             onClick={() => onSelectPlan(MASSLABS_PRICING[2])}
             className="px-5 py-2.5 text-xs font-mono text-[var(--color-text-primary)] bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] whitespace-nowrap cursor-pointer transition-colors"
           >
-            Request Enterprise Terms
+            {isBangla ? 'প্রাতিষ্ঠানিক চুক্তি অনুরোধ' : 'Request Enterprise Terms'}
           </button>
         </div>
 
@@ -182,10 +184,10 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
         <div className="pt-12 border-t border-[var(--color-border-subtle)] space-y-8">
           <div className="text-center space-y-2">
             <div className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-text-secondary)]">
-              Frequently Asked Questions
+              {t.pricingFaqs.tag}
             </div>
             <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">
-              Common Investigation Questions
+              {t.pricingFaqs.heading}
             </h3>
           </div>
 

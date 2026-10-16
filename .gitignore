@@ -8,4 +8,5 @@ coverage/
 !.env.example
 .aistudio/
 .kilo/
+.agents/
 hero (*).svg

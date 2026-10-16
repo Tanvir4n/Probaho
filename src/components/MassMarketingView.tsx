@@ -15,6 +15,13 @@ import { PageTransitionEffect } from './PageTransitionEffect';
 import { JomiChainSection } from './JomiChainSection';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import {
+  OwnershipGraphWidget,
+  FraudEngineGaugeWidget,
+  DocCompareScannerWidget,
+  AdversarialSimulatorWidget,
+  CadastralSectionTransitionBeam,
+} from './AnimatedEngineWidgets';
+import {
   ShieldCheck,
   ArrowRight,
   ChevronRight,
@@ -42,6 +49,7 @@ import {
   Moon,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface MassMarketingViewProps {
@@ -52,6 +60,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   onOpenDesignSystem,
 }) => {
   const { mode, isDay, toggleMode, palette } = useTheme();
+  const { language, setLanguage, toggleLanguage, isBangla, t } = useLanguage();
   const [currentMapIndex, setCurrentMapIndex] = useState(0);
   const [activeToolId, setActiveToolId] = useState<string>('masslabs');
   const [selectedProject, setSelectedProject] = useState<ArchitecturalProject | null>(null);
@@ -59,8 +68,6 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
   const [isSiteAnalysisStudioOpen, setIsSiteAnalysisStudioOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<'EN' | 'JA' | 'DE' | 'FR' | 'BN'>('EN');
-  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
   // Authentication State
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -180,36 +187,38 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             className="flex items-center gap-3 text-xl font-bold tracking-tight text-[var(--color-text-primary)] whitespace-nowrap hover:opacity-90 transition-opacity group"
           >
             <ProbahoLogo className="w-7 h-7 text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] shrink-0 transition-colors" />
-            <span className="font-bold tracking-tight font-sans text-white text-xl">Probaho</span>
+            <span className="font-bold tracking-tight font-sans text-white text-xl">
+              {isBangla ? 'প্রবাহ' : 'Probaho'}
+            </span>
           </a>
 
           {/* Desktop Direct Section Navigation */}
           <nav className="hidden lg:flex items-center gap-6 text-xs font-mono tracking-wider text-[var(--color-text-secondary)]">
             <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
-              Engines
+              {t.nav.engines}
             </a>
             <a
               href="#jomichain"
               className="text-[var(--color-surface-raised)] hover:brightness-110 transition-colors uppercase font-bold flex items-center gap-1.5"
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>JomiChain</span>
+              <span>{t.nav.jomichain}</span>
             </a>
             <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
-              Case Studies
+              {t.cases.tabAll}
             </a>
             <a href="#methodology" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
-              Simulator
+              {t.nav.methodology}
             </a>
             <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
-              Pricing
+              {t.nav.pricing}
             </a>
             <button
               onClick={() => setIsSiteAnalysisStudioOpen(true)}
               className="text-[var(--color-surface-raised)] hover:brightness-110 transition-colors uppercase font-medium cursor-pointer flex items-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Studio</span>
+              <span>{isBangla ? 'স্টুডিও' : 'Studio'}</span>
             </button>
           </nav>
 
@@ -219,7 +228,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               href="#pricing"
               className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium"
             >
-              PRICING
+              {t.nav.pricing}
             </a>
 
             {currentUser ? (
@@ -241,7 +250,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 onClick={() => setIsAuthModalOpen(true)}
                 className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium cursor-pointer"
               >
-                LOGIN
+                {t.nav.account}
               </button>
             )}
 
@@ -257,41 +266,17 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               </span>
             </button>
 
-            {/* Language Selector Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="flex items-center gap-1.5 text-[var(--color-text-primary)] hover:opacity-90 transition-opacity uppercase text-[11px] py-1.5 px-3 border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] rounded-[3px] glass-tile font-mono cursor-pointer"
-              >
-                <span>LANGUAGE</span>
-                <span className="text-[8px] text-[var(--color-text-secondary)]">▼</span>
-              </button>
-
-              {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-1.5 w-36 glass-panel rounded-[4px] shadow-2xl py-1 z-50 text-[11px] font-mono">
-                  {[
-                    { code: 'EN', label: 'English' },
-                    { code: 'JA', label: '日本語' },
-                    { code: 'DE', label: 'Deutsch' },
-                    { code: 'FR', label: 'Français' },
-                    { code: 'BN', label: 'বাংলা' },
-                  ].map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        setSelectedLanguage(lang.code as any);
-                        setIsLangDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 hover:bg-[var(--color-surface-muted)] transition-colors flex items-center justify-between cursor-pointer ${selectedLanguage === lang.code ? 'text-[var(--color-surface-raised)] font-bold' : 'text-[var(--color-text-secondary)]'
-                        }`}
-                    >
-                      <span>{lang.label}</span>
-                      <span className="text-[9.6px]">{lang.code}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Instant Bilingual Switcher Toggle (EN ⇄ বাংলা) */}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 text-[var(--color-text-primary)] hover:opacity-90 transition-all uppercase text-[11px] py-1.5 px-3 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[3px] glass-tile font-mono cursor-pointer shadow-sm group"
+              title={isBangla ? "Switch to English" : "বাংলায় পরিবর্তন করুন"}
+              aria-label={`Current language: ${language}. Click to toggle.`}
+            >
+              <Globe className="w-3.5 h-3.5 text-[var(--color-surface-raised)] group-hover:rotate-180 transition-transform duration-500" />
+              <span className="font-bold text-[var(--color-surface-raised)]">{isBangla ? 'বাংলা' : 'EN'}</span>
+              <span className="text-[9px] text-[var(--color-text-secondary)] font-normal">| {isBangla ? 'EN' : 'বাং'}</span>
+            </button>
 
             {/* Day / Night Theme Mode Switcher */}
             <button
@@ -303,12 +288,12 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               {isDay ? (
                 <>
                   <Sun className="w-3.5 h-3.5 text-[#16a34a] group-hover:rotate-45 transition-transform" />
-                  <span className="font-semibold text-[var(--color-text-primary)]">DAY</span>
+                  <span className="font-semibold text-[var(--color-text-primary)]">{isBangla ? 'ডে' : 'DAY'}</span>
                 </>
               ) : (
                 <>
                   <Moon className="w-3.5 h-3.5 text-[#22c55e] group-hover:-rotate-12 transition-transform" />
-                  <span className="font-semibold text-[var(--color-text-primary)]">NIGHT</span>
+                  <span className="font-semibold text-[var(--color-text-primary)]">{isBangla ? 'নাইট' : 'NIGHT'}</span>
                 </>
               )}
             </button>
@@ -341,17 +326,41 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 className="font-extrabold tracking-tight text-[var(--color-text-primary)] leading-[1.04] drop-shadow-md"
                 style={{ fontSize: 'clamp(3.2rem, 7vw, 5.75rem)' }}
               >
-                {activeTool.headline}
+                {isBangla && activeTool.id === 'masslabs'
+                  ? 'ঘটনার পূর্বেই ভূমি জালিয়াতি শনাক্ত করুন'
+                  : isBangla && activeTool.id === 'archimap'
+                  ? 'ধারাবাহিক মালিকানা চেইন বিশ্লেষণ'
+                  : isBangla && activeTool.id === 'cologram'
+                  ? 'দলিল ও খতিয়ান অসঙ্গতি বিশ্লেষণ'
+                  : isBangla && activeTool.id === 'laserfish'
+                  ? 'ব্যাখ্যাযোগ্য ভূমি ঝুঁকি নির্ণয়'
+                  : activeTool.headline}
               </h1>
 
               {/* Metadata Subtitle 1 */}
               <p className="text-base sm:text-lg text-[var(--color-text-primary)] font-normal leading-relaxed max-w-3xl drop-shadow-sm opacity-90">
-                {activeTool.meta}
+                {isBangla && activeTool.id === 'masslabs'
+                  ? 'মালিকানা গ্রাফ · বহু-নথি ক্রস-যাচাইকরণ · ব্যাখ্যাযোগ্য ঝুঁকি স্কোরিং · আক্রমণ স্ট্রেস-টেস্টিং'
+                  : isBangla && activeTool.id === 'archimap'
+                  ? 'মৌজা প্লট গ্রাফ · ধারাবাহিক স্থানান্তর চেইন · দ্বৈত-বিক্রয় শনাক্তকরণ · হিস্যা বণ্টন যাচাই'
+                  : isBangla && activeTool.id === 'cologram'
+                  ? 'বাংলা ওসিআর নিষ্কাশন · ফিল্ড-লেভেল বৈপরীত্য তুলনা · দাগ/খতিয়ান/জমির পরিমাণ দ্বন্দ্ব'
+                  : isBangla && activeTool.id === 'laserfish'
+                  ? 'আইনি নিয়ম ও অ্যানোমালি ডিটেকশন · তীব্রতা পরিমাপ · ক্রিপ্টোগ্রাফিক প্রমাণ ট্রেইল'
+                  : activeTool.meta}
               </p>
 
               {/* Subtitle 2 */}
               <p className="text-base sm:text-lg text-[var(--color-text-secondary)] font-normal leading-relaxed max-w-2xl drop-shadow-sm pb-2">
-                {activeTool.description}
+                {isBangla && activeTool.id === 'masslabs'
+                  ? t.hero.description
+                  : isBangla && activeTool.id === 'archimap'
+                  ? 'প্রতিটি প্লট, মালিক, দলিল ও নামজারিকে ধারাবাহিক গ্রাফ হিসেবে সংযুক্ত করুন। সময়ের সাথে মালিকানা পরিবর্তনের অসঙ্গতি ও অসম্ভব হস্তান্তর শনাক্ত করুন।'
+                  : isBangla && activeTool.id === 'cologram'
+                  ? 'দলিল, খতিয়ান ও নামজারি থেকে স্বয়ংক্রিয়ভাবে তথ্য উদ্ধৃত করে বিতর্কিত দাগ নম্বর, সীমানা ও হিস্যার পার্থক্য পাশাপাশি দেখুন।'
+                  : isBangla && activeTool.id === 'laserfish'
+                  ? 'প্রতিটি সতর্কতায় লঙ্ঘিত আইনি ধারা, প্রামাণ্য রেকর্ড ও তীব্রতা স্পষ্টভাবে উল্লেখ থাকে—কেবলমাত্র একটি স্কোর নয়।'
+                  : activeTool.description}
               </p>
 
               {/* Primary Action Button */}
@@ -360,7 +369,11 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   onClick={() => setIsSiteAnalysisStudioOpen(true)}
                   className="px-8 py-3.5 text-base font-bold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[3px] transition-all whitespace-nowrap flex items-center gap-3 shadow-[0_12px_32px_rgba(34,197,94,0.38),inset_0_1.5px_1px_rgba(255,255,255,0.35)] group focus-visible:ring-2 focus-visible:ring-[var(--color-border-strong)] outline-none cursor-pointer backdrop-blur-md"
                 >
-                  <span>{activeTool.ctaText}</span>
+                  <span>
+                    {isBangla
+                      ? (activeTool.id === 'masslabs' ? 'অনুসন্ধান শুরু করুন →' : `${activeTool.name} চালু করুন →`)
+                      : activeTool.ctaText}
+                  </span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <a
@@ -368,7 +381,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   className="px-6 py-3.5 text-base font-bold text-[var(--color-text-primary)] glass-tile border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[3px] transition-all whitespace-nowrap flex items-center gap-2 cursor-pointer shadow-md backdrop-blur-md"
                 >
                   <ShieldCheck className="w-4 h-4 text-[var(--color-surface-raised)]" />
-                  <span>JomiChain Plot Passport →</span>
+                  <span>{t.hero.ctaSecondary}</span>
                 </a>
               </div>
             </motion.div>
@@ -379,22 +392,26 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="relative z-20 px-6 sm:px-10 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11.52px] font-mono text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)]/70 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)]" />
-            <span className="text-[var(--color-text-primary)] font-semibold">Probaho Cadastral Core:</span>
-            <span>Streaming {activeMap.cityName} ({activeMap.coordinates})</span>
+            <span className="text-[var(--color-text-primary)] font-semibold">{t.hero.streamingCore}</span>
+            <span>
+              {isBangla
+                ? `লাইভ স্ট্রিম: ${activeMap.cityName} (${activeMap.coordinates})`
+                : `Streaming ${activeMap.cityName} (${activeMap.coordinates})`}
+            </span>
           </div>
 
           <div className="flex items-center gap-6">
             <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">
-              Detection Engines
+              {t.nav.engines}
             </a>
             <a href="#jomichain" className="text-[var(--color-surface-raised)] hover:underline font-bold transition-colors">
-              JomiChain Engine ↓
+              {t.nav.jomichain} ↓
             </a>
             <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">
-              Pricing Plans
+              {t.nav.pricing}
             </a>
             <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">
-              Case Studies ↓
+              {t.cases.tabAll} ↓
             </a>
           </div>
         </div>
@@ -432,6 +449,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
       {/* 
         ====================================================================
+        CADASTRAL SECTION TRANSITION BEAM: Telemetry runner to Section 02
+        ====================================================================
+      */}
+      <CadastralSectionTransitionBeam />
+
+      {/* 
+        ====================================================================
         PRODUCT SUITE OVERVIEW (archiMap, LaserFish, Cologram, Globee):
         ====================================================================
       */}
@@ -441,37 +465,53 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
+        className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200 relative overflow-hidden"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <div className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-surface-raised)]">
-              Probaho Intelligence Suite
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
-              Four Specialized Engines. One Unified Fraud Shield.
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-surface-raised)]/10 border border-[var(--color-surface-raised)]/30 text-[11px] font-mono uppercase tracking-widest text-[var(--color-surface-raised)]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-surface-raised)] animate-ping" />
+              <span>{t.suite.sectionTag}</span>
+            </motion.div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
+              {t.suite.heading}
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-              Multi-signal fraud detection, cross-document verification, and evidence intelligence for Bangladesh land records.
+              {t.suite.subheading}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Tool 1: archiMap / Ownership Graph */}
-            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
+            <motion.div
+              whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+            >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">01 · TEMPORAL OWNERSHIP GRAPH</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Bangladesh Cadastre</span>
+                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
+                    {t.suite.tool1.type}
+                  </span>
+                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)] px-2 py-0.5 rounded bg-white/5 border border-white/10">{t.suite.tool1.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Ownership Graph</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool1.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Model every parcel, owner, deed, and mutation as a temporal connected graph. Automatically detect double-sales, impossible transfer chains, and ownership share proportion deficits across historical records.
+                  {t.suite.tool1.desc}
                 </p>
+
+                {/* Micro-Animated SVG Graph Widget */}
+                <OwnershipGraphWidget />
+
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Temporal Transfer Chains & Dag Validation</div>
-                  <div>• Double-Sale & Share Deficit Detection</div>
-                  <div>• Interactive Mouza Parcel Graph Vectors</div>
+                  <div>{t.suite.tool1.f1}</div>
+                  <div>{t.suite.tool1.f2}</div>
+                  <div>{t.suite.tool1.f3}</div>
                 </div>
               </div>
               <button
@@ -479,94 +519,128 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setActiveToolId('archimap');
                   setIsSiteAnalysisStudioOpen(true);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)]"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
               >
-                Launch Ownership Graph →
+                <span>{t.suite.tool1.cta}</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
-            </div>
+            </motion.div>
 
             {/* Tool 2: LaserFish / FraudEngine */}
-            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
+            <motion.div
+              whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+            >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">02 · EXPLAINABLE RISK ENGINE</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Hybrid Rule + Anomaly</span>
+                  <span className="text-xs font-mono text-red-400 font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                    {t.suite.tool2.type}
+                  </span>
+                  <span className="text-[10px] font-mono text-red-400 px-2 py-0.5 rounded bg-red-950/40 border border-red-500/30">{t.suite.tool2.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">FraudEngine</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool2.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Combine deterministic legal rules with anomaly detection models. Every alert includes the specific violation rule triggered, supporting evidentiary citations, severity rating, and uncertainty measures.
+                  {t.suite.tool2.desc}
                 </p>
+
+                {/* Micro-Animated Radial Risk Gauge Widget */}
+                <FraudEngineGaugeWidget />
+
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Legal Rules Engine + Unsupervised Anomaly Scoring</div>
-                  <div>• Verifiable Evidence Dossier with Integrity Hashes</div>
-                  <div>• Counterfactual What-If Risk Analysis Simulator</div>
+                  <div>{t.suite.tool2.f1}</div>
+                  <div>{t.suite.tool2.f2}</div>
+                  <div>{t.suite.tool2.f3}</div>
                 </div>
               </div>
               <button
                 onClick={() => {
                   setActiveToolId('laserfish');
-                  setToastMessage('FraudEngine activated: Multi-signal risk assessment pipeline ready.');
+                  setToastMessage(isBangla ? 'ফ্রডইঞ্জিন সক্রিয়: বহু-সংকেত ঝুঁকি পাইপলাইন প্রস্তুত।' : 'FraudEngine activated: Multi-signal risk assessment pipeline ready.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer"
+                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
-                Explore FraudEngine →
+                <span>{t.suite.tool2.cta}</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
-            </div>
+            </motion.div>
 
             {/* Tool 3: Cologram / DocCompare */}
-            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
+            <motion.div
+              whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+            >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">03 · CONTRADICTION ENGINE</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Bangla OCR & LLM Extraction</span>
+                  <span className="text-xs font-mono text-cyan-400 font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                    {t.suite.tool3.type}
+                  </span>
+                  <span className="text-[10px] font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-950/40 border border-cyan-500/30">{t.suite.tool3.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">DocCompare</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool3.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Extract structured fields from deeds, khatian, porcha, and mutation papers. Highlight exact conflicting dag numbers, plot boundaries, seller shares, and dates side-by-side with OCR confidence scores.
+                  {t.suite.tool3.desc}
                 </p>
+
+                {/* Micro-Animated Dual-Document Scanner Widget */}
+                <DocCompareScannerWidget />
+
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Multi-Document Cross-Verification (Deed vs. Khatian)</div>
-                  <div>• Field-Level Discrepancy & Confidence Tagging</div>
-                  <div>• Page-Level Evidence Citations & Discrepancy Reports</div>
+                  <div>{t.suite.tool3.f1}</div>
+                  <div>{t.suite.tool3.f2}</div>
+                  <div>{t.suite.tool3.f3}</div>
                 </div>
               </div>
               <button
                 onClick={() => {
                   setActiveToolId('cologram');
-                  setToastMessage('DocCompare contradiction analysis engine ready.');
+                  setToastMessage(isBangla ? 'দলিল তুলনাকারী অসঙ্গতি শনাক্তকরণ ইঞ্জিন প্রস্তুত।' : 'DocCompare contradiction analysis engine ready.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer"
+                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
-                Launch DocCompare →
+                <span>{t.suite.tool3.cta}</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
-            </div>
+            </motion.div>
 
             {/* Tool 4: Globee / Adversarial Simulator */}
-            <div className="p-8 rounded-[8px] space-y-5 hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group">
+            <motion.div
+              whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+            >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold">04 · ADVERSARIAL SIMULATOR</span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)]">Attack Benchmark</span>
+                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-ping" />
+                    {t.suite.tool4.type}
+                  </span>
+                  <span className="text-[10px] font-mono text-[var(--color-surface-raised)] px-2 py-0.5 rounded bg-[var(--color-surface-raised)]/10 border border-[var(--color-surface-raised)]/30">{t.suite.tool4.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">Adversarial Simulator</h3>
+                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool4.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Simulate synthetic fraud attacks—such as double-selling, forged mutation timelines, and altered land areas—to benchmark detection performance, stress-test rules, and minimize false positives.
+                  {t.suite.tool4.desc}
                 </p>
+
+                {/* Micro-Animated Stress-Test Oscilloscope Widget */}
+                <AdversarialSimulatorWidget />
+
                 <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>• Synthetic Attack Vector Injection & Stress-Testing</div>
-                  <div>• Benchmark Detection Rate & Precision-Recall Metrics</div>
-                  <div>• Continuous Defense Hardening for Registry Security</div>
+                  <div>{t.suite.tool4.f1}</div>
+                  <div>{t.suite.tool4.f2}</div>
+                  <div>{t.suite.tool4.f3}</div>
                 </div>
               </div>
               <button
                 onClick={() => setIsNoticeOpen(true)}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)]"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
               >
-                Open Adversarial Simulator →
+                <span>{t.suite.tool4.cta}</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
-            </div>
+            </motion.div>
           </div>
         </div>
       </motion.section>
@@ -604,20 +678,20 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--color-border-subtle)] pb-6">
             <div>
               <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono mb-1">
-                Investigated Records & Fraud Cases
+                {t.cases.tag}
               </div>
               <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">
-                Land Record Verifications & Detected Fraud Scenarios
+                {t.cases.heading}
               </h2>
             </div>
 
             {/* Filter Buttons */}
             <div className="flex items-center gap-1.5 p-1 glass-pill rounded-[6px]">
               {[
-                { id: 'all', label: 'All Cases' },
-                { id: 'clean', label: 'Clean Verified' },
-                { id: 'double', label: 'Double Sale' },
-                { id: 'complex', label: 'Complex Fraud' },
+                { id: 'all', label: t.cases.tabAll },
+                { id: 'clean', label: t.cases.tabClean },
+                { id: 'double', label: t.cases.tabDouble },
+                { id: 'complex', label: t.cases.tabComplex },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -635,41 +709,55 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
           {/* Project Bento Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <div
+            {filteredProjects.map((project, idx) => (
+              <motion.div
                 key={project.id}
-                className="rounded-[8px] overflow-hidden group hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card"
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
+                className="rounded-[8px] overflow-hidden group border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card hover:shadow-[0_16px_40px_rgba(34,197,94,0.15)]"
               >
                 <div>
                   <div className="relative aspect-[4/3] overflow-hidden bg-black/60">
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute top-3 left-3 glass-pill px-2.5 py-1 text-[9.6px] font-mono text-white rounded-[3px]">
-                      {project.location}
+                    <div className="absolute top-3 left-3 glass-pill px-2.5 py-1 text-[9.6px] font-mono text-white rounded-[3px] bg-black/70 backdrop-blur-sm border border-white/10">
+                      {isBangla && project.locationBn ? project.locationBn : project.location}
+                    </div>
+                    {/* Live Case Forensic Status Tag */}
+                    <div className="absolute top-3 right-3 glass-pill px-2 py-1 text-[9px] font-mono rounded-[3px] flex items-center gap-1.5 bg-black/75 backdrop-blur-sm border border-white/10">
+                      <span className={`w-1.5 h-1.5 rounded-full ${project.category.includes('Double') ? 'bg-red-400 animate-ping' : 'bg-[var(--color-surface-raised)] animate-pulse'}`} />
+                      <span className={project.category.includes('Double') ? 'text-red-300 font-semibold' : 'text-emerald-300 font-semibold'}>
+                        {project.category.includes('Double') ? (isBangla ? 'দ্বৈত-সংঘর্ষ চিহ্নিত' : 'COLLISION CAUGHT') : (isBangla ? 'যাচাইকৃত প্রমাণ' : 'VERIFIED PROOF')}
+                      </span>
                     </div>
                   </div>
 
                   <div className="p-6 space-y-3">
                     <div className="flex items-center gap-2 text-[10.56px] text-[var(--color-text-secondary)] font-mono">
-                      <span>{project.category}</span>
+                      <span>{isBangla && project.categoryBn ? project.categoryBn : project.category}</span>
                       <span aria-hidden="true">·</span>
                       <span>{project.year}</span>
                     </div>
 
                     <h3 className="text-lg font-semibold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">
-                      {project.title}
+                      {isBangla && project.titleBn ? project.titleBn : project.title}
                     </h3>
 
                     <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
-                      {project.summary}
+                      {isBangla && project.summaryBn ? project.summaryBn : project.summary}
                     </p>
 
                     <div className="pt-2 border-t border-[var(--color-border-subtle)] flex items-center justify-between text-[11.52px] font-mono">
-                      <span className="text-[var(--color-text-secondary)]">{project.metricLabel}</span>
+                      <span className="text-[var(--color-text-secondary)]">
+                        {isBangla && project.metricLabelBn ? project.metricLabelBn : project.metricLabel}
+                      </span>
                       <span className="text-[var(--color-text-primary)] font-bold mass-num">{project.metric}</span>
                     </div>
                   </div>
@@ -678,13 +766,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="p-6 pt-0">
                   <button
                     onClick={() => setSelectedProject(project)}
-                    className="w-full py-2.5 text-xs font-mono text-[var(--color-text-primary)] glass-tile border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] hover:text-[var(--color-surface-raised)] rounded-[3px] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-2.5 text-xs font-mono text-[var(--color-text-primary)] glass-tile border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] hover:text-[var(--color-surface-raised)] rounded-[3px] transition-colors flex items-center justify-center gap-2 cursor-pointer group-hover:bg-[var(--color-surface-raised)]/10"
                   >
-                    <span>Inspect Investigation Dossier</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <span>{t.cases.inspectDossier}</span>
+                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -706,50 +794,50 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="max-w-2xl space-y-3">
             <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono">
-              Detection Methodology
+              {t.methodology.tag}
             </div>
             <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">
-              Multi-Signal Ingestion to Cryptographic Evidence Pipeline
+              {t.methodology.heading}
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-              From unstandardized Bangla land documents and physical porchas to graph-based ownership verification and adversarial robustness testing, Probaho provides end-to-end evidence intelligence.
+              {t.methodology.subheading}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
               <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                01. Ingestion & Structured OCR
+                {isBangla ? '০১. ডিজিটাইজেশন ও ওসিআর' : '01. Ingestion & Structured OCR'}
               </div>
               <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
-                Deed, Khatian & Mutation Digitization
+                {t.methodology.step1Title}
               </h3>
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Process legacy RS, SA, CS, and BS khatian records alongside modern digital deeds. Extract key legal fields with specialized Bangla OCR and record field confidence scores.
+                {t.methodology.step1Desc}
               </p>
             </div>
 
             <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
               <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                02. Graph Analysis & Cross-Verification
+                {isBangla ? '০২. গ্রাফ বিশ্লেষণ ও ক্রস-ভেরিফিকেশন' : '02. Graph Analysis & Cross-Verification'}
               </div>
               <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
-                Temporal Graph & Contradiction Engine
+                {t.methodology.step2Title}
               </h3>
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Construct directed temporal graphs representing ownership transfers over time. Cross-verify party names, transfer shares, and dag boundaries to flag legal impossibilities.
+                {t.methodology.step2Desc}
               </p>
             </div>
 
             <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
               <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                03. Explainable Risk & Evidence
+                {isBangla ? '০৩. ব্যাখ্যাযোগ্য ঝুঁকি ও প্রমাণ' : '03. Explainable Risk & Evidence'}
               </div>
               <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
-                Rule Justifications & Cryptographic Dossier
+                {t.methodology.step3Title}
               </h3>
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Produce explainable risk assessments combining deterministic legal rules with anomaly detection. Export cryptographically verified audit trails with SHA-256 hashes.
+                {t.methodology.step3Desc}
               </p>
             </div>
           </div>
@@ -773,27 +861,27 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono">
-                Institutional Investigation
+                {isBangla ? 'প্রাতিষ্ঠানিক অনুসন্ধান' : 'Institutional Investigation'}
               </div>
               <h2 className="text-3xl font-semibold tracking-tight text-[var(--color-text-primary)]">
-                Request a land fraud audit or parcel investigation.
+                {t.inquiry.heading}
               </h2>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                Probaho partners with land registry offices, legal practices, banking institutions, and municipal authorities to audit high-risk land parcels and uncover fraudulent transfer claims.
+                {t.inquiry.subheading}
               </p>
 
               <div className="space-y-3 font-mono text-xs text-[var(--color-text-secondary)]">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
-                  <span>Direct analysis by senior land fraud intelligence team</span>
+                  <span>{isBangla ? 'সিনিয়র ল্যান্ড ফ্রড ইন্টেলিজেন্স টিম কর্তৃক সরাসরি বিশ্লেষণ' : 'Direct analysis by senior land fraud intelligence team'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
-                  <span>Cryptographic SHA-256 evidence package with cross-document audit</span>
+                  <span>{isBangla ? 'ক্রস-ডকুমেন্ট অডিটসহ ক্রিপ্টোগ্রাফিক SHA-256 প্রমাণ প্যাকেজ' : 'Cryptographic SHA-256 evidence package with cross-document audit'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
-                  <span>Strict confidentiality & institutional data isolation protocols</span>
+                  <span>{isBangla ? 'কঠোর প্রাতিষ্ঠানিক গোপনীয়তা ও ডাটা আইসোলেশন প্রোটোকল' : 'Strict confidentiality & institutional data isolation protocols'}</span>
                 </div>
               </div>
             </div>
@@ -804,10 +892,12 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="py-8 text-center space-y-4">
                   <CheckCircle className="w-12 h-12 text-[var(--color-surface-raised)] mx-auto" />
                   <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
-                    Investigation Request Dispatched
+                    {isBangla ? 'অনুসন্ধান অনুরোধ প্রেরণ সফল' : 'Investigation Request Dispatched'}
                   </h3>
                   <p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto leading-relaxed">
-                    Thank you. The Probaho intelligence team has received your parcel inquiry for <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span>. An analyst will correspond directly via {inquiryEmail}.
+                    {isBangla 
+                      ? <>ধন্যবাদ। প্রবাহ ইন্টেলিজেন্স টিম <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span> সম্পর্কিত আপনার অনুসন্ধান অনুরোধ গ্রহণ করেছে। {inquiryEmail} এর মাধ্যমে শীঘ্রই যোগাযোগ করা হবে।</>
+                      : <>Thank you. The Probaho intelligence team has received your parcel inquiry for <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span>. An analyst will correspond directly via {inquiryEmail}.</>}
                   </p>
                   <button
                     onClick={() => {
@@ -817,14 +907,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     }}
                     className="px-4 py-2 text-xs font-mono text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] cursor-pointer"
                   >
-                    Submit Another Inquiry
+                    {isBangla ? 'আরেকটি অনুসন্ধান জমা দিন' : 'Submit Another Inquiry'}
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleInquirySubmit} className="space-y-5">
                   <div>
                     <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
-                      OFFICIAL OR INSTITUTIONAL EMAIL *
+                      {t.inquiry.emailLabel} *
                     </label>
                     <input
                       type="email"
@@ -838,27 +928,27 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
                   <div>
                     <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
-                      INVESTIGATION TYPOLOGY
+                      {t.inquiry.typologyLabel}
                     </label>
                     <select
                       value={inquiryScope}
                       onChange={(e) => setInquiryScope(e.target.value)}
                       className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
                     >
-                      <option value="Commercial / High-Value Parcel Audit">Commercial / High-Value Parcel Audit</option>
-                      <option value="Institutional Registry Bulk Verification">Institutional Registry Bulk Verification</option>
-                      <option value="Double-Sale Legal Dispute Dossier">Double-Sale Legal Dispute Dossier</option>
-                      <option value="Inheritance & Mutation Conflict Investigation">Inheritance & Mutation Conflict Investigation</option>
+                      <option value="Commercial / High-Value Parcel Audit">{isBangla ? 'বাণিজ্যিক / উচ্চ মূল্যের প্লট অডিট' : 'Commercial / High-Value Parcel Audit'}</option>
+                      <option value="Institutional Registry Bulk Verification">{isBangla ? 'রেজিস্ট্রি অফিস বাল্ক যাচাইকরণ' : 'Institutional Registry Bulk Verification'}</option>
+                      <option value="Double-Sale Legal Dispute Dossier">{isBangla ? 'দ্বৈত-বিক্রয় আইনি বিরোধ ডসিয়ার' : 'Double-Sale Legal Dispute Dossier'}</option>
+                      <option value="Inheritance & Mutation Conflict Investigation">{isBangla ? 'ওয়ারিশান ও নামজারি বিরোধ অনুসন্ধান' : 'Inheritance & Mutation Conflict Investigation'}</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
-                      PARCEL LOCATION, DAG & KHATIAN DETAILS
+                      {t.inquiry.detailsLabel}
                     </label>
                     <textarea
                       rows={3}
-                      placeholder="Specify District, Mouza name, Dag/Plot numbers, Khatian identifiers, and estimated parcel area..."
+                      placeholder={isBangla ? 'জেলা, মৌজা, দাগ ও খতিয়ান নম্বর এবং জমির আনুমানিক পরিমাণ লিখুন...' : 'Specify District, Mouza name, Dag/Plot numbers, Khatian identifiers, and estimated parcel area...'}
                       value={inquiryNotes}
                       onChange={(e) => setInquiryNotes(e.target.value)}
                       className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
@@ -879,10 +969,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     {formState === 'loading' ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin text-current" />
-                        <span>Transmitting Inquiry...</span>
+                        <span>{t.inquiry.transmitting}</span>
                       </>
                     ) : (
-                      <span>Transmit Investigation Request</span>
+                      <span>{t.inquiry.transmitBtn}</span>
                     )}
                   </button>
                 </form>
@@ -903,27 +993,27 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             <div>
               <ProbahoBrand size={24} textSize="text-lg" />
               <p className="text-[11.52px] mt-1 text-[var(--color-text-secondary)] max-w-sm">
-                Intelligent land fraud detection & evidence intelligence for Bangladesh. Standardized under probaho.bd.
+                {t.footer.desc}
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-6 text-[11.52px] font-mono">
-              <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">Engines</a>
-              <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">Pricing</a>
-              <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">Cases</a>
-              <a href="#methodology" className="hover:text-[var(--color-text-primary)] transition-colors">Methodology</a>
-              <button onClick={() => setIsAuthModalOpen(true)} className="hover:text-[var(--color-text-primary)] transition-colors cursor-pointer">Account</button>
+              <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.engines}</a>
+              <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.pricing}</a>
+              <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.cases}</a>
+              <a href="#methodology" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.methodology}</a>
+              <button onClick={() => setIsAuthModalOpen(true)} className="hover:text-[var(--color-text-primary)] transition-colors cursor-pointer">{t.nav.account}</button>
             </div>
           </div>
 
           <div className="pt-6 border-t border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10.56px]">
             <div>
-              © {new Date().getFullYear()} Probaho Intelligence Laboratory · Developed by Md. Tanvir Hasan &amp; Sourav Ghosh · Apache-2.0 License
+              © {new Date().getFullYear()} Probaho Intelligence Laboratory · {t.footer.developedBy}
             </div>
             <div className="flex items-center gap-4 text-[var(--color-text-tertiary)]">
-              <span>WCAG 2.2 Level AA & AAA Verified</span>
+              <span>{t.footer.wcag}</span>
               <span>·</span>
-              <span className="capitalize">{mode} Mode Active</span>
+              <span className="capitalize">{mode === 'day' ? t.nav.dayMode : t.nav.nightMode} {isBangla ? 'সক্রিয়' : 'Active'}</span>
             </div>
           </div>
         </div>
@@ -954,9 +1044,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               {/* Modal Header */}
               <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
                 <div className="flex items-center gap-2 text-xs font-mono text-[var(--color-text-secondary)]">
-                  <span className="text-[var(--color-surface-raised)] font-bold">SYSTEM NOTICE</span>
+                  <span className="text-[var(--color-surface-raised)] font-bold">{isBangla ? 'সিস্টেম নোটিশ' : 'SYSTEM NOTICE'}</span>
                   <span>·</span>
-                  <span>Probaho · Adversarial Simulator</span>
+                  <span>{isBangla ? 'প্রবাহ · আক্রমণ সিমুলেটর' : 'Probaho · Adversarial Simulator'}</span>
                 </div>
                 <button
                   onClick={() => setIsNoticeOpen(false)}
@@ -977,7 +1067,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex items-end p-4">
                   <div className="text-sm font-semibold text-white">
-                    Synthetic Attack & Fraud Stress-Testing Engine
+                    {isBangla ? 'সিন্থেটিক আক্রমণ ও প্রতারণা স্ট্রেস-টেস্টিং ইঞ্জিন' : 'Synthetic Attack & Fraud Stress-Testing Engine'}
                   </div>
                 </div>
               </div>
@@ -985,16 +1075,16 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               {/* Notice Body Text */}
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
-                  Adversarial Simulator is Live
+                  {isBangla ? 'অ্যাডভারসেরিয়াল সিমুলেটর এখন সক্রিয়' : 'Adversarial Simulator is Live'}
                 </h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                  Double-sale injection · altered mutation dates · share deficit attacks — benchmark detection rates and prove robustness against real-world fraud schemes.
+                  {isBangla ? 'দ্বৈত-বিক্রয় ইনজেকশন · পরিবর্তিত নামজারি তারিখ · হিস্যা ঘাটতি আক্রমণ — বাস্তব প্রতারণার বিরুদ্ধে শনাক্তকরণ ক্ষমতা যাচাই করুন।' : 'Double-sale injection · altered mutation dates · share deficit attacks — benchmark detection rates and prove robustness against real-world fraud schemes.'}
                 </p>
                 <p className="text-xs text-[var(--color-text-primary)] leading-relaxed">
-                  Test and validate your rules with synthetic and historical land record anomaly datasets. Public preview enabled for verified organizations.
+                  {isBangla ? 'সিন্থেটিক ও ঐতিহাসিক ভূমি রেকর্ড অসঙ্গতি ডাটা দিয়ে আপনার নিয়মাবলী পরীক্ষা করুন। ভেরিফাইড প্রাতিষ্ঠানিক ব্যবহারকারীদের জন্য উন্মুক্ত।' : 'Test and validate your rules with synthetic and historical land record anomaly datasets. Public preview enabled for verified organizations.'}
                 </p>
                 <div className="text-[10px] font-mono text-[var(--color-text-tertiary)] pt-1">
-                  Posted: October 14, 2026 · Probaho Core
+                  {isBangla ? 'প্রকাশকাল: ১৪ অক্টোবর, ২০২৬ · প্রবাহ কোর' : 'Posted: October 14, 2026 · Probaho Core'}
                 </div>
               </div>
 
@@ -1002,7 +1092,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <div className="pt-3 border-t border-[var(--color-border-subtle)] flex items-center justify-between">
                 <label className="flex items-center gap-2 text-[11px] font-mono text-[var(--color-text-secondary)] cursor-pointer">
                   <input type="checkbox" className="accent-[var(--color-surface-raised)]" />
-                  <span>Don't show again today</span>
+                  <span>{isBangla ? 'আজ আর দেখাবেন না' : "Don't show again today"}</span>
                 </label>
 
                 <button
@@ -1012,7 +1102,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                   className="px-4 py-2 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[2px] flex items-center gap-1.5 font-mono cursor-pointer shadow-sm"
                 >
-                  <span>Launch Simulator →</span>
+                  <span>{isBangla ? 'সিমুলেটর চালু করুন →' : 'Launch Simulator →'}</span>
                 </button>
               </div>
             </motion.div>
@@ -1047,7 +1137,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
                   <span className="text-[var(--color-text-tertiary)]">|</span>
-                  <span className="text-xs text-[var(--color-text-primary)] font-semibold">{activeMap.cityName} Cadastral & Ownership Graph Studio</span>
+                  <span className="text-xs text-[var(--color-text-primary)] font-semibold">
+                    {isBangla ? `${activeMap.cityName} ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ স্টুডিও` : `${activeMap.cityName} Cadastral & Ownership Graph Studio`}
+                  </span>
                   <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeMap.coordinates})</span>
                 </div>
 
@@ -1096,8 +1188,12 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
                   {/* HUD Overlay */}
                   <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
-                    <div className="text-[var(--color-surface-raised)] font-semibold">Active Registry: {activeMap.layers}</div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)]">Division: {activeMap.cityName} · CRS: EPSG:3857 · Cadastre: {activeMap.parcelCount}</div>
+                    <div className="text-[var(--color-surface-raised)] font-semibold">
+                      {isBangla ? 'সক্রিয় রেজিস্ট্রি:' : 'Active Registry:'} {activeMap.layers}
+                    </div>
+                    <div className="text-[10px] text-[var(--color-text-secondary)]">
+                      {isBangla ? 'বিভাগ' : 'Division'}: {activeMap.cityName} · CRS: EPSG:3857 · {isBangla ? 'ক্যাডাস্ট্রে' : 'Cadastre'}: {activeMap.parcelCount}
+                    </div>
                   </div>
                 </div>
 
@@ -1105,15 +1201,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="w-full lg:w-72 glass-tile border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] p-5 space-y-6 overflow-y-auto font-mono text-xs">
                   <div>
                     <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-wider mb-2">
-                      CADASTRAL & EVIDENCE GIS LAYERS
+                      {t.studio.layersTitle}
                     </div>
                     <div className="space-y-2">
                       {[
-                        { key: 'buildings' as const, label: 'Mouza Cadastral Parcels (Dag plots)' },
-                        { key: 'parcels' as const, label: 'Ownership Transfer Graph Edges' },
-                        { key: 'roads' as const, label: 'Flagged Double-Sale Overlays' },
-                        { key: 'terrain' as const, label: 'Mutation Discrepancy Vectors' },
-                        { key: 'solar' as const, label: 'Deed vs Porcha Conflict Markers' },
+                        { key: 'buildings' as const, label: isBangla ? 'মৌজা ক্যাডাস্ট্রাল প্লট (দাগ নকশা)' : 'Mouza Cadastral Parcels (Dag plots)' },
+                        { key: 'parcels' as const, label: isBangla ? 'মালিকানা হস্তান্তর গ্রাফ এজ' : 'Ownership Transfer Graph Edges' },
+                        { key: 'roads' as const, label: isBangla ? 'চিহ্নিত দ্বৈত-বিক্রয় ওভারলে' : 'Flagged Double-Sale Overlays' },
+                        { key: 'terrain' as const, label: isBangla ? 'নামজারি অসঙ্গতি ভেক্টর' : 'Mutation Discrepancy Vectors' },
+                        { key: 'solar' as const, label: isBangla ? 'দলিল বনাম পর্চা বিরোধ মার্কার' : 'Deed vs Porcha Conflict Markers' },
                       ].map((layer) => (
                         <button
                           key={layer.key}
@@ -1133,20 +1229,22 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   </div>
 
                   <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] space-y-1.5">
-                    <div className="text-[var(--color-text-primary)] font-semibold">Export Format Supported:</div>
-                    <div>• GeoJSON, Shapefile, DXF, SVG Vector</div>
-                    <div>• Cryptographic SHA-256 Evidence Report</div>
+                    <div className="text-[var(--color-text-primary)] font-semibold">
+                      {isBangla ? 'সমর্থিত এক্সপোর্ট ফরম্যাট:' : 'Export Format Supported:'}
+                    </div>
+                    <div>{isBangla ? '• জিওজেএসন, শেপফাইল, ডিএক্সএফ, এসভিজি' : '• GeoJSON, Shapefile, DXF, SVG Vector'}</div>
+                    <div>{isBangla ? '• ক্রিপ্টোগ্রাফিক SHA-256 প্রমাণ রিপোর্ট' : '• Cryptographic SHA-256 Evidence Report'}</div>
                   </div>
 
                   <div className="pt-2">
                     <button
                       onClick={() => {
-                        setToastMessage(`Exported cadastral evidence package for ${activeMap.cityName}.`);
+                        setToastMessage(isBangla ? `${activeMap.cityName} এর ক্যাডাস্ট্রাল প্রমাণ প্যাকেজ ডাউনলোড সম্পন্ন।` : `Exported cadastral evidence package for ${activeMap.cityName}.`);
                         setTimeout(() => setToastMessage(null), 4000);
                       }}
                       className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] transition-colors cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.35)]"
                     >
-                      Export Evidence Dossier (.PDF)
+                      {t.studio.exportBtn}
                     </button>
                   </div>
                 </div>
@@ -1176,7 +1274,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             >
               <div className="sticky top-0 bg-black/40 backdrop-blur-md p-4 border-b border-[var(--color-border-subtle)] flex items-center justify-between z-10">
                 <div className="text-xs font-mono text-[var(--color-text-secondary)]">
-                  INVESTIGATION DOSSIER · {selectedProject.id.toUpperCase()}
+                  {isBangla ? `তদন্ত ডসিয়ার · ${selectedProject.id.toUpperCase()}` : `INVESTIGATION DOSSIER · ${selectedProject.id.toUpperCase()}`}
                 </div>
                 <button
                   onClick={() => setSelectedProject(null)}
@@ -1198,26 +1296,38 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 </div>
 
                 <div>
-                  <div className="text-xs font-mono text-[var(--color-surface-raised)] mb-1">{selectedProject.category} · {selectedProject.location}</div>
-                  <h3 className="text-2xl font-semibold text-[var(--color-text-primary)]">{selectedProject.title}</h3>
-                  <p className="mt-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">{selectedProject.summary}</p>
+                  <div className="text-xs font-mono text-[var(--color-surface-raised)] mb-1">
+                    {isBangla && selectedProject.categoryBn ? selectedProject.categoryBn : selectedProject.category} · {isBangla && selectedProject.locationBn ? selectedProject.locationBn : selectedProject.location}
+                  </div>
+                  <h3 className="text-2xl font-semibold text-[var(--color-text-primary)]">
+                    {isBangla && selectedProject.titleBn ? selectedProject.titleBn : selectedProject.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-[var(--color-text-secondary)] leading-relaxed">
+                    {isBangla && selectedProject.summaryBn ? selectedProject.summaryBn : selectedProject.summary}
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 p-4 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] font-mono text-xs">
                   <div>
-                    <div className="text-[var(--color-text-secondary)]">Primary Metric</div>
-                    <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.metric} ({selectedProject.metricLabel})</div>
+                    <div className="text-[var(--color-text-secondary)]">{isBangla ? 'প্রাথমিক সূচক' : 'Primary Metric'}</div>
+                    <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">
+                      {selectedProject.metric} ({isBangla && selectedProject.metricLabelBn ? selectedProject.metricLabelBn : selectedProject.metricLabel})
+                    </div>
                   </div>
                   <div>
-                    <div className="text-[var(--color-text-secondary)]">Parcel Identifier</div>
-                    <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">{selectedProject.dimensions}</div>
+                    <div className="text-[var(--color-text-secondary)]">{isBangla ? 'প্লট পরিচিতি' : 'Parcel Identifier'}</div>
+                    <div className="text-base text-[var(--color-text-primary)] font-semibold mt-0.5">
+                      {isBangla && selectedProject.dimensionsBn ? selectedProject.dimensionsBn : selectedProject.dimensions}
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <div className="text-xs font-mono text-[var(--color-text-secondary)] mb-2">SUPPORTING DOCUMENTARY EVIDENCE</div>
+                  <div className="text-xs font-mono text-[var(--color-text-secondary)] mb-2">
+                    {isBangla ? 'সংযুক্ত প্রামাণ্য নথিপত্র' : 'SUPPORTING DOCUMENTARY EVIDENCE'}
+                  </div>
                   <div className="flex flex-wrap gap-2">
-                    {selectedProject.materials.map((mat, i) => (
+                    {(isBangla && selectedProject.materialsBn ? selectedProject.materialsBn : selectedProject.materials).map((mat, i) => (
                       <span
                         key={i}
                         className="px-2.5 py-1 text-xs font-mono glass-tile border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] rounded-[3px]"
@@ -1233,7 +1343,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     onClick={() => setSelectedProject(null)}
                     className="px-4 py-2 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
                   >
-                    Close Dossier
+                    {isBangla ? 'ডসিয়ার বন্ধ করুন' : 'Close Dossier'}
                   </button>
                   <button
                     onClick={() => {
@@ -1242,7 +1352,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     }}
                     className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
                   >
-                    Request Similar Parcel Audit
+                    {isBangla ? 'একই ধরনের প্লট অডিট অনুরোধ' : 'Request Similar Parcel Audit'}
                   </button>
                 </div>
               </div>
@@ -1271,7 +1381,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             >
               <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
                 <div className="text-xs font-mono text-[var(--color-surface-raised)] font-bold">
-                  DIRECT TITLE INVESTIGATION INQUIRY
+                  {isBangla ? 'সরাসরি জমি যাচাই ও বিরোধ অনুসন্ধান' : 'DIRECT TITLE INVESTIGATION INQUIRY'}
                 </div>
                 <button
                   onClick={() => setIsInquiryModalOpen(false)}
@@ -1283,21 +1393,21 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               </div>
 
               <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-                Connect directly with Probaho analysts for title verification and contradiction audits.
+                {isBangla ? 'স্বত্ব যাচাই ও খতিয়ান বিরোধ অডিটের জন্য সরাসরি প্রবাহ বিশ্লেষকদের সাথে যুক্ত হোন।' : 'Connect directly with Probaho analysts for title verification and contradiction audits.'}
               </p>
 
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   setIsInquiryModalOpen(false);
-                  setToastMessage('Thank you. Your parcel investigation inquiry has been dispatched to Probaho.');
+                  setToastMessage(isBangla ? 'ধন্যবাদ। আপনার ভূমি অনুসন্ধান অনুরোধটি সফলভাবে প্রবাহে পাঠানো হয়েছে।' : 'Thank you. Your parcel investigation inquiry has been dispatched to Probaho.');
                   setTimeout(() => setToastMessage(null), 4000);
                 }}
                 className="space-y-4"
               >
                 <div>
                   <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1">
-                    OFFICIAL EMAIL *
+                    {t.inquiry.emailLabel} *
                   </label>
                   <input
                     type="email"
@@ -1309,11 +1419,11 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
                 <div>
                   <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1">
-                    PARCEL LOCATION & TARGET TIMELINE
+                    {isBangla ? 'জমির অবস্থান ও কাঙ্ক্ষিত সময়সীমা' : 'PARCEL LOCATION & TARGET TIMELINE'}
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Mouza Mirpur · Dag 3078 · Dhaka"
+                    placeholder={isBangla ? 'যেমন: মৌজা মিরপুর · দাগ ৩০৭৮ · ঢাকা' : 'e.g. Mouza Mirpur · Dag 3078 · Dhaka'}
                     className="w-full px-3 py-2 text-xs glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[3px] font-mono"
                   />
                 </div>
@@ -1324,13 +1434,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     onClick={() => setIsInquiryModalOpen(false)}
                     className="px-3 py-2 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
                   >
-                    Cancel
+                    {isBangla ? 'বাতিল' : 'Cancel'}
                   </button>
                   <button
                     type="submit"
                     className="px-4 py-2 text-xs font-mono text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-semibold cursor-pointer shadow-md"
                   >
-                    Send Investigation Brief
+                    {isBangla ? 'তদন্ত বিবরণ পাঠান' : 'Send Investigation Brief'}
                   </button>
                 </div>
               </form>

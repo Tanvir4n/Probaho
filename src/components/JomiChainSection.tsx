@@ -46,6 +46,7 @@ import {
   FileCode2,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 // ============================================================================
 // DATA MODELS & SYNTHETIC DATA (Complies with Rulebook Synthetic Data Rule)
@@ -349,6 +350,7 @@ export const SAMPLE_BANGLA_PAIRS: FuzzyPair[] = [
 
 export const JomiChainSection: React.FC = () => {
   const { isDay } = useTheme();
+  const { isBangla, t } = useLanguage();
   const [selectedPlotId, setSelectedPlotId] = useState<string>('plot-1042');
   const [activeTab, setActiveTab] = useState<'story' | 'lineage' | 'ledger' | 'lock' | 'fuzzy' | 'report'>('story');
   
@@ -366,29 +368,29 @@ export const JomiChainSection: React.FC = () => {
   // Live simulation actions
   const handleLockOfficeA = () => {
     setIsOfficeALocked(true);
-    setToastMessage('🔒 Office A (Tejgaon Sub-Registry) reserved Dag 1042. Soft-lock active for 72 hours.');
+    setToastMessage(isBangla ? '🔒 সাব-রেজিস্ট্রি অফিস এ (তেজগাঁও) দাগ ১০৪২ রিজার্ভ করেছে। সফট-লক ৭২ ঘণ্টার জন্য সক্রিয়।' : '🔒 Office A (Tejgaon Sub-Registry) reserved Dag 1042. Soft-lock active for 72 hours.');
     setTimeout(() => setToastMessage(null), 5000);
   };
 
   const handleUnlockOfficeA = () => {
     setIsOfficeALocked(false);
     setIsOfficeBAttempted(false);
-    setToastMessage('🔓 Soft-lock released. Plot Dag 1042 returned to open ledger state.');
+    setToastMessage(isBangla ? '🔓 সফট-লক অবমুক্ত হয়েছে। দাগ ১০৪২ উন্মুক্ত লেজার অবস্থায় ফিরে এসেছে।' : '🔓 Soft-lock released. Plot Dag 1042 returned to open ledger state.');
     setTimeout(() => setToastMessage(null), 4000);
   };
 
   const handleAttemptOfficeB = () => {
     setIsOfficeBAttempted(true);
-    setToastMessage('🚨 CONCURRENCY COLLISION BLOCKED! Office B attempted to sell a soft-locked plot.');
+    setToastMessage(isBangla ? '🚨 কনকারেন্সি সংঘাত প্রতিহত হয়েছে! অফিস বি লক থাকা জমি বিক্রির অপচেষ্টা করেছিল।' : '🚨 CONCURRENCY COLLISION BLOCKED! Office B attempted to sell a soft-locked plot.');
     setTimeout(() => setToastMessage(null), 6000);
   };
 
   const handleToggleTamper = () => {
     setIsTamperActive(!isTamperActive);
     if (!isTamperActive) {
-      setToastMessage('⚠️ SIMULATION: Record #2 in Database was directly altered! Cryptographic chain is now severed.');
+      setToastMessage(isBangla ? '⚠️ সিমুলেশন: ডাটাবেসের রেকর্ড #২ পরিবর্তন করা হয়েছে! ক্রিপ্টোগ্রাফিক চেইন বাতিল।' : '⚠️ SIMULATION: Record #2 in Database was directly altered! Cryptographic chain is now severed.');
     } else {
-      setToastMessage('✅ Database restored to verified signed state. Hash chain validated.');
+      setToastMessage(isBangla ? '✅ ডাটাবেস যাচাইকৃত স্বাক্ষরিত অবস্থায় পুনর্স্থাপিত হয়েছে। হ্যাশ চেইন বৈধ।' : '✅ Database restored to verified signed state. Hash chain validated.');
     }
     setTimeout(() => setToastMessage(null), 5000);
   };
@@ -415,29 +417,36 @@ export const JomiChainSection: React.FC = () => {
           <div className="space-y-3 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-[3px] bg-[var(--color-surface-raised)]/10 border border-[var(--color-surface-raised)]/30 font-mono text-xs text-[var(--color-surface-raised)] font-semibold">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>PROBAHO CORE ENGINE // P3: CATCH FRAUD & DOUBLE-SELLING</span>
+              <span>{t.jomichain.sectionTag}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
-              JomiChain <span className="text-[var(--color-surface-raised)]">— The Plot Passport</span>
+              {t.jomichain.heading}
             </h2>
             <p className="text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed italic font-serif">
-              “Every plot has a story. Make it tamper-proof.”
+              {isBangla ? '“প্রতিটি জমির একটি ইতিহাস আছে। এটিকে অপরিবর্তনীয় করুন।”' : '“Every plot has a story. Make it tamper-proof.”'}
             </p>
             <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
-              Records are historically scattered across sub-registry and revenue offices, leaving citizens and land officers blind to the complete parcel timeline. 
-              <strong> JomiChain</strong> unifies every plot into a tamper-evident <strong>Plot Passport</strong>—linking CS, SA, RS, and BS khatians, deeds, mutations, and bank mortgages with cryptographic hash chains and real-time double-sale locks.
+              {t.jomichain.subheading}
             </p>
           </div>
 
           {/* Quick Stats Pill */}
           <div className="flex flex-wrap md:flex-col items-start md:items-end gap-2 shrink-0">
             <div className="glass-tile px-3.5 py-2 rounded-[5px] border border-[var(--color-border-subtle)] text-right">
-              <div className="text-[10px] font-mono text-[var(--color-text-secondary)] uppercase">Focus Track</div>
-              <div className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">P3 Fraud + P2 & P4 Layers</div>
+              <div className="text-[10px] font-mono text-[var(--color-text-secondary)] uppercase">
+                {isBangla ? 'ফোকাস ট্র্যাক' : 'Focus Track'}
+              </div>
+              <div className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">
+                {isBangla ? 'পি৩ প্রতারণা + পি২ ও পি৪ স্তর' : 'P3 Fraud + P2 & P4 Layers'}
+              </div>
             </div>
             <div className="glass-tile px-3.5 py-2 rounded-[5px] border border-[var(--color-border-subtle)] text-right">
-              <div className="text-[10px] font-mono text-[var(--color-text-secondary)] uppercase">Verification Method</div>
-              <div className="text-xs font-mono font-bold text-[var(--color-text-primary)]">Ed25519 & Hash Chain</div>
+              <div className="text-[10px] font-mono text-[var(--color-text-secondary)] uppercase">
+                {isBangla ? 'যাচাই পদ্ধতি' : 'Verification Method'}
+              </div>
+              <div className="text-xs font-mono font-bold text-[var(--color-text-primary)]">
+                Ed25519 &amp; Hash Chain
+              </div>
             </div>
           </div>
         </div>
@@ -447,12 +456,12 @@ export const JomiChainSection: React.FC = () => {
         {/* ==================================================================== */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-[var(--color-border-subtle)]">
           {[
-            { id: 'story', label: '🎬 5-Minute Live Story', badge: 'DEMO' },
-            { id: 'lineage', label: '1. Survey-Lineage Graph', badge: 'CS→BS' },
-            { id: 'ledger', label: '2. Hash-Chained Ledger', badge: 'Ed25519' },
-            { id: 'lock', label: '3. Double-Sale Lock', badge: 'Real-Time' },
-            { id: 'fuzzy', label: '4. Bangla Fuzzy Match', badge: 'OCR/NLP' },
-            { id: 'report', label: '5. Trust Report & QR', badge: 'Citizen' },
+            { id: 'story', label: isBangla ? '🎬 ৫ মিনিটের লাইভ ডেমো' : '🎬 5-Minute Live Story', badge: 'DEMO' },
+            { id: 'lineage', label: isBangla ? '১. জরিপ-ধারাবাহিকতা গ্রাফ' : '1. Survey-Lineage Graph', badge: 'CS→BS' },
+            { id: 'ledger', label: isBangla ? '২. হ্যাশ-চেইন্ড লেজার' : '2. Hash-Chained Ledger', badge: 'Ed25519' },
+            { id: 'lock', label: isBangla ? '৩. দ্বৈত-বিক্রয় সফট লক' : '3. Double-Sale Lock', badge: 'Real-Time' },
+            { id: 'fuzzy', label: isBangla ? '৪. বাংলা ফাজি ম্যাচ' : '4. Bangla Fuzzy Match', badge: 'OCR/NLP' },
+            { id: 'report', label: isBangla ? '৫. ট্রাস্ট রিপোর্ট ও কিউআর' : '5. Trust Report & QR', badge: 'Citizen' },
           ].map((tab) => (
             <button
               key={tab.id}

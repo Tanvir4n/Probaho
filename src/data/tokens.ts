@@ -123,56 +123,84 @@ export type ComponentState = typeof MASS_COMPONENT_STATES[number];
 export interface ArchitecturalProject {
   id: string;
   title: string;
+  titleBn?: string;
   category: string;
+  categoryBn?: string;
   location: string;
+  locationBn?: string;
   year: string;
   metric: string;
   metricLabel: string;
+  metricLabelBn?: string;
   image: string;
   summary: string;
+  summaryBn?: string;
   dimensions: string;
+  dimensionsBn?: string;
   materials: string[];
+  materialsBn?: string[];
 }
 
 export const ARCHITECTURAL_PROJECTS: ArchitecturalProject[] = [
   {
     id: 'case-clean-001',
     title: 'Verified Ownership Chain — Rajshahi Division',
+    titleBn: 'যাচাইকৃত মালিকানা ধারা — রাজশাহী বিভাগ',
     category: 'Clean Case',
+    categoryBn: 'নিরাপদ কেস',
     location: 'Rajshahi, Bangladesh',
+    locationBn: 'রাজশাহী, বাংলাদেশ',
     year: '2024',
     metric: '100%',
     metricLabel: 'Ownership Chain Verified',
+    metricLabelBn: 'মালিকানা ধারা সম্পূর্ণ যাচাইকৃত',
     image: '/src/assets/images/map_manhattan_carto_1791915045536.jpg',
     summary: "All deeds, mutations, and khatian records are consistent. The seller's recorded share fully covers the transfer and no conflicting transactions were detected across the parcel timeline.",
+    summaryBn: 'সকল দলিল, নামজারি ও খতিয়ান রেকর্ড সম্পূর্ণ সামঞ্জস্যপূর্ণ। বিক্রেতার সংরক্ষিত হিস্যা হস্তান্তরের সাথে সম্পূর্ণ মেলে এবং প্লট টাইমলাইনে কোনো বিতর্কিত লেনদেন পাওয়া যায়নি।',
     dimensions: 'Dag 1452 · Mouza Kantanagar',
+    dimensionsBn: 'দাগ ১৪৫২ · মৌজা কান্তনগর',
     materials: ['Sale Deed 2019', 'RS Khatian 2015', 'Mutation Record 2020'],
+    materialsBn: ['বিক্রয় দলিল ২০১৯', 'আরএস খতিয়ান ২০১৫', 'নামজারি রেকর্ড ২০২০'],
   },
   {
     id: 'case-double-sale',
     title: 'Double-Sale Fraud — Dhaka Metropolitan',
+    titleBn: 'দ্বৈত-বিক্রয় প্রতারণা — ঢাকা মেট্রোপলিটন',
     category: 'Double Sale',
+    categoryBn: 'দ্বৈত বিক্রয়',
     location: 'Dhaka, Bangladesh',
+    locationBn: 'ঢাকা, বাংলাদেশ',
     year: '2025',
     metric: '94.6%',
     metricLabel: 'Fraud Confidence Score',
+    metricLabelBn: 'জালিয়াতি নিশ্চিতকরণ সূচক',
     image: '/src/assets/images/map_tokyo_carto_1791915087818.jpg',
     summary: "Two conflicting sale deeds dated 12 days apart transfer the same parcel (Dag 3078) to different buyers. The seller's recorded ownership share does not support the second transfer.",
+    summaryBn: '১২ দিনের ব্যবধানে সম্পাদিত দুটি পরস্পরবিরোধী বিক্রয় দলিলে একই প্লট (দাগ ৩০৭৮) ভিন্ন ভিন্ন ক্রেতার কাছে হস্তান্তর করা হয়েছে। বিক্রেতার বৈধ হিস্যায় দ্বিতীয় বিক্রয় আইনত অসম্ভব।',
     dimensions: 'Dag 3078 · Mouza Mirpur',
+    dimensionsBn: 'দাগ ৩০৭৮ · মৌজা মিরপুর',
     materials: ['Sale Deed A — 2025-01-04', 'Sale Deed B — 2025-01-16', 'RS Porcha 2018'],
+    materialsBn: ['বিক্রয় দলিল ক — ০৪-০১-২০২৫', 'বিক্রয় দলিল খ — ১৬-০১-২০২৫', 'আরএস পর্চা ২০১৮'],
   },
   {
     id: 'case-complex-003',
     title: 'Share Mismatch & Mutation Conflict — Chittagong',
+    titleBn: 'হিস্যা অসঙ্গতি ও নামজারি বিতর্ক — চট্টগ্রাম',
     category: 'Complex Fraud',
+    categoryBn: 'জটিল জালিয়াতি',
     location: 'Chittagong, Bangladesh',
+    locationBn: 'চট্টগ্রাম, বাংলাদেশ',
     year: '2026',
     metric: '3 Alerts',
     metricLabel: 'Cross-Signal Fraud Triggers',
+    metricLabelBn: 'মাল্টি-সিগন্যাল ফ্রড অ্যালার্ট',
     image: '/src/assets/images/map_london_carto_1791915087785.jpg',
     summary: 'An ownership-share mismatch combined with an inconsistent mutation record and a suspicious document version. The claimed transfer exceeds available shares by 22% and the mutation date predates the original deed.',
+    summaryBn: 'মালিকানা হিস্যার গরমিল, নামজারি রেকর্ডের বৈপরীত্য ও সন্দেহজনক নথি সংস্করণ। দাবিকৃত হস্তান্তর বিক্রেতার হিস্যার চেয়ে ২২% বেশি এবং নামজারির তারিখ মূল দলিলের পূর্ববর্তী।',
     dimensions: 'Dag 7291 · Mouza Patenga',
+    dimensionsBn: 'দাগ ৭২৯১ · মৌজা পতেঙ্গা',
     materials: ['Khatian 2017 (v1)', 'Khatian 2017 (v2 — altered)', 'Mutation 2019', 'Sale Deed 2023'],
+    materialsBn: ['খতিয়ান ২০১৭ (সংস্করণ ১)', 'খতিয়ান ২০১৭ (সংস্করণ ২ — ঘষা-মাজা)', 'নামজারি ২০১৯', 'বিক্রয় দলিল ২০২৩'],
   },
 ];
 

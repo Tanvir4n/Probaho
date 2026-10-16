@@ -15,6 +15,7 @@ import {
   X
 } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { ProbahoLogo, ProbahoBrand } from './components/ProbahoLogo';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -142,8 +143,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
