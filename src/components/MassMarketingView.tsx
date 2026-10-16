@@ -72,14 +72,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
   const [isSiteAnalysisStudioOpen, setIsSiteAnalysisStudioOpen] = useState(false);
+  const [studioCityIndex, setStudioCityIndex] = useState(0); // Anchored to 0 (Dhaka) for Cadastral Studio
 
   // Authentication State
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ email: string; name: string } | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Blueprint Animation Speed & Pause Technical Controls
-  const [isBlueprintPaused, setIsBlueprintPaused] = useState(false);
+  // Blueprint Animation Speed & Pause Technical Controls (Paused by default so cities never jump unexpectedly)
+  const [isBlueprintPaused, setIsBlueprintPaused] = useState(true);
   const [blueprintSpeed, setBlueprintSpeed] = useState<number>(1.0);
   const [mapOverlayOpacity, setMapOverlayOpacity] = useState<number>(0.18);
   const [blueprintZoom, setBlueprintZoom] = useState<number>(0.40); // Compact Zoomed-out Start (40% scale, "size ektu komay dew")
@@ -102,6 +103,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
   const activeTool = MASSLABS_TOOLS.find((t) => t.id === activeToolId) || MASSLABS_TOOLS[0];
   const activeMap = URBAN_MAP_DATASETS[currentMapIndex];
+  const activeStudioMap = URBAN_MAP_DATASETS[studioCityIndex];
 
   const handleToolSelect = (toolId: string) => {
     setActiveToolId(toolId);
@@ -162,8 +164,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           currentMapIndex={currentMapIndex}
           onMapChange={setCurrentMapIndex}
           className="z-0"
-          autoPlay={true}
-          isPaused={isBlueprintPaused}
+          autoPlay={false}
+          isPaused={isBlueprintPaused || isSiteAnalysisStudioOpen}
           onTogglePause={() => setIsBlueprintPaused((prev) => !prev)}
           speedMultiplier={blueprintSpeed}
           onSpeedChange={setBlueprintSpeed}
@@ -520,6 +522,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <OwnershipGraphWidget
                   onLaunchStudio={() => {
                     setCurrentMapIndex(0);
+                    setStudioCityIndex(0);
                     setActiveToolId('archimap');
                     setIsSiteAnalysisStudioOpen(true);
                   }}
@@ -534,6 +537,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <button
                 onClick={() => {
                   setCurrentMapIndex(0);
+                  setStudioCityIndex(0);
                   setActiveToolId('archimap');
                   setIsSiteAnalysisStudioOpen(true);
                 }}
@@ -1155,7 +1159,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               exit={{ opacity: 0, y: 30, scale: 0.98 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className={`glass-panel rounded-[8px] w-full flex flex-col shadow-2xl overflow-hidden ${
-                activeMap.id === 'dhaka-metro' ? 'max-w-[96vw] xl:max-w-[1540px] h-[92vh]' : 'max-w-5xl h-[85vh]'
+                activeStudioMap.id === 'dhaka-metro' ? 'max-w-[96vw] xl:max-w-[1540px] h-[92vh]' : 'max-w-5xl h-[85vh]'
               }`}
               role="dialog"
               aria-modal="true"
@@ -1166,10 +1170,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
                   <span className="text-[var(--color-text-tertiary)]">|</span>
                   <span className="text-xs text-[var(--color-text-primary)] font-semibold">
-                    {isBangla ? `${activeMap.cityName} ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ স্টুডিও` : `${activeMap.cityName} Cadastral & Ownership Graph Studio`}
+                    {isBangla ? `${activeStudioMap.cityName} ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ স্টুডিও` : `${activeStudioMap.cityName} Cadastral & Ownership Graph Studio`}
                   </span>
-                  <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeMap.coordinates})</span>
-                  {activeMap.id === 'dhaka-metro' && (
+                  <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeStudioMap.coordinates})</span>
+                  {activeStudioMap.id === 'dhaka-metro' && (
                     <span className="px-2 py-0.5 text-[9.5px] font-mono rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       D3.js Vector GIS · 86y Temporal DAG
@@ -1182,15 +1186,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     {URBAN_MAP_DATASETS.map((m, idx) => (
                       <button
                         key={m.id}
-                        onClick={() => setCurrentMapIndex(idx)}
-                        className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer flex items-center gap-1.5 ${idx === currentMapIndex
+                        onClick={() => setStudioCityIndex(idx)}
+                        className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer flex items-center gap-1.5 ${idx === studioCityIndex
                             ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                             : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                           }`}
                       >
                         <span>{m.cityName}</span>
                         {m.id === 'dhaka-metro' && (
-                          <span className={`text-[8px] px-1 py-0.2 rounded font-bold ${idx === currentMapIndex ? 'bg-white/25 text-white' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                          <span className={`text-[8px] px-1 py-0.2 rounded font-bold ${idx === studioCityIndex ? 'bg-white/25 text-white' : 'bg-emerald-500/20 text-emerald-400'}`}>
                             D3
                           </span>
                         )}
@@ -1210,7 +1214,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
               {/* Workspace: Map Viewport + Layer Control Panel */}
               <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-                {activeMap.id === 'dhaka-metro' ? (
+                {activeStudioMap.id === 'dhaka-metro' ? (
                   <div className="flex-1 relative w-full h-full overflow-hidden">
                     <TemporalOwnershipGraphStudio
                       onClose={() => setIsSiteAnalysisStudioOpen(false)}
@@ -1222,8 +1226,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     {/* Map Canvas for other regions */}
                     <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
                       <img
-                        src={activeMap.image}
-                        alt={activeMap.cityName}
+                        src={activeStudioMap.image}
+                        alt={activeStudioMap.cityName}
                         className={`w-full h-full object-cover ${isDay ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]' : 'contrast-[1.12] brightness-[1.08]'
                           }`}
                         referrerPolicy="no-referrer"
@@ -1237,10 +1241,10 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       {/* HUD Overlay */}
                       <div className="absolute top-4 left-4 glass-pill p-3 rounded-[4px] text-xs font-mono space-y-1">
                         <div className="text-[var(--color-surface-raised)] font-semibold">
-                          {isBangla ? 'সক্রিয় রেজিস্ট্রি:' : 'Active Registry:'} {activeMap.layers}
+                          {isBangla ? 'সক্রিয় রেজিস্ট্রি:' : 'Active Registry:'} {activeStudioMap.layers}
                         </div>
                         <div className="text-[10px] text-[var(--color-text-secondary)]">
-                          {isBangla ? 'বিভাগ' : 'Division'}: {activeMap.cityName} · CRS: EPSG:3857 · {isBangla ? 'ক্যাডাস্ট্রে' : 'Cadastre'}: {activeMap.parcelCount}
+                          {isBangla ? 'বিভাগ' : 'Division'}: {activeStudioMap.cityName} · CRS: EPSG:3857 · {isBangla ? 'ক্যাডাস্ট্রে' : 'Cadastre'}: {activeStudioMap.parcelCount}
                         </div>
                       </div>
                     </div>

@@ -22,9 +22,9 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
   currentMapIndex: controlledMapIndex,
   onMapChange,
   className = '',
-  autoPlay = true,
+  autoPlay = false,
   speedMultiplier = 1.0,
-  isPaused = false,
+  isPaused = true,
   onTogglePause,
   onSpeedChange,
   overlayOpacity: controlledOverlayOpacity,
@@ -35,7 +35,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
 }) => {
   const isDay = themeMode === 'day';
   const [internalMapIndex, setInternalMapIndex] = useState(0);
-  const [internalPaused, setInternalPaused] = useState(!autoPlay);
+  const [internalPaused, setInternalPaused] = useState(true);
   const [internalOverlayOpacity, setInternalOverlayOpacity] = useState(0.18);
   const [internalZoomLevel, setInternalZoomLevel] = useState(0.40); // 40% Compact Zoomed-out Start ("size ektu komay dew")
   const [showLayerControls, setShowLayerControls] = useState(false);
@@ -77,10 +77,9 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
     }
   };
 
-  // Continuous timer rotating through map blueprint layers
-  // Speed-adjusted interval: standard 6500ms divided by speed multiplier
+  // Automated layer transition timer (disabled by default so cities never jump unexpectedly)
   useEffect(() => {
-    if (paused) return;
+    if (paused || !autoPlay) return;
 
     const intervalMs = Math.max(1500, Math.round(6500 / speedMultiplier));
     const interval = setInterval(() => {
@@ -89,7 +88,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
     }, intervalMs);
 
     return () => clearInterval(interval);
-  }, [paused, activeIndex, speedMultiplier]);
+  }, [paused, autoPlay, activeIndex, speedMultiplier]);
 
   const activeMap = URBAN_MAP_DATASETS[activeIndex];
 
