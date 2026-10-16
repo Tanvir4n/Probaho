@@ -918,7 +918,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
           <div className="pt-6 border-t border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10.56px]">
             <div>
-              © {new Date().getFullYear()} Probaho Intelligence Laboratory. All rights reserved.
+              © {new Date().getFullYear()} Probaho Intelligence Laboratory · Developed by Md. Tanvir Hasan &amp; Sourav Ghosh · Apache-2.0 License
             </div>
             <div className="flex items-center gap-4 text-[var(--color-text-tertiary)]">
               <span>WCAG 2.2 Level AA & AAA Verified</span>

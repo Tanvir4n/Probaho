@@ -393,12 +393,21 @@ Probaho/
 
 ---
 
-## 👥 Contributors & Acknowledgements
+## 👥 Contributors & Team Members
 
-* **Developed by:** Md. Tanvir Hasan & Team
-* **GitHub:** [@Tanvir4n](https://github.com/Tanvir4n)
+* **Core Engineering & Architecture:**
+  * **Md. Tanvir Hasan** — System Architecture, Cryptographic Ledger & Full-Stack Engineering ([@Tanvir4n](https://github.com/Tanvir4n))
+  * **Sourav Ghosh** — Platform Engineering, Investigation Telemetry & Research
 * **Project Name:** Probaho (প্রবাহ)
+* **Repository:** [Tanvir4n/Probaho](https://github.com/Tanvir4n/Probaho)
+
+---
+
+## 📄 License
+
+This project is licensed under the **Apache License, Version 2.0** — see the [LICENSE](LICENSE) file for complete details.
 
 <div align="center">
 <sub>“Every plot has a story. Make it tamper-proof.” — Probaho Land Fraud Intelligence</sub>
 </div>
+

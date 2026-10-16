@@ -1,7 +1,13 @@
 {
-  "name": "react-example",
+  "name": "probaho",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Probaho — Architectural Land Fraud Intelligence & JomiChain Cryptographic Plot Passport",
+  "license": "Apache-2.0",
+  "contributors": [
+    "Md. Tanvir Hasan <imtanvirhasan1@gmail.com>",
+    "Sourav Ghosh"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
