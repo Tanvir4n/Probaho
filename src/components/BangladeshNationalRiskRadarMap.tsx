@@ -171,14 +171,20 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
     return () => cancelAnimationFrame(animId);
   }, [isRadarActive, radarRpm, mapThemeMode]);
 
-  // Calibrate D3 Mercator Projection for Bangladesh (88°E - 92.8°E, 20.5°N - 26.6°N)
+  // Calibrate D3 Mercator Projection for Bangladesh using fitExtent on real GeoJSON data
+  // Ensures optimal center, aspect ratio, scale, and exact padding on all four edges
   const projection = useMemo(() => {
     const { width, height } = dimensions;
+    const padding = 28;
     return d3
       .geoMercator()
-      .center([90.35, 23.75])
-      .scale(Math.min(width, height) * 6.3)
-      .translate([width / 2, height / 2 - 15]);
+      .fitExtent(
+        [
+          [padding, padding],
+          [width - padding, height - padding],
+        ],
+        BANGLADESH_GEOJSON as any
+      );
   }, [dimensions]);
 
   const geoPathGenerator = useMemo(() => {
@@ -762,8 +768,8 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
               const isLocked = lockedHub.divisionId === divId;
 
               // Authentic colors matching the school textbook map
-              let fillColor = divProfile?.color || '#10b981';
-              let fillOpacity = 0.85;
+              let fillColor = divProfile?.color || feature.properties?.adminColor || '#10b981';
+              let fillOpacity = 0.92;
 
               if (mapThemeMode === 'radar') {
                 fillColor = isDay ? '#c8dded' : '#14253a';
@@ -774,7 +780,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                 fillOpacity = isHovered ? 0.95 : isLocked ? 0.9 : 0.72;
               } else {
                 // Administrative Atlas Mode
-                fillOpacity = isHovered ? 1.0 : isLocked ? 0.95 : 0.88;
+                fillOpacity = isHovered ? 1.0 : isLocked ? 0.96 : 0.92;
               }
 
               return (
@@ -797,8 +803,8 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                   strokeWidth={
                     mapThemeMode === 'administrative'
                       ? isHovered
-                        ? 2.5
-                        : 1.8
+                        ? 3.2
+                        : 2.2
                       : isLocked
                       ? 2.4
                       : isHovered
@@ -936,12 +942,12 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                         ? '#0f172a'
                         : '#f8fafc'
                     }
-                    fontSize={mapThemeMode === 'administrative' ? '18' : '13'}
+                    fontSize={mapThemeMode === 'administrative' ? (div.id === 'dhaka' || div.id === 'chittagong' ? '22' : '20') : '14'}
                     fontWeight="900"
                     fontFamily="serif, sans-serif"
                     letterSpacing="1"
-                    stroke={mapThemeMode === 'administrative' ? 'rgba(0, 0, 0, 0.75)' : isDay ? '#ffffff' : '#000000'}
-                    strokeWidth={mapThemeMode === 'administrative' ? '3.5' : '2.5'}
+                    stroke={mapThemeMode === 'administrative' ? 'rgba(0, 0, 0, 0.85)' : isDay ? '#ffffff' : '#000000'}
+                    strokeWidth={mapThemeMode === 'administrative' ? '4.0' : '2.5'}
                     paintOrder="stroke"
                     strokeLinejoin="round"
                     className="filter drop-shadow-md"
@@ -1038,10 +1044,11 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                       filter="drop-shadow(0 1px 3px rgba(0,0,0,0.4))"
                     />
 
-                    {/* District Bengali Label */}
+                    {/* District Bengali Label with Zero-Collision Anchoring */}
                     <text
-                      x="5"
-                      y="3"
+                      x={dist.dx ?? 5}
+                      y={dist.dy ?? 3}
+                      textAnchor={dist.anchor ?? 'start'}
                       fill={
                         mapThemeMode === 'administrative'
                           ? isSelected
