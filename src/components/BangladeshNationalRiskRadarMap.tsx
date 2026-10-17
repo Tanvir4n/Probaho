@@ -2,14 +2,16 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  * Probaho — Bangladesh National Risk & 360° Regional Radar D3.js Map
- * Accurate WGS84 GIS Projection, Rotating Sweep Beam, Risk Heatmaps,
- * Division Badges, Oceanic Bathymetry, and Real-Time Cadastral Threat Telemetry.
+ * Authentic WGS84 GIS Projection, 8 Administrative Divisions & 64 Districts,
+ * Rotating Radar Sweep Beam, Risk Heatmaps, Traditional Bengali Compass Rose,
+ * Delta Estuaries, and Real-Time Cadastral Threat Telemetry.
  */
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import * as d3 from 'd3';
 import {
   BANGLADESH_DIVISIONS,
+  BANGLADESH_DISTRICTS,
   BANGLADESH_GEOJSON,
   BANGLADESH_RIVERS,
   BAY_OF_BENGAL_FEATURES,
@@ -17,6 +19,7 @@ import {
   NEIGHBOR_REGIONS,
   NationalHub,
   DivisionProfile,
+  BangladeshDistrict,
 } from '../data/bangladeshNationalGeoData';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -42,22 +45,32 @@ import {
   Pause,
   AlertTriangle,
   Waves,
+  MapPin,
+  Search,
+  Filter,
+  Check,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export interface BangladeshNationalRiskRadarMapProps {
   className?: string;
   height?: string | number;
   initialLockedHubId?: string;
+  initialMode?: 'administrative' | 'radar';
   onSelectHub?: (hub: NationalHub) => void;
   onSelectDivision?: (division: DivisionProfile) => void;
+  onSelectDistrict?: (district: BangladeshDistrict) => void;
 }
 
 export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRadarMapProps> = ({
   className = '',
-  height = '720px',
+  height = '760px',
   initialLockedHubId = 'patuakhali',
+  initialMode = 'administrative',
   onSelectHub,
   onSelectDivision,
+  onSelectDistrict,
 }) => {
   const { isBangla } = useLanguage();
   const { isDay } = useTheme();
@@ -68,27 +81,48 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
   const gZoomRef = useRef<SVGGElement>(null);
 
   // Map viewport dimensions
-  const [dimensions, setDimensions] = useState({ width: 960, height: 720 });
+  const [dimensions, setDimensions] = useState({ width: 960, height: 760 });
   const [zoomLevel, setZoomLevel] = useState(1.0);
 
-  // Target lock state
+  // Core Map Mode: 'administrative' (বিভাগ ও জেলা সমূহ) vs 'radar' (৩৬০° হুমকি রাডার)
+  const [mapThemeMode, setMapThemeMode] = useState<'administrative' | 'radar'>(initialMode);
+
+  // Target lock & selection states
   const [lockedHubId, setLockedHubId] = useState<string>(initialLockedHubId);
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>('patuakhali-dist');
   const [hoveredDivisionId, setHoveredDivisionId] = useState<string | null>(null);
+  const [hoveredDistrictId, setHoveredDistrictId] = useState<string | null>(null);
   const [hoveredHubId, setHoveredHubId] = useState<string | null>(null);
+
+  // Layer Toggles
+  const [showDistricts, setShowDistricts] = useState<boolean>(true);
+  const [showRivers, setShowRivers] = useState<boolean>(true);
+  const [showBathymetry, setShowBathymetry] = useState<boolean>(true);
+  const [showNeighbors, setShowNeighbors] = useState<boolean>(true);
+  const [showHeatmaps, setShowHeatmaps] = useState<boolean>(true);
+  const [showGrid, setShowGrid] = useState<boolean>(true);
+
+  // Filter dropdown state
+  const [filterDivisionId, setFilterDivisionId] = useState<string>('ALL');
+  const [districtSearchQuery, setDistrictSearchQuery] = useState<string>('');
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
   // Radar Animation States
   const [isRadarActive, setIsRadarActive] = useState<boolean>(true);
-  const [radarRpm, setRadarRpm] = useState<number>(10); // 10 RPM as seen in screenshot
+  const [radarRpm, setRadarRpm] = useState<number>(10);
   const [radarAngle, setRadarAngle] = useState<number>(135);
-
-  // Layer Toggles
-  const [showHeatmaps, setShowHeatmaps] = useState<boolean>(true);
-  const [showBathymetry, setShowBathymetry] = useState<boolean>(true);
-  const [showRivers, setShowRivers] = useState<boolean>(true);
-  const [showGrid, setShowGrid] = useState<boolean>(true);
 
   // Alert Banner State
   const [isAlertVisible, setIsAlertVisible] = useState<boolean>(true);
+
+  // Tooltip State for hover card
+  const [tooltipData, setTooltipData] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    district?: BangladeshDistrict;
+    division?: DivisionProfile;
+  }>({ visible: false, x: 0, y: 0 });
 
   // D3 Zoom behavior reference
   const zoomBehaviorRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -98,6 +132,11 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
   const lockedHub = useMemo(() => {
     return NATIONAL_HUBS.find((h) => h.id === lockedHubId) || NATIONAL_HUBS[0];
   }, [lockedHubId]);
+
+  // Selected district object
+  const selectedDistrict = useMemo(() => {
+    return BANGLADESH_DISTRICTS.find((d) => d.id === selectedDistrictId) || null;
+  }, [selectedDistrictId]);
 
   // Handle Resize
   useEffect(() => {
@@ -116,14 +155,13 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
   // Continuous Radar Sweep Animation Loop
   useEffect(() => {
-    if (!isRadarActive) return;
+    if (!isRadarActive || mapThemeMode !== 'radar') return;
     let animId: number;
     let lastTime = performance.now();
 
     const tick = (now: number) => {
       const delta = (now - lastTime) / 1000;
       lastTime = now;
-      // Degrees per second = RPM * 360 / 60 = RPM * 6
       const degreesPerSec = radarRpm * 6;
       setRadarAngle((prev) => (prev + degreesPerSec * delta) % 360);
       animId = requestAnimationFrame(tick);
@@ -131,17 +169,16 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
     animId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(animId);
-  }, [isRadarActive, radarRpm]);
+  }, [isRadarActive, radarRpm, mapThemeMode]);
 
-  // Calibrate D3 Projection for Bangladesh
+  // Calibrate D3 Mercator Projection for Bangladesh (88°E - 92.8°E, 20.5°N - 26.6°N)
   const projection = useMemo(() => {
     const { width, height } = dimensions;
-    // Center of Bangladesh: 90.35° E, 23.75° N
     return d3
       .geoMercator()
       .center([90.35, 23.75])
-      .scale(Math.min(width, height) * 6.2)
-      .translate([width / 2, height / 2 - 20]);
+      .scale(Math.min(width, height) * 6.3)
+      .translate([width / 2, height / 2 - 15]);
   }, [dimensions]);
 
   const geoPathGenerator = useMemo(() => {
@@ -163,7 +200,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.75, 6.0])
+      .scaleExtent([0.8, 7.0])
       .on('zoom', (event) => {
         currentTransformRef.current = event.transform;
         setZoomLevel(event.transform.k);
@@ -226,6 +263,14 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
     onSelectDivision?.(div);
   };
 
+  const handleSelectDistrict = (dist: BangladeshDistrict) => {
+    setSelectedDistrictId(dist.id);
+    // Also sync hub if corresponding hub exists
+    const matchingHub = NATIONAL_HUBS.find((h) => h.name.toLowerCase().includes(dist.name.toLowerCase()) || dist.id.includes(h.id));
+    if (matchingHub) setLockedHubId(matchingHub.id);
+    onSelectDistrict?.(dist);
+  };
+
   // Color mapping by risk score
   const getRiskColor = (score: number) => {
     if (score >= 80) return '#ef4444'; // Red-500 Critical
@@ -234,13 +279,25 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
     return '#10b981'; // Emerald-500 Low
   };
 
+  // Filtered districts list based on division selector & search
+  const filteredDistricts = useMemo(() => {
+    return BANGLADESH_DISTRICTS.filter((d) => {
+      const matchDiv = filterDivisionId === 'ALL' || d.divisionId === filterDivisionId;
+      const matchQuery =
+        !districtSearchQuery.trim() ||
+        d.name.toLowerCase().includes(districtSearchQuery.toLowerCase()) ||
+        d.nameBn.includes(districtSearchQuery);
+      return matchDiv && matchQuery;
+    });
+  }, [filterDivisionId, districtSearchQuery]);
+
   // Nautical Lat/Lng Grid values
   const gridLats = [21, 22, 23, 24, 25, 26];
   const gridLngs = [88, 89, 90, 91, 92];
 
-  // Radial sweep cone generator path
+  // Radial sweep cone generator path for radar mode
   const radarSweepRadius = 260;
-  const sweepAngleDeg = 48; // Width of sweep cone
+  const sweepAngleDeg = 48;
   const sweepStartRad = ((radarAngle - sweepAngleDeg) * Math.PI) / 180;
   const sweepEndRad = (radarAngle * Math.PI) / 180;
 
@@ -254,14 +311,65 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
   return (
     <div
       ref={containerRef}
-      className={`relative w-full rounded-[10px] overflow-hidden border border-[var(--color-border-subtle)] select-none shadow-2xl transition-colors duration-200 ${
-        isDay ? 'bg-[#eef3f8]' : 'bg-[#080d16]'
+      className={`relative w-full rounded-[12px] overflow-hidden border border-[var(--color-border-subtle)] select-none shadow-2xl transition-colors duration-200 ${
+        mapThemeMode === 'administrative'
+          ? isDay
+            ? 'bg-[#f4f8fb]'
+            : 'bg-[#0b1523]'
+          : isDay
+          ? 'bg-[#eef3f8]'
+          : 'bg-[#080d16]'
       } ${className}`}
       style={{ height }}
     >
       {/* 
         ========================================================================
-        1. MAIN D3 INTERACTIVE SVG CANVAS
+        1. TOP ADMINISTRATIVE BANNER HEADER (Matching reference map "বিভাগ ও জেলা সমূহ")
+        ========================================================================
+      */}
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex flex-col items-center">
+        <div
+          className={`px-5 py-1.5 rounded-full backdrop-blur-md border shadow-lg flex items-center gap-3 transition-colors ${
+            mapThemeMode === 'administrative'
+              ? isDay
+                ? 'bg-white/95 border-emerald-600/40 text-emerald-950 shadow-emerald-900/10'
+                : 'bg-[#0f1d2e]/95 border-emerald-400/40 text-emerald-100 shadow-[0_0_20px_rgba(16,185,129,0.2)]'
+              : isDay
+              ? 'bg-white/95 border-cyan-400 text-slate-900'
+              : 'bg-[#08101d]/95 border-cyan-400 text-slate-100'
+          }`}
+        >
+          {mapThemeMode === 'administrative' ? (
+            <>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <h2 className="text-base sm:text-lg font-black tracking-wide font-serif text-slate-900 dark:text-white flex items-center gap-2">
+                <span>{isBangla ? 'বিভাগ ও জেলা সমূহ' : 'Divisions & 64 Districts of Bangladesh'}</span>
+              </h2>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30">
+                {isBangla ? '৮ বিভাগ · ৬৪ জেলা' : '8 ADM1 · 64 ADM2'}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ff2a6d]" />
+              </span>
+              <h2 className="text-sm sm:text-base font-bold font-mono tracking-wider uppercase text-[#ff2a6d] flex items-center gap-1.5">
+                <Radio className="w-4 h-4 animate-spin" style={{ animationDuration: '4s' }} />
+                <span>360° {isBangla ? 'আঞ্চলিক রাডার টেলিমিতি' : 'REGIONAL THREAT RADAR'}</span>
+              </h2>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-rose-500/15 text-rose-500 font-bold border border-rose-500/30">
+                10 RPM · 155 km
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* 
+        ========================================================================
+        2. D3 INTERACTIVE SVG CANVAS
         ========================================================================
       */}
       <svg
@@ -271,24 +379,30 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
         className="w-full h-full cursor-grab active:cursor-grabbing block"
       >
         <defs>
-          {/* Subtle Lat/Long Grid Pattern */}
+          {/* Lat/Long Grid Pattern for Radar Mode */}
           <pattern id="nauticalGrid" width="60" height="60" patternUnits="userSpaceOnUse">
             <path
               d="M 60 0 L 0 0 0 60"
               fill="none"
-              stroke={isDay ? 'rgba(0, 70, 140, 0.07)' : 'rgba(56, 189, 248, 0.08)'}
+              stroke={isDay ? 'rgba(0, 70, 140, 0.08)' : 'rgba(56, 189, 248, 0.08)'}
               strokeWidth="0.8"
             />
           </pattern>
 
-          {/* Oceanic Deep Depth Gradient (Bay of Bengal) */}
-          <linearGradient id="oceanGradient" x1="0" y1="0" x2="0" y2="1">
+          {/* Oceanic Azure Water Gradient (Bay of Bengal) */}
+          <linearGradient id="oceanGradientAdmin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={isDay ? '#99f6e4' : '#042f2e'} stopOpacity="0.45" />
+            <stop offset="35%" stopColor={isDay ? '#38bdf8' : '#075985'} stopOpacity="0.75" />
+            <stop offset="100%" stopColor={isDay ? '#0284c7' : '#0c4a6e'} stopOpacity="0.95" />
+          </linearGradient>
+
+          <linearGradient id="oceanGradientRadar" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={isDay ? '#d0e5f5' : '#081728'} stopOpacity="0.4" />
             <stop offset="40%" stopColor={isDay ? '#b8d8ef' : '#04101e'} stopOpacity="0.8" />
             <stop offset="100%" stopColor={isDay ? '#9ec7e6' : '#020b16'} stopOpacity="1.0" />
           </linearGradient>
 
-          {/* High-Risk Epicenter Heatmap Glow Gradient (Patuakhali / Barishal) */}
+          {/* Threat Heatmaps (Patuakhali & Sylhet) */}
           <radialGradient id="heatGlowCritical" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#ef4444" stopOpacity="0.65" />
             <stop offset="40%" stopColor="#f97316" stopOpacity="0.45" />
@@ -296,14 +410,13 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
             <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
           </radialGradient>
 
-          {/* Medium Risk Gradient (Sylhet) */}
           <radialGradient id="heatGlowMedium" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.55" />
             <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.30" />
             <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
           </radialGradient>
 
-          {/* Radar Sweep Wedge Linear/Radial Gradient */}
+          {/* Radar Sweep Wedge Gradient */}
           <radialGradient id="radarSweepGradient" cx="0%" cy="0%" r="100%">
             <stop offset="0%" stopColor="#ef4444" stopOpacity="0.85" />
             <stop offset="35%" stopColor="#f97316" stopOpacity="0.45" />
@@ -311,7 +424,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
             <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
           </radialGradient>
 
-          {/* Swatch of No Ground Submarine Canyon Vortex Gradient */}
+          {/* Swatch of No Ground Submarine Canyon Gradient */}
           <radialGradient id="canyonGradient" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor={isDay ? '#0284c7' : '#0369a1'} stopOpacity="0.85" />
             <stop offset="60%" stopColor={isDay ? '#38bdf8' : '#075985'} stopOpacity="0.45" />
@@ -321,8 +434,8 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
         {/* Dynamic Zoom & Pan Root Container */}
         <g ref={gZoomRef}>
-          {/* Nautical Grid Background */}
-          {showGrid && (
+          {/* Nautical Grid Background (Radar Mode) */}
+          {mapThemeMode === 'radar' && showGrid && (
             <rect
               x="-2000"
               y="-2000"
@@ -333,13 +446,13 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
             />
           )}
 
-          {/* Bay of Bengal Base Water Body */}
+          {/* Bay of Bengal Water Body */}
           <rect
             x="-500"
             y={dimensions.height * 0.62}
             width={dimensions.width + 1000}
             height={dimensions.height * 0.8}
-            fill="url(#oceanGradient)"
+            fill={mapThemeMode === 'administrative' ? 'url(#oceanGradientAdmin)' : 'url(#oceanGradientRadar)'}
             className="pointer-events-none"
           />
 
@@ -412,56 +525,51 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* 
             ====================================================================
-            NEIGHBORING TERRITORY LABELS (India & Myanmar)
+            NEIGHBORING TERRITORIES (Meghalaya, Assam, Tripura, Mizoram, West Bengal, Myanmar)
+            Matching the uploaded administrative reference atlas
             ====================================================================
           */}
-          <g className="neighbor-labels pointer-events-none select-none">
-            {NEIGHBOR_REGIONS.map((reg) => {
-              const pt = projection(reg.coords as [number, number]);
-              if (!pt) return null;
-              return (
-                <g key={reg.sub} transform={`translate(${pt[0]}, ${pt[1]})`}>
-                  <text
-                    textAnchor={reg.align as any}
-                    fill={isDay ? '#64748b' : '#475569'}
-                    fontSize="11"
-                    fontFamily="monospace"
-                    fontWeight="700"
-                    letterSpacing="2"
-                    opacity="0.7"
-                  >
-                    {reg.name}
-                  </text>
-                  <text
-                    y="12"
-                    textAnchor={reg.align as any}
-                    fill={isDay ? '#94a3b8' : '#334155'}
-                    fontSize="9"
-                    fontFamily="monospace"
-                    opacity="0.7"
-                  >
-                    {reg.sub}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
+          {showNeighbors && (
+            <g className="neighbor-labels pointer-events-none select-none">
+              {NEIGHBOR_REGIONS.map((reg) => {
+                const pt = projection(reg.coords as [number, number]);
+                if (!pt) return null;
+                return (
+                  <g key={reg.nameBn} transform={`translate(${pt[0]}, ${pt[1]})`}>
+                    <text
+                      textAnchor={reg.align as any}
+                      fill={mapThemeMode === 'administrative' ? (isDay ? '#334155' : '#cbd5e1') : isDay ? '#64748b' : '#475569'}
+                      fontSize={mapThemeMode === 'administrative' ? '12.5' : '11'}
+                      fontFamily={mapThemeMode === 'administrative' ? 'serif, sans-serif' : 'monospace'}
+                      fontWeight="800"
+                      letterSpacing={mapThemeMode === 'administrative' ? '1.5' : '2'}
+                      stroke={isDay ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.85)'}
+                      strokeWidth="2.5"
+                      paintOrder="stroke"
+                    >
+                      {isBangla ? reg.nameBn : `${reg.name} (${reg.sub})`}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          )}
 
           {/* 
             ====================================================================
-            BAY OF BENGAL BATHYMETRY (Shelf & Isobath Curves)
+            BAY OF BENGAL BATHYMETRY & SOUTHERN OCEAN LABELS
             ====================================================================
           */}
           {showBathymetry && (
             <g className="bathymetry-layer pointer-events-none select-none">
               {/* -20m Shelf Curve */}
               {(() => {
-                const shelfLineGenerator = d3
+                const shelfLineGen = d3
                   .line<[number, number]>()
                   .x((d) => projection(d)![0])
                   .y((d) => projection(d)![1])
                   .curve(d3.curveBasis);
-                const pathStr = shelfLineGenerator(BAY_OF_BENGAL_FEATURES.shelf20m as [number, number][]);
+                const pathStr = shelfLineGen(BAY_OF_BENGAL_FEATURES.shelf20m as [number, number][]);
                 const labelPos = projection([89.8, 21.4]);
                 return (
                   pathStr && (
@@ -493,12 +601,12 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
               {/* -50m Isobath Curve */}
               {(() => {
-                const isobathLineGenerator = d3
+                const isobathLineGen = d3
                   .line<[number, number]>()
                   .x((d) => projection(d)![0])
                   .y((d) => projection(d)![1])
                   .curve(d3.curveBasis);
-                const pathStr = isobathLineGenerator(BAY_OF_BENGAL_FEATURES.isobath50m as [number, number][]);
+                const pathStr = isobathLineGen(BAY_OF_BENGAL_FEATURES.isobath50m as [number, number][]);
                 const labelPos = projection([90.5, 20.95]);
                 return (
                   pathStr && (
@@ -537,73 +645,49 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                     x={pt[0]}
                     y={pt[1]}
                     fill={isDay ? '#0284c7' : '#38bdf8'}
-                    fontSize="8.5"
+                    fontSize="9"
                     fontFamily="monospace"
                     fontStyle="italic"
-                    opacity="0.8"
+                    fontWeight="600"
+                    stroke={isDay ? '#ffffff' : '#000000'}
+                    strokeWidth="2"
+                    paintOrder="stroke"
                   >
                     {isBangla ? BAY_OF_BENGAL_FEATURES.dublarChar.labelBn : BAY_OF_BENGAL_FEATURES.dublarChar.label}
                   </text>
                 );
               })()}
 
-              {/* Swatch of No Ground Oceanic Canyon Vortex */}
+              {/* Swatch of No Ground Submarine Canyon Vortex */}
               {(() => {
                 const pt = projection(BAY_OF_BENGAL_FEATURES.swatchOfNoGround.center as [number, number]);
                 if (!pt) return null;
                 return (
                   <g transform={`translate(${pt[0]}, ${pt[1]})`}>
-                    <ellipse
-                      rx="38"
-                      ry="22"
-                      transform="rotate(-25)"
-                      fill="url(#canyonGradient)"
-                      opacity="0.65"
-                    />
-                    <ellipse
-                      rx="38"
-                      ry="22"
-                      transform="rotate(-25)"
-                      fill="none"
-                      stroke={isDay ? '#0284c7' : '#38bdf8'}
-                      strokeWidth="1.2"
-                      strokeDasharray="4 3"
-                    />
-                    <ellipse
-                      rx="22"
-                      ry="12"
-                      transform="rotate(-25)"
-                      fill="none"
-                      stroke={isDay ? '#0369a1' : '#0284c7'}
-                      strokeWidth="0.8"
-                      strokeDasharray="2 3"
-                    />
-                    <text
-                      y="32"
-                      textAnchor="middle"
-                      fill={isDay ? '#0284c7' : '#38bdf8'}
-                      fontSize="8"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                      letterSpacing="1"
-                    >
+                    <ellipse rx="38" ry="22" transform="rotate(-25)" fill="url(#canyonGradient)" opacity="0.65" />
+                    <ellipse rx="38" ry="22" transform="rotate(-25)" fill="none" stroke={isDay ? '#0284c7' : '#38bdf8'} strokeWidth="1.2" strokeDasharray="4 3" />
+                    <ellipse rx="22" ry="12" transform="rotate(-25)" fill="none" stroke={isDay ? '#0369a1' : '#0284c7'} strokeWidth="0.8" strokeDasharray="2 3" />
+                    <text y="32" textAnchor="middle" fill={isDay ? '#0284c7' : '#38bdf8'} fontSize="8" fontFamily="monospace" fontWeight="bold" letterSpacing="1">
                       {isBangla ? 'সোয়াচ অব নো গ্রাউন্ড (-১৩৪০মি)' : 'SWATCH OF NO GROUND (-1340m)'}
                     </text>
                   </g>
                 );
               })()}
 
-              {/* Bay of Bengal Grand Label */}
+              {/* Bay of Bengal Grand Label (ব ঙ্গো প সা গ র) */}
               <text
-                x={dimensions.width * 0.52}
-                y={dimensions.height - 22}
+                x={dimensions.width * 0.50}
+                y={dimensions.height - 24}
                 textAnchor="middle"
-                fill={isDay ? '#0369a1' : '#38bdf8'}
-                fontSize="18"
-                fontFamily="monospace"
-                fontWeight="800"
-                letterSpacing="12"
-                opacity={isDay ? '0.45' : '0.35'}
+                fill={mapThemeMode === 'administrative' ? (isDay ? '#0369a1' : '#38bdf8') : isDay ? '#0369a1' : '#38bdf8'}
+                fontSize={mapThemeMode === 'administrative' ? '22' : '18'}
+                fontFamily="serif, sans-serif"
+                fontWeight="900"
+                letterSpacing={mapThemeMode === 'administrative' ? '16' : '12'}
+                opacity={mapThemeMode === 'administrative' ? '0.85' : '0.4'}
+                stroke={isDay ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'}
+                strokeWidth="2"
+                paintOrder="stroke"
               >
                 {isBangla ? 'ব ঙ্গো প সা গ র' : 'B A Y   O F   B E N G A L'}
               </text>
@@ -612,44 +696,21 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* 
             ====================================================================
-            RADIAL THREAT HEATMAPS / DENSITY HALOS
+            RADAR MODE SPECIFIC: HEATMAPS & ROTATING 360° SWEEP BEAM
             ====================================================================
           */}
-          {showHeatmaps && (
+          {mapThemeMode === 'radar' && showHeatmaps && (
             <g className="heatmaps-layer pointer-events-none">
-              {/* Critical Threat Epicenter (Patuakhali & Barishal Delta) */}
-              <circle
-                cx={lockedPoint.x}
-                cy={lockedPoint.y}
-                r="165"
-                fill="url(#heatGlowCritical)"
-              />
-
-              {/* Sylhet Medium Risk Haor Glow */}
+              <circle cx={lockedPoint.x} cy={lockedPoint.y} r="165" fill="url(#heatGlowCritical)" />
               {(() => {
                 const sylhetPt = projection([91.8687, 24.6949]);
-                return (
-                  sylhetPt && (
-                    <circle
-                      cx={sylhetPt[0]}
-                      cy={sylhetPt[1]}
-                      r="110"
-                      fill="url(#heatGlowMedium)"
-                    />
-                  )
-                );
+                return sylhetPt && <circle cx={sylhetPt[0]} cy={sylhetPt[1]} r="110" fill="url(#heatGlowMedium)" />;
               })()}
             </g>
           )}
 
-          {/* 
-            ====================================================================
-            360° RADAR SWEEP BEAM CONE & CONCENTRIC RANGE RINGS
-            ====================================================================
-          */}
-          {isRadarActive && (
+          {mapThemeMode === 'radar' && isRadarActive && (
             <g className="radar-sweep-layer pointer-events-none">
-              {/* Concentric Distance Range Rings (50km, 100km, 155km) */}
               {[75, 140, 210].map((radius, idx) => (
                 <circle
                   key={`ring-${idx}`}
@@ -663,25 +724,9 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                 />
               ))}
 
-              {/* Outer Range Ring (155 km Boundary) */}
-              <circle
-                cx={lockedPoint.x}
-                cy={lockedPoint.y}
-                r={radarSweepRadius}
-                fill="none"
-                stroke="rgba(239, 68, 68, 0.65)"
-                strokeWidth="1.4"
-                strokeDasharray="6 4"
-              />
+              <circle cx={lockedPoint.x} cy={lockedPoint.y} r={radarSweepRadius} fill="none" stroke="rgba(239, 68, 68, 0.65)" strokeWidth="1.4" strokeDasharray="6 4" />
+              <path d={radarSweepPath} fill="url(#radarSweepGradient)" opacity="0.45" />
 
-              {/* Rotating Sweep Beam Cone */}
-              <path
-                d={radarSweepPath}
-                fill="url(#radarSweepGradient)"
-                opacity="0.45"
-              />
-
-              {/* Leading High-Intensity Radar Beam Line */}
               <line
                 x1={lockedPoint.x}
                 y1={lockedPoint.y}
@@ -693,61 +738,55 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                 filter="drop-shadow(0 0 6px #ef4444)"
               />
 
-              {/* Epicenter Target Crosshairs */}
-              <line
-                x1={lockedPoint.x - 14}
-                y1={lockedPoint.y}
-                x2={lockedPoint.x + 14}
-                y2={lockedPoint.y}
-                stroke="#ef4444"
-                strokeWidth="1.6"
-              />
-              <line
-                x1={lockedPoint.x}
-                y1={lockedPoint.y - 14}
-                x2={lockedPoint.x}
-                y2={lockedPoint.y + 14}
-                stroke="#ef4444"
-                strokeWidth="1.6"
-              />
-              <circle
-                cx={lockedPoint.x}
-                cy={lockedPoint.y}
-                r="4.5"
-                fill="#ffffff"
-                stroke="#ef4444"
-                strokeWidth="2"
-              />
+              <line x1={lockedPoint.x - 14} y1={lockedPoint.y} x2={lockedPoint.x + 14} y2={lockedPoint.y} stroke="#ef4444" strokeWidth="1.6" />
+              <line x1={lockedPoint.x} y1={lockedPoint.y - 14} x2={lockedPoint.x} y2={lockedPoint.y + 14} stroke="#ef4444" strokeWidth="1.6" />
+              <circle cx={lockedPoint.x} cy={lockedPoint.y} r="4.5" fill="#ffffff" stroke="#ef4444" strokeWidth="2" />
             </g>
           )}
 
           {/* 
             ====================================================================
-            BANGLADESH 8 ADMINISTRATIVE DIVISIONS (GeoJSON Polygons)
+            3. BANGLADESH 8 ADMINISTRATIVE DIVISIONS (Authentic GeoBoundaries MultiPolygons)
+            Colors matched directly to the uploaded educational map:
+            Rangpur (Green), Rajshahi (Coral Red), Mymensingh (Amber Yellow),
+            Sylhet (Lime Green), Dhaka (Forest Green), Khulna (Yellow),
+            Barishal (Seafoam Teal), Chittagong (Crimson Red).
             ====================================================================
           */}
           <g className="divisions-layer">
             {BANGLADESH_GEOJSON.features.map((feature: any) => {
               const divId = feature.id as string;
               const pathStr = geoPathGenerator(feature);
+              const divProfile = BANGLADESH_DIVISIONS.find((d) => d.id === divId);
               const isHovered = hoveredDivisionId === divId;
               const isLocked = lockedHub.divisionId === divId;
 
-              // Color based on theme and state
-              let fillColor = isDay ? '#c8dded' : '#14253a';
-              if (divId === 'barishal') fillColor = isDay ? '#f8d7da' : '#2a1622';
-              if (divId === 'sylhet') fillColor = isDay ? '#fef3c7' : '#232018';
-              if (divId === 'dhaka') fillColor = isDay ? '#dbeafe' : '#162338';
-              if (divId === 'rangpur') fillColor = isDay ? '#d1fae5' : '#122625';
+              // Authentic colors matching the school textbook map
+              let fillColor = divProfile?.color || '#10b981';
+              let fillOpacity = 0.85;
+
+              if (mapThemeMode === 'radar') {
+                fillColor = isDay ? '#c8dded' : '#14253a';
+                if (divId === 'barishal') fillColor = isDay ? '#f8d7da' : '#2a1622';
+                if (divId === 'sylhet') fillColor = isDay ? '#fef3c7' : '#232018';
+                if (divId === 'dhaka') fillColor = isDay ? '#dbeafe' : '#162338';
+                if (divId === 'rangpur') fillColor = isDay ? '#d1fae5' : '#122625';
+                fillOpacity = isHovered ? 0.95 : isLocked ? 0.9 : 0.72;
+              } else {
+                // Administrative Atlas Mode
+                fillOpacity = isHovered ? 1.0 : isLocked ? 0.95 : 0.88;
+              }
 
               return (
                 <path
                   key={divId}
                   d={pathStr || ''}
                   fill={fillColor}
-                  fillOpacity={isHovered ? 0.95 : isLocked ? 0.88 : 0.72}
+                  fillOpacity={fillOpacity}
                   stroke={
-                    isLocked
+                    mapThemeMode === 'administrative'
+                      ? '#ffffff'
+                      : isLocked
                       ? '#ef4444'
                       : isHovered
                       ? '#38bdf8'
@@ -755,13 +794,36 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                       ? 'rgba(255, 255, 255, 0.95)'
                       : 'rgba(56, 189, 248, 0.45)'
                   }
-                  strokeWidth={isLocked ? 2.4 : isHovered ? 2.0 : 1.2}
-                  className="transition-all duration-200 cursor-pointer"
-                  onMouseEnter={() => setHoveredDivisionId(divId)}
-                  onMouseLeave={() => setHoveredDivisionId(null)}
+                  strokeWidth={
+                    mapThemeMode === 'administrative'
+                      ? isHovered
+                        ? 2.5
+                        : 1.8
+                      : isLocked
+                      ? 2.4
+                      : isHovered
+                      ? 2.0
+                      : 1.2
+                  }
+                  strokeLinejoin="round"
+                  className="transition-all duration-150 cursor-pointer"
+                  onMouseEnter={(e) => {
+                    setHoveredDivisionId(divId);
+                    if (divProfile) {
+                      setTooltipData({
+                        visible: true,
+                        x: e.clientX,
+                        y: e.clientY,
+                        division: divProfile,
+                      });
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredDivisionId(null);
+                    setTooltipData((prev) => ({ ...prev, visible: false }));
+                  }}
                   onClick={() => {
-                    const div = BANGLADESH_DIVISIONS.find((d) => d.id === divId);
-                    if (div) handleSelectDivision(div);
+                    if (divProfile) handleSelectDivision(divProfile);
                   }}
                 />
               );
@@ -770,7 +832,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* 
             ====================================================================
-            MAJOR RIVER CORRIDORS (Padma, Jamuna, Meghna, Karnaphuli)
+            4. MAJOR RIVER NETWORKS & DELTA CHANNELS (Padma, Jamuna, Meghna, Teesta, etc.)
             ====================================================================
           */}
           {showRivers && (
@@ -782,17 +844,31 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                   .y((d) => projection(d)![1])
                   .curve(d3.curveBasis);
                 const pathStr = riverLineGen(river.path as [number, number][]);
+                const isMajor = river.id === 'padma' || river.id === 'jamuna' || river.id === 'meghna';
                 return (
                   pathStr && (
-                    <path
-                      key={river.id}
-                      d={pathStr}
-                      fill="none"
-                      stroke={isDay ? '#38bdf8' : '#0284c7'}
-                      strokeWidth={river.id === 'padma' || river.id === 'jamuna' ? 3.4 : 2.4}
-                      strokeLinecap="round"
-                      opacity="0.85"
-                    />
+                    <g key={river.id}>
+                      {/* White water outline for high contrast */}
+                      <path
+                        d={pathStr}
+                        fill="none"
+                        stroke={isDay ? '#ffffff' : '#0f172a'}
+                        strokeWidth={isMajor ? 4.5 : 3.0}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        opacity="0.8"
+                      />
+                      {/* River blue water core */}
+                      <path
+                        d={pathStr}
+                        fill="none"
+                        stroke={mapThemeMode === 'administrative' ? '#38bdf8' : isDay ? '#38bdf8' : '#0284c7'}
+                        strokeWidth={isMajor ? 3.0 : 1.8}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        opacity="0.95"
+                      />
+                    </g>
                   )
                 );
               })}
@@ -806,13 +882,14 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                     key={anno.name}
                     x={pt[0]}
                     y={pt[1]}
-                    fill={isDay ? '#0284c7' : '#38bdf8'}
-                    fontSize="8.5"
-                    fontFamily="monospace"
+                    fill={mapThemeMode === 'administrative' ? '#0369a1' : isDay ? '#0284c7' : '#38bdf8'}
+                    fontSize="9"
+                    fontFamily="serif, sans-serif"
                     fontStyle="italic"
-                    fontWeight="600"
-                    opacity="0.8"
-                    letterSpacing="0.5"
+                    fontWeight="700"
+                    stroke={isDay ? '#ffffff' : '#000000'}
+                    strokeWidth="2.5"
+                    paintOrder="stroke"
                   >
                     {isBangla ? anno.nameBn : anno.name}
                   </text>
@@ -823,21 +900,20 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* 
             ====================================================================
-            DIVISION PILL BADGES (e.g. Rangpur 19/100, Dhaka 28/100, etc.)
+            5. LARGE BENGALI DIVISION LABELS (রংপুর, রাজশাহী, ঢাকা, etc.)
+            Centrally placed in each division matching the textbook reference map
             ====================================================================
           */}
-          <g className="division-badges pointer-events-auto">
+          <g className="division-titles pointer-events-auto select-none">
             {BANGLADESH_DIVISIONS.map((div) => {
               const pt = projection(div.center);
               if (!pt) return null;
               const isLocked = lockedHub.divisionId === div.id;
               const isHovered = hoveredDivisionId === div.id;
-              const isBarishal = div.id === 'barishal';
-              const riskColor = getRiskColor(div.riskScore);
 
               return (
                 <g
-                  key={`badge-${div.id}`}
+                  key={`div-title-${div.id}`}
                   transform={`translate(${pt[0] + (div.labelOffset?.[0] || 0)}, ${
                     pt[1] + (div.labelOffset?.[1] || 0)
                   })`}
@@ -846,58 +922,49 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                   onMouseEnter={() => setHoveredDivisionId(div.id)}
                   onMouseLeave={() => setHoveredDivisionId(null)}
                 >
-                  {/* Glassmorphic Pill Box */}
-                  <rect
-                    x="-48"
-                    y="-14"
-                    width="96"
-                    height="28"
-                    rx="14"
-                    fill={isBarishal ? '#1e3a5f' : isLocked ? (isDay ? '#1e293b' : '#0f172a') : isDay ? '#ffffff' : '#0f172a'}
-                    fillOpacity="0.95"
-                    stroke={isBarishal ? '#ffffff' : isLocked ? '#ef4444' : isHovered ? '#38bdf8' : 'rgba(255, 255, 255, 0.6)'}
-                    strokeWidth={isBarishal || isLocked ? 2.0 : 1.2}
-                    filter="drop-shadow(0 4px 10px rgba(0,0,0,0.35))"
-                  />
-
-                  {/* Division Name */}
+                  {/* Division Name Heading in Bengali */}
                   <text
-                    x="-2"
-                    y={isBarishal ? '3' : '-1'}
+                    x="0"
+                    y="0"
                     textAnchor="middle"
-                    fill={isBarishal || isLocked ? '#ffffff' : isDay ? '#0f172a' : '#f8fafc'}
-                    fontSize="11"
-                    fontWeight="700"
-                    fontFamily="monospace"
+                    fill={
+                      mapThemeMode === 'administrative'
+                        ? '#ffffff'
+                        : isLocked
+                        ? '#ffffff'
+                        : isDay
+                        ? '#0f172a'
+                        : '#f8fafc'
+                    }
+                    fontSize={mapThemeMode === 'administrative' ? '18' : '13'}
+                    fontWeight="900"
+                    fontFamily="serif, sans-serif"
+                    letterSpacing="1"
+                    stroke={mapThemeMode === 'administrative' ? 'rgba(0, 0, 0, 0.75)' : isDay ? '#ffffff' : '#000000'}
+                    strokeWidth={mapThemeMode === 'administrative' ? '3.5' : '2.5'}
+                    paintOrder="stroke"
+                    strokeLinejoin="round"
+                    className="filter drop-shadow-md"
                   >
                     {isBangla ? div.nameBn : div.name}
                   </text>
 
-                  {/* Score pill subscript (for non-Barishal or normal badges) */}
-                  {!isBarishal && (
+                  {/* Subtitle / Risk score badge in Radar Mode */}
+                  {mapThemeMode === 'radar' && (
                     <text
-                      x="-2"
-                      y="9"
+                      x="0"
+                      y="14"
                       textAnchor="middle"
-                      fill={riskColor}
-                      fontSize="8.5"
+                      fill={getRiskColor(div.riskScore)}
+                      fontSize="9"
                       fontWeight="800"
                       fontFamily="monospace"
+                      stroke={isDay ? '#ffffff' : '#000000'}
+                      strokeWidth="2"
+                      paintOrder="stroke"
                     >
                       {div.riskScore}/100
                     </text>
-                  )}
-
-                  {/* Status Indicator Dot */}
-                  {!isBarishal && (
-                    <circle
-                      cx="36"
-                      cy="0"
-                      r="3.5"
-                      fill={riskColor}
-                      stroke="#ffffff"
-                      strokeWidth="1.2"
-                    />
                   )}
                 </g>
               );
@@ -906,164 +973,393 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* 
             ====================================================================
-            REGIONAL HUBS & THREAT NODES (District Level Dots)
+            6. ALL 64 DISTRICTS OF BANGLADESH (Pins & Authentic Bengali Labels)
+            Matching the uploaded educational textbook map exactly
             ====================================================================
           */}
-          <g className="hubs-layer">
-            {NATIONAL_HUBS.map((hub) => {
-              const pt = projection(hub.coordinates);
-              if (!pt) return null;
-              const isLocked = lockedHubId === hub.id;
-              const isHovered = hoveredHubId === hub.id;
-              const isDhakaMetro = hub.id === 'dhaka-metro';
-              const color = getRiskColor(hub.riskScore);
+          {showDistricts && (
+            <g className="districts-layer pointer-events-auto">
+              {filteredDistricts.map((dist) => {
+                const pt = projection(dist.coordinates);
+                if (!pt) return null;
+                const isSelected = selectedDistrictId === dist.id;
+                const isHovered = hoveredDistrictId === dist.id;
+                const color = getRiskColor(dist.riskScore);
 
-              return (
-                <g
-                  key={hub.id}
-                  transform={`translate(${pt[0]}, ${pt[1]})`}
-                  className="cursor-pointer"
-                  onClick={() => handleSelectHub(hub)}
-                  onMouseEnter={() => setHoveredHubId(hub.id)}
-                  onMouseLeave={() => setHoveredHubId(null)}
-                >
-                  {/* Concentric rings for Dhaka Metro cluster */}
-                  {isDhakaMetro && (
-                    <>
-                      <circle r="12" fill="none" stroke="#22c55e" strokeWidth="1.2" strokeDasharray="3 3" opacity="0.8" />
-                      <circle r="8" fill="none" stroke="#22c55e" strokeWidth="1.4" opacity="0.9" />
-                      <circle cx="2" cy="-4" r="3.5" fill="#22c55e" stroke="#ffffff" strokeWidth="1.2" />
-                      <circle cx="-3" cy="3" r="3" fill="#22c55e" stroke="#ffffff" strokeWidth="1.0" />
-                    </>
-                  )}
-
-                  {/* Pulsing outer ring on locked hub */}
-                  {isLocked && (
-                    <circle
-                      r="14"
-                      fill="none"
-                      stroke={color}
-                      strokeWidth="1.8"
-                      className="animate-ping opacity-75"
-                    />
-                  )}
-
-                  {/* Outer White Rim */}
-                  <circle
-                    r={isLocked ? 7 : isHovered ? 6 : 4.5}
-                    fill={color}
-                    stroke="#ffffff"
-                    strokeWidth={isLocked ? 2.5 : 1.5}
-                    filter="drop-shadow(0 2px 5px rgba(0,0,0,0.45))"
-                  />
-
-                  {/* Hub Label Text */}
-                  <text
-                    x="8"
-                    y="3"
-                    fill={isDay ? '#0f172a' : '#f8fafc'}
-                    fontSize="9.5"
-                    fontWeight={isLocked ? '700' : '600'}
-                    fontFamily="monospace"
-                    stroke={isDay ? '#ffffff' : '#000000'}
-                    strokeWidth="2.5"
-                    paintOrder="stroke"
-                    strokeLinejoin="round"
-                    className="select-none pointer-events-none"
+                return (
+                  <g
+                    key={dist.id}
+                    transform={`translate(${pt[0]}, ${pt[1]})`}
+                    className="cursor-pointer group"
+                    onClick={() => handleSelectDistrict(dist)}
+                    onMouseEnter={(e) => {
+                      setHoveredDistrictId(dist.id);
+                      setTooltipData({
+                        visible: true,
+                        x: e.clientX,
+                        y: e.clientY,
+                        district: dist,
+                      });
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredDistrictId(null);
+                      setTooltipData((prev) => ({ ...prev, visible: false }));
+                    }}
                   >
-                    {isBangla ? hub.nameBn : hub.name}
-                  </text>
-                </g>
-              );
-            })}
+                    {/* Pulsing ring on selected district */}
+                    {isSelected && (
+                      <circle
+                        r="10"
+                        fill="none"
+                        stroke="#ffffff"
+                        strokeWidth="1.8"
+                        className="animate-ping opacity-75"
+                      />
+                    )}
+
+                    {/* Small pinpoint dot */}
+                    <circle
+                      r={isSelected ? 4.5 : isHovered ? 4 : 2.5}
+                      fill={
+                        mapThemeMode === 'administrative'
+                          ? isSelected
+                            ? '#ffffff'
+                            : '#0f172a'
+                          : color
+                      }
+                      stroke={
+                        mapThemeMode === 'administrative'
+                          ? isSelected
+                            ? '#ef4444'
+                            : '#ffffff'
+                          : '#ffffff'
+                      }
+                      strokeWidth={isSelected ? 2.0 : 1.0}
+                      filter="drop-shadow(0 1px 3px rgba(0,0,0,0.4))"
+                    />
+
+                    {/* District Bengali Label */}
+                    <text
+                      x="5"
+                      y="3"
+                      fill={
+                        mapThemeMode === 'administrative'
+                          ? isSelected
+                            ? '#ffffff'
+                            : isHovered
+                            ? '#ffffff'
+                            : '#0f172a'
+                          : isDay
+                          ? '#0f172a'
+                          : '#f8fafc'
+                      }
+                      fontSize={isSelected ? '11.5' : isHovered ? '10.5' : '9.5'}
+                      fontWeight={isSelected ? '900' : isHovered ? '800' : '700'}
+                      fontFamily="serif, sans-serif"
+                      stroke={
+                        mapThemeMode === 'administrative'
+                          ? isSelected
+                            ? '#ef4444'
+                            : 'rgba(255, 255, 255, 0.95)'
+                          : isDay
+                          ? '#ffffff'
+                          : '#000000'
+                      }
+                      strokeWidth={isSelected ? '3.5' : '2.5'}
+                      paintOrder="stroke"
+                      strokeLinejoin="round"
+                      className="select-none pointer-events-none transition-all duration-100"
+                    >
+                      {isBangla ? dist.nameBn : dist.name}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          )}
+
+          {/* 
+            ====================================================================
+            7. TRADITIONAL 8-POINT BENGALI COMPASS ROSE (Top-Right)
+            Matching the authentic reference map:
+                    উ:
+               প: ✣ পূ:
+                    দ:
+            ====================================================================
+          */}
+          <g
+            className="bengali-compass-rose pointer-events-none select-none"
+            transform={`translate(${dimensions.width - 70}, 85)`}
+          >
+            {/* Outer Compass Circle Ring */}
+            <circle
+              r="28"
+              fill={mapThemeMode === 'administrative' ? (isDay ? 'rgba(255,255,255,0.7)' : 'rgba(15,23,42,0.7)') : 'transparent'}
+              stroke={isDay ? '#334155' : '#94a3b8'}
+              strokeWidth="1.2"
+              strokeDasharray="2 2"
+            />
+            <circle
+              r="22"
+              fill="none"
+              stroke={isDay ? '#334155' : '#94a3b8'}
+              strokeWidth="0.8"
+            />
+
+            {/* 8-Pointed Nautical Star (Faceted alternating triangles) */}
+            {/* North Point */}
+            <polygon points="0,0 -4,-8 0,-24" fill={isDay ? '#0f172a' : '#f8fafc'} />
+            <polygon points="0,0 4,-8 0,-24" fill={isDay ? '#94a3b8' : '#475569'} />
+
+            {/* South Point */}
+            <polygon points="0,0 -4,8 0,24" fill={isDay ? '#94a3b8' : '#475569'} />
+            <polygon points="0,0 4,8 0,24" fill={isDay ? '#0f172a' : '#f8fafc'} />
+
+            {/* East Point */}
+            <polygon points="0,0 8,-4 24,0" fill={isDay ? '#0f172a' : '#f8fafc'} />
+            <polygon points="0,0 8,4 24,0" fill={isDay ? '#94a3b8' : '#475569'} />
+
+            {/* West Point */}
+            <polygon points="0,0 -8,-4 -24,0" fill={isDay ? '#94a3b8' : '#475569'} />
+            <polygon points="0,0 -8,4 -24,0" fill={isDay ? '#0f172a' : '#f8fafc'} />
+
+            {/* NE, NW, SE, SW Minor Points */}
+            <polygon points="0,0 4,-4 14,-14" fill={isDay ? '#64748b' : '#cbd5e1'} />
+            <polygon points="0,0 -4,-4 -14,-14" fill={isDay ? '#64748b' : '#cbd5e1'} />
+            <polygon points="0,0 4,4 14,14" fill={isDay ? '#64748b' : '#cbd5e1'} />
+            <polygon points="0,0 -4,4 -14,14" fill={isDay ? '#64748b' : '#cbd5e1'} />
+
+            {/* Center Pivot Pin */}
+            <circle r="3.5" fill="#ffffff" stroke={isDay ? '#0f172a' : '#f8fafc'} strokeWidth="1.5" />
+
+            {/* Traditional Bengali Directional Labels: উ:, দ:, পূ:, প: */}
+            {/* North (উ:) */}
+            <text
+              x="0"
+              y="-34"
+              textAnchor="middle"
+              fill={isDay ? '#0f172a' : '#f8fafc'}
+              fontSize="14"
+              fontWeight="900"
+              fontFamily="serif, sans-serif"
+              stroke={isDay ? '#ffffff' : '#000000'}
+              strokeWidth="2"
+              paintOrder="stroke"
+            >
+              উ:
+            </text>
+
+            {/* South (দ:) */}
+            <text
+              x="0"
+              y="42"
+              textAnchor="middle"
+              fill={isDay ? '#0f172a' : '#f8fafc'}
+              fontSize="14"
+              fontWeight="900"
+              fontFamily="serif, sans-serif"
+              stroke={isDay ? '#ffffff' : '#000000'}
+              strokeWidth="2"
+              paintOrder="stroke"
+            >
+              দ:
+            </text>
+
+            {/* East (পূ:) */}
+            <text
+              x="38"
+              y="5"
+              textAnchor="start"
+              fill={isDay ? '#0f172a' : '#f8fafc'}
+              fontSize="14"
+              fontWeight="900"
+              fontFamily="serif, sans-serif"
+              stroke={isDay ? '#ffffff' : '#000000'}
+              strokeWidth="2"
+              paintOrder="stroke"
+            >
+              পূ:
+            </text>
+
+            {/* West (প:) */}
+            <text
+              x="-38"
+              y="5"
+              textAnchor="end"
+              fill={isDay ? '#0f172a' : '#f8fafc'}
+              fontSize="14"
+              fontWeight="900"
+              fontFamily="serif, sans-serif"
+              stroke={isDay ? '#ffffff' : '#000000'}
+              strokeWidth="2"
+              paintOrder="stroke"
+            >
+              প:
+            </text>
           </g>
         </g>
       </svg>
 
       {/* 
         ========================================================================
-        2. TOP-LEFT HUD CARD: 360° REGIONAL RADAR TELEMETRY
+        8. TOP-LEFT CONTROL PANEL & MODE SWITCHER
         ========================================================================
       */}
-      <div className="absolute top-3.5 left-3.5 z-30 flex flex-col gap-2 max-w-[280px] sm:max-w-[320px]">
+      <div className="absolute top-3.5 left-3.5 z-30 flex flex-col gap-2 max-w-[280px] sm:max-w-[330px]">
+        {/* Core Mode Switcher Pill */}
         <div
-          className={`p-3.5 rounded-[12px] backdrop-blur-xl border-[1.5px] shadow-2xl transition-colors duration-200 ${
-            isDay
-              ? 'bg-white/95 border-cyan-400 text-slate-900 shadow-cyan-900/15'
-              : 'bg-[#08101d]/95 border-cyan-400 text-slate-100 shadow-[0_0_25px_rgba(6,182,212,0.25)]'
+          className={`p-1 rounded-[10px] border shadow-xl backdrop-blur-xl flex items-center gap-1 ${
+            isDay ? 'bg-white/95 border-slate-300' : 'bg-[#0f172a]/95 border-white/20'
           }`}
         >
-          {/* Header Row with Spinning Radar Indicator */}
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/10 dark:border-white/10">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-[#ff2a6d]" />
-              </span>
-              <span className="text-xs font-mono font-bold tracking-wider uppercase text-[#ff2a6d] flex items-center gap-1.5">
-                <Radio className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '4s' }} />
-                <span>360° {isBangla ? 'আঞ্চলিক রাডার' : 'REGIONAL RADAR'}</span>
-              </span>
+          <button
+            onClick={() => setMapThemeMode('administrative')}
+            className={`flex-1 py-1.5 px-2.5 rounded-[7px] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              mapThemeMode === 'administrative'
+                ? 'bg-emerald-600 text-white shadow-md'
+                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>{isBangla ? 'প্রশাসনিক মানচিত্র' : 'Administrative'}</span>
+          </button>
+
+          <button
+            onClick={() => setMapThemeMode('radar')}
+            className={`flex-1 py-1.5 px-2.5 rounded-[7px] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              mapThemeMode === 'radar'
+                ? 'bg-red-600 text-white shadow-md'
+                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+            }`}
+          >
+            <Radio className="w-3.5 h-3.5" />
+            <span>{isBangla ? 'হুমকি রাডার' : 'Threat Radar'}</span>
+          </button>
+        </div>
+
+        {/* Radar Telemetry Dossier (Shown in Radar Mode) */}
+        {mapThemeMode === 'radar' && (
+          <div
+            className={`p-3.5 rounded-[12px] backdrop-blur-xl border-[1.5px] shadow-2xl transition-colors duration-200 ${
+              isDay
+                ? 'bg-white/95 border-cyan-400 text-slate-900 shadow-cyan-900/15'
+                : 'bg-[#08101d]/95 border-cyan-400 text-slate-100 shadow-[0_0_25px_rgba(6,182,212,0.25)]'
+            }`}
+          >
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-black/10 dark:border-white/10">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#ff2a6d]" />
+                </span>
+                <span className="text-xs font-mono font-bold tracking-wider uppercase text-[#ff2a6d]">
+                  360° {isBangla ? 'আঞ্চলিক টেলিমিতি' : 'REGIONAL TELEMETRY'}
+                </span>
+              </div>
+
+              <button
+                onClick={() => setIsRadarActive((prev) => !prev)}
+                className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                title={isRadarActive ? 'Pause Radar Sweep' : 'Resume Radar Sweep'}
+              >
+                {isRadarActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+              </button>
             </div>
 
-            {/* Radar Pause / Play control */}
-            <button
-              onClick={() => setIsRadarActive((prev) => !prev)}
-              className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 text-xs font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
-              title={isRadarActive ? 'Pause Radar Sweep' : 'Resume Radar Sweep'}
-              aria-label={isRadarActive ? 'Pause radar' : 'Resume radar'}
+            <div className="space-y-1.5 font-mono text-[11px]">
+              <div className="flex items-center justify-between">
+                <span className="text-[var(--color-text-secondary)] font-medium">Target Lock:</span>
+                <span className="font-bold text-[#ff2a6d]">
+                  {isBangla ? lockedHub.nameBn : lockedHub.name}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-[var(--color-text-secondary)] font-medium">Range / Scan:</span>
+                <span className="font-semibold text-emerald-500">155 km · {radarRpm} RPM</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-[var(--color-text-secondary)] font-medium">Threat Vector:</span>
+                <span className="font-bold text-amber-500">{lockedHub.threatVector}</span>
+              </div>
+
+              <div className="flex items-center justify-between pt-1 border-t border-black/5 dark:border-white/5 text-[10px]">
+                <span className="text-[var(--color-text-secondary)]">Active Disputes:</span>
+                <span className="font-bold text-[var(--color-text-primary)]">
+                  {lockedHub.activeDisputes} {isBangla ? 'টি দাগ' : 'dags'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="text-[var(--color-text-secondary)]">Prevented Exposure:</span>
+                <span className="font-bold text-emerald-500">
+                  ৳ {lockedHub.preventedCr} {isBangla ? 'কোটি' : 'Cr BDT'}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Layer Toggles & District Quick Search */}
+        <div
+          className={`p-2.5 rounded-[10px] border shadow-xl backdrop-blur-xl space-y-2 ${
+            isDay ? 'bg-white/95 border-slate-300' : 'bg-[#0f172a]/95 border-white/20'
+          }`}
+        >
+          {/* Quick Division Selector */}
+          <div className="flex items-center gap-1.5 text-xs">
+            <Filter className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+            <select
+              value={filterDivisionId}
+              onChange={(e) => setFilterDivisionId(e.target.value)}
+              className="w-full text-xs font-semibold py-1 px-2 rounded bg-black/5 dark:bg-white/10 border border-[var(--color-border-subtle)] focus:outline-none focus:border-sky-500 text-[var(--color-text-primary)] cursor-pointer"
             >
-              {isRadarActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            </button>
+              <option value="ALL">{isBangla ? 'সকল বিভাগ (৮টি)' : 'All 8 Divisions'}</option>
+              {BANGLADESH_DIVISIONS.map((div) => (
+                <option key={div.id} value={div.id}>
+                  {isBangla ? div.nameBn : div.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Telemetry Metrics List */}
-          <div className="space-y-1.5 font-mono text-[11px]">
-            <div className="flex items-center justify-between">
-              <span className="text-[var(--color-text-secondary)] font-medium">Target Lock:</span>
-              <span className="font-bold text-[#ff2a6d] flex items-center gap-1">
-                <span>{isBangla ? lockedHub.nameBn : lockedHub.name}</span>
-              </span>
-            </div>
+          {/* Quick Layer Switch Buttons */}
+          <div className="grid grid-cols-2 gap-1.5 text-[11px] font-medium">
+            <button
+              onClick={() => setShowDistricts((prev) => !prev)}
+              className={`py-1 px-2 rounded border flex items-center justify-between transition-colors cursor-pointer ${
+                showDistricts
+                  ? 'bg-sky-500/15 border-sky-500/40 text-sky-500'
+                  : 'bg-black/5 dark:bg-white/5 border-transparent text-[var(--color-text-secondary)]'
+              }`}
+            >
+              <span>{isBangla ? '৬৪ জেলা' : '64 Districts'}</span>
+              {showDistricts ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+            </button>
 
-            <div className="flex items-center justify-between">
-              <span className="text-[var(--color-text-secondary)] font-medium">Range / Scan:</span>
-              <span className="font-semibold text-emerald-500">
-                155 km · {radarRpm} RPM
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-[var(--color-text-secondary)] font-medium">Threat Vector:</span>
-              <span className="font-bold text-amber-500">
-                {lockedHub.threatVector}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between pt-1 border-t border-black/5 dark:border-white/5 text-[10px]">
-              <span className="text-[var(--color-text-secondary)]">Active Disputes:</span>
-              <span className="font-bold text-[var(--color-text-primary)]">
-                {lockedHub.activeDisputes} {isBangla ? 'টি দাগ' : 'dags'}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-[var(--color-text-secondary)]">Prevented Exposure:</span>
-              <span className="font-bold text-emerald-500">
-                ৳ {lockedHub.preventedCr} {isBangla ? 'কোটি' : 'Cr BDT'}
-              </span>
-            </div>
+            <button
+              onClick={() => setShowRivers((prev) => !prev)}
+              className={`py-1 px-2 rounded border flex items-center justify-between transition-colors cursor-pointer ${
+                showRivers
+                  ? 'bg-sky-500/15 border-sky-500/40 text-sky-500'
+                  : 'bg-black/5 dark:bg-white/5 border-transparent text-[var(--color-text-secondary)]'
+              }`}
+            >
+              <span>{isBangla ? 'নদীনালা' : 'Rivers'}</span>
+              {showRivers ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+            </button>
           </div>
         </div>
       </div>
 
       {/* 
         ========================================================================
-        3. TOP-RIGHT CONTROLS: COMPASS, ZOOM, RESET, & 4-WAY D-PAD
+        9. TOP-RIGHT CONTROLS: ZOOM, RESET, & 4-WAY D-PAD
         ========================================================================
       */}
       <div className="absolute top-3.5 right-3.5 z-30 flex flex-col items-center gap-2">
-        {/* Circular Compass Rose (N) */}
+        {/* Reset North Compass Button */}
         <button
           onClick={handleResetView}
           className={`w-9 h-9 rounded-full flex flex-col items-center justify-center border shadow-lg backdrop-blur-md transition-transform hover:scale-105 cursor-pointer ${
@@ -1163,7 +1459,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
       {/* 
         ========================================================================
-        4. FLOATING THREAT ALERT BADGE (Coastal Cyclone & Surge Alert)
+        10. FLOATING CYCLONE ALERT BADGE (Bottom Coast)
         ========================================================================
       */}
       {isAlertVisible && (
@@ -1185,16 +1481,15 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
       {/* 
         ========================================================================
-        5. BOTTOM-LEFT SCALE BAR WIDGET
+        11. BOTTOM-LEFT SCALE BAR & SCOPE
         ========================================================================
       */}
       <div className="absolute bottom-3.5 left-3.5 z-30">
         <div
-          className={`px-3.5 py-2 rounded-[6px] border shadow-xl backdrop-blur-md font-mono text-xs ${
+          className={`px-3.5 py-2 rounded-[8px] border shadow-xl backdrop-blur-md font-mono text-xs ${
             isDay ? 'bg-white/92 border-slate-300 text-slate-900' : 'bg-[#0f172a]/90 border-white/20 text-white'
           }`}
         >
-          {/* Scope Indicator */}
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
             <span className="font-semibold text-[11.5px]">
@@ -1205,14 +1500,12 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
             </span>
           </div>
 
-          {/* 100km Graphic Scale Bar */}
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)]">
               <span>0</span>
               <span className="font-bold text-[var(--color-text-primary)]">100 km</span>
               <span>(62 mi)</span>
             </div>
-            {/* Stepped Scale Ruler Bar */}
             <div className="w-36 h-1.5 bg-slate-700/50 rounded-xs flex overflow-hidden border border-white/20">
               <div className="w-1/2 h-full bg-sky-400" />
               <div className="w-1/2 h-full bg-white/70" />
@@ -1223,30 +1516,76 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
       {/* 
         ========================================================================
-        6. BOTTOM-RIGHT LEGEND: COMBINED RISK & DENSITY
+        12. BOTTOM-RIGHT LEGEND
         ========================================================================
       */}
       <div className="absolute bottom-3.5 right-3.5 z-30">
         <div
-          className={`px-3.5 py-2.5 rounded-[6px] border shadow-xl backdrop-blur-md font-mono text-xs max-w-[240px] ${
+          className={`px-3.5 py-2.5 rounded-[8px] border shadow-xl backdrop-blur-md font-mono text-xs max-w-[260px] ${
             isDay ? 'bg-white/92 border-slate-300 text-slate-900' : 'bg-[#0f172a]/90 border-white/20 text-white'
           }`}
         >
-          <div className="font-bold text-[11px] mb-1.5 flex items-center justify-between">
-            <span>{isBangla ? 'সমন্বিত ঝুঁকি ও ঘনত্ব' : 'Combined Risk & Density'}</span>
-            <Activity className="w-3 h-3 text-red-400" />
-          </div>
-
-          {/* Continuous Gradient Bar: Cyan -> Blue -> Amber -> Red */}
-          <div className="w-full h-2 rounded-full overflow-hidden shadow-inner bg-slate-800" style={{
-            background: 'linear-gradient(to right, #10b981 0%, #38bdf8 30%, #3b82f6 55%, #f59e0b 75%, #ef4444 100%)'
-          }} />
-
-          <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] mt-1 font-semibold">
-            <span className="text-emerald-500">0 {isBangla ? 'নিরাপদ' : 'Safe'}</span>
-            <span className="text-amber-500">50 {isBangla ? 'মাঝারি' : 'Mid'}</span>
-            <span className="text-red-500">100 {isBangla ? 'সর্বোচ্চ' : 'Peak'}</span>
-          </div>
+          {mapThemeMode === 'administrative' ? (
+            <div className="space-y-1.5">
+              <div className="font-bold text-[11px] flex items-center justify-between">
+                <span>{isBangla ? 'প্রশাসনিক বিভাগ সূচক' : 'Division Palette Index'}</span>
+                <Layers className="w-3 h-3 text-emerald-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px]">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#16a34a] border border-white" />
+                  <span>রংপুর</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444] border border-white" />
+                  <span>রাজশাহী</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b] border border-white" />
+                  <span>ময়মনসিংহ</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#84cc16] border border-white" />
+                  <span>সিলেট</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#059669] border border-white" />
+                  <span>ঢাকা</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#eab308] border border-white" />
+                  <span>খুলনা</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#14b8a6] border border-white" />
+                  <span>বরিশাল</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#dc2626] border border-white" />
+                  <span>চট্টগ্রাম</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              <div className="font-bold text-[11px] flex items-center justify-between">
+                <span>{isBangla ? 'সমন্বিত ঝুঁকি ও ঘনত্ব' : 'Combined Risk & Density'}</span>
+                <Activity className="w-3 h-3 text-red-400" />
+              </div>
+              <div
+                className="w-full h-2 rounded-full overflow-hidden shadow-inner bg-slate-800"
+                style={{
+                  background:
+                    'linear-gradient(to right, #10b981 0%, #38bdf8 30%, #3b82f6 55%, #f59e0b 75%, #ef4444 100%)',
+                }}
+              />
+              <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] mt-1 font-semibold">
+                <span className="text-emerald-500">0 {isBangla ? 'নিরাপদ' : 'Safe'}</span>
+                <span className="text-amber-500">50 {isBangla ? 'মাঝারি' : 'Mid'}</span>
+                <span className="text-red-500">100 {isBangla ? 'সর্বোচ্চ' : 'Peak'}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

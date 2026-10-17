@@ -1,10 +1,12 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
- * Probaho — Bangladesh National Cadastral & Threat Radar GeoJSON Dataset
- * Precise WGS84 Geographic Coordinates for 8 Administrative Divisions,
- * Major Rivers, Coastal Deltas, Bay of Bengal Bathymetry, and Regional Hubs.
+ * Probaho — Official Bangladesh National Cadastral & Threat Radar GeoJSON Dataset
+ * Authentic Administrative Divisions (ADM1) via geoBoundaries, 64 Districts,
+ * Major River Networks, Bay of Bengal Bathymetry, and Regional Cadastral Hubs.
  */
+
+import bangladeshAdm1Json from './bangladeshAdm1Real.json';
 
 export interface NationalHub {
   id: string;
@@ -33,11 +35,29 @@ export interface DivisionProfile {
   activeDisputes: number;
   threatVector: string;
   threatVectorBn: string;
-  color: string;
+  color: string; // Vibrant authentic color from official division map
+  radarColor: string; // Tactical cybernetic radar color
   areaKm2: number;
   populationM: number;
 }
 
+export interface BangladeshDistrict {
+  id: string;
+  name: string;
+  nameBn: string;
+  divisionId: string;
+  coordinates: [number, number]; // [lng, lat]
+  riskScore: number;
+  activeDisputes: number;
+}
+
+/**
+ * 8 Official Administrative Divisions of Bangladesh
+ * Colors matching the authentic national administrative map:
+ * Rangpur (Emerald), Rajshahi (Coral Red), Mymensingh (Amber Yellow),
+ * Sylhet (Lime Green), Dhaka (Deep Forest Green), Khulna (Goldenrod),
+ * Barishal (Seafoam Teal), Chittagong (Crimson Red).
+ */
 export const BANGLADESH_DIVISIONS: DivisionProfile[] = [
   {
     id: 'barishal',
@@ -50,39 +70,10 @@ export const BANGLADESH_DIVISIONS: DivisionProfile[] = [
     activeDisputes: 428,
     threatVector: 'MULE_RING / CHAR ALLUVION',
     threatVectorBn: 'বেনামি চক্র ও চর বন্দোবস্ত জালিয়াতি',
-    color: '#ef4444',
+    color: '#14b8a6', // Seafoam teal from uploaded map
+    radarColor: '#ef4444',
     areaKm2: 13297,
     populationM: 9.3,
-  },
-  {
-    id: 'sylhet',
-    name: 'Sylhet',
-    nameBn: 'সিলেট',
-    center: [91.8687, 24.6949],
-    labelOffset: [10, -5],
-    riskScore: 54,
-    riskLevel: 'MEDIUM',
-    activeDisputes: 196,
-    threatVector: 'EXPAT TITLE THEFT',
-    threatVectorBn: 'প্রবাসী ভূমি আত্মসাৎ ও ভুয়া আমমোক্তারনামা',
-    color: '#f59e0b',
-    areaKm2: 12596,
-    populationM: 12.1,
-  },
-  {
-    id: 'khulna',
-    name: 'Khulna',
-    nameBn: 'খুলনা',
-    center: [89.3403, 22.8456],
-    labelOffset: [-10, 0],
-    riskScore: 42,
-    riskLevel: 'MEDIUM',
-    activeDisputes: 164,
-    threatVector: 'WETLAND & MANGROVE BUFFER',
-    threatVectorBn: 'সুন্দরবন বাফার ও জলাভূমি খাস দখল',
-    color: '#06b6d4',
-    areaKm2: 22285,
-    populationM: 17.4,
   },
   {
     id: 'chittagong',
@@ -95,7 +86,8 @@ export const BANGLADESH_DIVISIONS: DivisionProfile[] = [
     activeDisputes: 182,
     threatVector: 'COASTAL LEASE & HILL TRACT',
     threatVectorBn: 'উপকূলীয় লিজ ও পাহাড় শ্রেণি রূপান্তর',
-    color: '#10b981',
+    color: '#dc2626', // Crimson red from uploaded map
+    radarColor: '#10b981',
     areaKm2: 33771,
     populationM: 33.2,
   },
@@ -110,9 +102,26 @@ export const BANGLADESH_DIVISIONS: DivisionProfile[] = [
     activeDisputes: 312,
     threatVector: 'CONCURRENT DOUBLE-SALE',
     threatVectorBn: 'সমসাময়িক দ্বৈত দলিল ও বহু-সাবরেজিস্ট্রি জাল',
-    color: '#3b82f6',
+    color: '#059669', // Deep Forest green from uploaded map
+    radarColor: '#3b82f6',
     areaKm2: 20594,
     populationM: 44.2,
+  },
+  {
+    id: 'khulna',
+    name: 'Khulna',
+    nameBn: 'খুলনা',
+    center: [89.3403, 22.8456],
+    labelOffset: [-10, 0],
+    riskScore: 42,
+    riskLevel: 'MEDIUM',
+    activeDisputes: 164,
+    threatVector: 'WETLAND & MANGROVE BUFFER',
+    threatVectorBn: 'সুন্দরবন বাফার ও জলাভূমি খাস দখল',
+    color: '#eab308', // Goldenrod from uploaded map
+    radarColor: '#06b6d4',
+    areaKm2: 22285,
+    populationM: 17.4,
   },
   {
     id: 'mymensingh',
@@ -125,7 +134,8 @@ export const BANGLADESH_DIVISIONS: DivisionProfile[] = [
     activeDisputes: 92,
     threatVector: 'HEIRSHIP WARISAN DISPUTE',
     threatVectorBn: 'ওয়ারিশ গোপন ও নামজারি টেম্পারিং',
-    color: '#3b82f6',
+    color: '#f59e0b', // Amber yellow from uploaded map
+    radarColor: '#3b82f6',
     areaKm2: 10584,
     populationM: 12.3,
   },
@@ -140,7 +150,8 @@ export const BANGLADESH_DIVISIONS: DivisionProfile[] = [
     activeDisputes: 84,
     threatVector: 'PADMA RIVER BED CHAR',
     threatVectorBn: 'পদ্মা চর সিকস্তি-পয়স্তি দাগ বিরোধ',
-    color: '#3b82f6',
+    color: '#ef4444', // Coral red from uploaded map
+    radarColor: '#3b82f6',
     areaKm2: 18174,
     populationM: 20.4,
   },
@@ -155,12 +166,118 @@ export const BANGLADESH_DIVISIONS: DivisionProfile[] = [
     activeDisputes: 72,
     threatVector: 'CS-SA BOUNDARY VARIANCE',
     threatVectorBn: 'সিএস-এসএ নকশা সীমানা অসামঞ্জস্য',
-    color: '#10b981',
+    color: '#10b981', // Emerald green from uploaded map
+    radarColor: '#10b981',
     areaKm2: 16185,
     populationM: 17.6,
   },
+  {
+    id: 'sylhet',
+    name: 'Sylhet',
+    nameBn: 'সিলেট',
+    center: [91.8687, 24.6949],
+    labelOffset: [10, -5],
+    riskScore: 54,
+    riskLevel: 'MEDIUM',
+    activeDisputes: 196,
+    threatVector: 'EXPAT TITLE THEFT',
+    threatVectorBn: 'প্রবাসী ভূমি আত্মসাৎ ও ভুয়া আমমোক্তারনামা',
+    color: '#84cc16', // Lime green from uploaded map
+    radarColor: '#f59e0b',
+    areaKm2: 12596,
+    populationM: 12.1,
+  },
 ];
 
+/**
+ * All 64 Districts of Bangladesh with exact WGS84 geographic coordinates
+ * and authentic Bengali names matching the official administrative atlas.
+ */
+export const BANGLADESH_DISTRICTS: BangladeshDistrict[] = [
+  // Rangpur Division (8)
+  { id: 'panchagarh', name: 'Panchagarh', nameBn: 'পঞ্চগড়', divisionId: 'rangpur', coordinates: [88.5567, 26.3333], riskScore: 18, activeDisputes: 14 },
+  { id: 'thakurgaon', name: 'Thakurgaon', nameBn: 'ঠাকুরগাঁও', divisionId: 'rangpur', coordinates: [88.4684, 26.0333], riskScore: 21, activeDisputes: 18 },
+  { id: 'dinajpur', name: 'Dinajpur', nameBn: 'দিনাজপুর', divisionId: 'rangpur', coordinates: [88.6355, 25.6217], riskScore: 24, activeDisputes: 30 },
+  { id: 'nilphamari', name: 'Nilphamari', nameBn: 'নীলফামারী', divisionId: 'rangpur', coordinates: [88.9416, 25.9333], riskScore: 19, activeDisputes: 15 },
+  { id: 'lalmonirhat', name: 'Lalmonirhat', nameBn: 'লালমনিরহাট', divisionId: 'rangpur', coordinates: [89.2833, 25.9167], riskScore: 22, activeDisputes: 19 },
+  { id: 'rangpur-dist', name: 'Rangpur', nameBn: 'রংপুর', divisionId: 'rangpur', coordinates: [89.2752, 25.7439], riskScore: 19, activeDisputes: 42 },
+  { id: 'kurigram', name: 'Kurigram', nameBn: 'কুড়িগ্রাম', divisionId: 'rangpur', coordinates: [89.6500, 25.8000], riskScore: 26, activeDisputes: 28 },
+  { id: 'gaibandha', name: 'Gaibandha', nameBn: 'গাইবান্ধা', divisionId: 'rangpur', coordinates: [89.5333, 25.3333], riskScore: 23, activeDisputes: 22 },
+
+  // Rajshahi Division (8)
+  { id: 'joypurhat', name: 'Joypurhat', nameBn: 'জয়পুরহাট', divisionId: 'rajshahi', coordinates: [89.0278, 25.1000], riskScore: 20, activeDisputes: 16 },
+  { id: 'bogura-dist', name: 'Bogura', nameBn: 'বগুড়া', divisionId: 'rajshahi', coordinates: [89.3777, 24.8465], riskScore: 31, activeDisputes: 38 },
+  { id: 'naogaon', name: 'Naogaon', nameBn: 'নওগাঁ', divisionId: 'rajshahi', coordinates: [88.9500, 24.8167], riskScore: 23, activeDisputes: 22 },
+  { id: 'chapai-nawabganj', name: 'Chapai Nawabganj', nameBn: 'চাঁপাইনবাবগঞ্জ', divisionId: 'rajshahi', coordinates: [88.2700, 24.5900], riskScore: 25, activeDisputes: 26 },
+  { id: 'rajshahi-dist', name: 'Rajshahi', nameBn: 'রাজশাহী', divisionId: 'rajshahi', coordinates: [88.6042, 24.3745], riskScore: 22, activeDisputes: 46 },
+  { id: 'natore', name: 'Natore', nameBn: 'নাটোর', divisionId: 'rajshahi', coordinates: [88.9833, 24.4167], riskScore: 24, activeDisputes: 25 },
+  { id: 'sirajganj', name: 'Sirajganj', nameBn: 'সিরাজগঞ্জ', divisionId: 'rajshahi', coordinates: [89.7000, 24.4500], riskScore: 34, activeDisputes: 39 },
+  { id: 'pabna', name: 'Pabna', nameBn: 'পাবনা', divisionId: 'rajshahi', coordinates: [89.2500, 24.0000], riskScore: 29, activeDisputes: 32 },
+
+  // Mymensingh Division (4)
+  { id: 'sherpur', name: 'Sherpur', nameBn: 'শেরপুর', divisionId: 'mymensingh', coordinates: [90.0167, 25.0167], riskScore: 22, activeDisputes: 18 },
+  { id: 'jamalpur', name: 'Jamalpur', nameBn: 'জামালপুর', divisionId: 'mymensingh', coordinates: [89.9500, 24.9167], riskScore: 27, activeDisputes: 31 },
+  { id: 'mymensingh-dist', name: 'Mymensingh', nameBn: 'ময়মনসিংহ', divisionId: 'mymensingh', coordinates: [90.4203, 24.7471], riskScore: 25, activeDisputes: 92 },
+  { id: 'netrokona', name: 'Netrokona', nameBn: 'নেত্রকোনা', divisionId: 'mymensingh', coordinates: [90.7333, 24.8833], riskScore: 26, activeDisputes: 24 },
+
+  // Sylhet Division (4)
+  { id: 'sunamganj-dist', name: 'Sunamganj', nameBn: 'সুনামগঞ্জ', divisionId: 'sylhet', coordinates: [91.3950, 25.0658], riskScore: 48, activeDisputes: 72 },
+  { id: 'sylhet-dist', name: 'Sylhet', nameBn: 'সিলেট', divisionId: 'sylhet', coordinates: [91.8687, 24.8949], riskScore: 54, activeDisputes: 124 },
+  { id: 'moulvibazar', name: 'Moulvibazar', nameBn: 'মৌলভীবাজার', divisionId: 'sylhet', coordinates: [91.7667, 24.4833], riskScore: 44, activeDisputes: 52 },
+  { id: 'habiganj', name: 'Habiganj', nameBn: 'হবিগঞ্জ', divisionId: 'sylhet', coordinates: [91.4167, 24.3833], riskScore: 38, activeDisputes: 44 },
+
+  // Dhaka Division (13)
+  { id: 'tangail', name: 'Tangail', nameBn: 'টাঙ্গাইল', divisionId: 'dhaka', coordinates: [89.9167, 24.2500], riskScore: 32, activeDisputes: 48 },
+  { id: 'kishoreganj', name: 'Kishoreganj', nameBn: 'কিশোরগঞ্জ', divisionId: 'dhaka', coordinates: [90.7833, 24.4333], riskScore: 36, activeDisputes: 54 },
+  { id: 'manikganj', name: 'Manikganj', nameBn: 'মানিকগঞ্জ', divisionId: 'dhaka', coordinates: [90.0000, 23.8667], riskScore: 30, activeDisputes: 38 },
+  { id: 'dhaka-dist', name: 'Dhaka', nameBn: 'ঢাকা', divisionId: 'dhaka', coordinates: [90.4125, 23.8103], riskScore: 28, activeDisputes: 312 },
+  { id: 'gazipur-dist', name: 'Gazipur', nameBn: 'গাজীপুর', divisionId: 'dhaka', coordinates: [90.4264, 24.0023], riskScore: 64, activeDisputes: 98 },
+  { id: 'narsingdi', name: 'Narsingdi', nameBn: 'নরসিংদী', divisionId: 'dhaka', coordinates: [90.7167, 23.9167], riskScore: 38, activeDisputes: 46 },
+  { id: 'narayanganj-dist', name: 'Narayanganj', nameBn: 'নারায়ণগঞ্জ', divisionId: 'dhaka', coordinates: [90.5000, 23.6238], riskScore: 58, activeDisputes: 74 },
+  { id: 'munshiganj', name: 'Munshiganj', nameBn: 'মুন্সিগঞ্জ', divisionId: 'dhaka', coordinates: [90.5333, 23.5500], riskScore: 35, activeDisputes: 42 },
+  { id: 'rajbari', name: 'Rajbari', nameBn: 'রাজবাড়ী', divisionId: 'dhaka', coordinates: [89.6500, 23.7500], riskScore: 28, activeDisputes: 29 },
+  { id: 'faridpur', name: 'Faridpur', nameBn: 'ফরিদপুর', divisionId: 'dhaka', coordinates: [89.8333, 23.6000], riskScore: 32, activeDisputes: 41 },
+  { id: 'madaripur', name: 'Madaripur', nameBn: 'মাদারীপুর', divisionId: 'dhaka', coordinates: [90.1833, 23.1667], riskScore: 33, activeDisputes: 36 },
+  { id: 'shariatpur', name: 'Shariatpur', nameBn: 'শরীয়তপুর', divisionId: 'dhaka', coordinates: [90.3500, 23.2167], riskScore: 36, activeDisputes: 44 },
+  { id: 'gopalganj', name: 'Gopalganj', nameBn: 'গোপালগঞ্জ', divisionId: 'dhaka', coordinates: [89.8333, 23.0000], riskScore: 29, activeDisputes: 33 },
+
+  // Khulna Division (10)
+  { id: 'meherpur', name: 'Meherpur', nameBn: 'মেহেরপুর', divisionId: 'khulna', coordinates: [88.6333, 23.7667], riskScore: 26, activeDisputes: 24 },
+  { id: 'kushtia', name: 'Kushtia', nameBn: 'কুষ্টিয়া', divisionId: 'khulna', coordinates: [89.1333, 23.9000], riskScore: 34, activeDisputes: 48 },
+  { id: 'chuadanga', name: 'Chuadanga', nameBn: 'চুয়াডাঙ্গা', divisionId: 'khulna', coordinates: [88.8500, 23.6333], riskScore: 28, activeDisputes: 29 },
+  { id: 'jhenaidah', name: 'Jhenaidah', nameBn: 'ঝিনাইদহ', divisionId: 'khulna', coordinates: [89.1833, 23.5333], riskScore: 31, activeDisputes: 37 },
+  { id: 'magura', name: 'Magura', nameBn: 'মাগুরা', divisionId: 'khulna', coordinates: [89.4167, 23.4833], riskScore: 27, activeDisputes: 26 },
+  { id: 'jashore-dist', name: 'Jashore', nameBn: 'যশোর', divisionId: 'khulna', coordinates: [89.2081, 23.1664], riskScore: 38, activeDisputes: 68 },
+  { id: 'narail', name: 'Narail', nameBn: 'নড়াইল', divisionId: 'khulna', coordinates: [89.5000, 23.1667], riskScore: 25, activeDisputes: 23 },
+  { id: 'satkhira', name: 'Satkhira', nameBn: 'সাতক্ষীরা', divisionId: 'khulna', coordinates: [89.0667, 22.7167], riskScore: 46, activeDisputes: 62 },
+  { id: 'khulna-dist', name: 'Khulna', nameBn: 'খুলনা', divisionId: 'khulna', coordinates: [89.5403, 22.8456], riskScore: 42, activeDisputes: 96 },
+  { id: 'bagerhat', name: 'Bagerhat', nameBn: 'বাগেরহাট', divisionId: 'khulna', coordinates: [89.7833, 22.6500], riskScore: 49, activeDisputes: 72 },
+
+  // Barishal Division (6)
+  { id: 'barishal-dist', name: 'Barishal', nameBn: 'বরিশাল', divisionId: 'barishal', coordinates: [90.3535, 22.7010], riskScore: 82, activeDisputes: 112 },
+  { id: 'pirojpur', name: 'Pirojpur', nameBn: 'পিরোজপুর', divisionId: 'barishal', coordinates: [89.9833, 22.5833], riskScore: 56, activeDisputes: 58 },
+  { id: 'jhalakathi', name: 'Jhalakathi', nameBn: 'ঝালকাঠি', divisionId: 'barishal', coordinates: [90.2000, 22.6333], riskScore: 52, activeDisputes: 46 },
+  { id: 'barguna-dist', name: 'Barguna', nameBn: 'বরগুনা', divisionId: 'barishal', coordinates: [90.1256, 22.1587], riskScore: 79, activeDisputes: 64 },
+  { id: 'patuakhali-dist', name: 'Patuakhali', nameBn: 'পটুয়াখালী', divisionId: 'barishal', coordinates: [90.3299, 22.3596], riskScore: 88, activeDisputes: 178 },
+  { id: 'bhola-dist', name: 'Bhola', nameBn: 'ভোলা', divisionId: 'barishal', coordinates: [90.6481, 22.6859], riskScore: 68, activeDisputes: 48 },
+
+  // Chittagong Division (11)
+  { id: 'brahmanbaria', name: 'Brahmanbaria', nameBn: 'ব্রাহ্মণবাড়িয়া', divisionId: 'chittagong', coordinates: [91.1000, 23.9500], riskScore: 35, activeDisputes: 48 },
+  { id: 'cumilla-dist', name: 'Cumilla', nameBn: 'কুমিল্লা', divisionId: 'chittagong', coordinates: [91.1788, 23.4682], riskScore: 36, activeDisputes: 58 },
+  { id: 'chandpur', name: 'Chandpur', nameBn: 'চাঁদপুর', divisionId: 'chittagong', coordinates: [90.6500, 23.2333], riskScore: 38, activeDisputes: 49 },
+  { id: 'lakshmipur', name: 'Lakshmipur', nameBn: 'লক্ষ্মীপুর', divisionId: 'chittagong', coordinates: [90.8333, 22.9500], riskScore: 42, activeDisputes: 52 },
+  { id: 'noakhali', name: 'Noakhali', nameBn: 'নোয়াখালী', divisionId: 'chittagong', coordinates: [91.1000, 22.8333], riskScore: 46, activeDisputes: 64 },
+  { id: 'feni', name: 'Feni', nameBn: 'ফেনী', divisionId: 'chittagong', coordinates: [91.4000, 23.0167], riskScore: 34, activeDisputes: 38 },
+  { id: 'khagrachhari', name: 'Khagrachhari', nameBn: 'খাগড়াছড়ি', divisionId: 'chittagong', coordinates: [91.9833, 23.1167], riskScore: 45, activeDisputes: 52 },
+  { id: 'rangamati', name: 'Rangamati', nameBn: 'রাঙ্গামাটি', divisionId: 'chittagong', coordinates: [92.1833, 22.6500], riskScore: 41, activeDisputes: 46 },
+  { id: 'chattogram-dist', name: 'Chattogram', nameBn: 'চট্টগ্রাম', divisionId: 'chittagong', coordinates: [91.7832, 22.3569], riskScore: 38, activeDisputes: 122 },
+  { id: 'bandarban', name: 'Bandarban', nameBn: 'বান্দরবান', divisionId: 'chittagong', coordinates: [92.2167, 22.1833], riskScore: 43, activeDisputes: 44 },
+  { id: 'coxs-bazar-dist', name: 'Cox\'s Bazar', nameBn: 'কক্সবাজার', divisionId: 'chittagong', coordinates: [92.0058, 21.4272], riskScore: 71, activeDisputes: 86 },
+];
+
+/**
+ * Key National Hub Nodes (Primary Focus for Risk Analytics & Threat Radar)
+ */
 export const NATIONAL_HUBS: NationalHub[] = [
   // Barishal Division Hubs (Primary Threat Focus)
   {
@@ -475,280 +592,13 @@ export const NATIONAL_HUBS: NationalHub[] = [
 ];
 
 /**
- * GeoJSON FeatureCollection for Bangladesh's 8 Divisions
- * Polygons generated with realistic geometric curvature and coastal inlets.
+ * Official Bangladesh Administrative Divisions GeoJSON FeatureCollection
+ * Loaded directly from geoBoundaries ADM1.
  */
-export const BANGLADESH_GEOJSON: GeoJSON.FeatureCollection<GeoJSON.Geometry, any> = {
-  type: 'FeatureCollection',
-  features: [
-    // 1. Rangpur Division (North-West)
-    {
-      type: 'Feature',
-      id: 'rangpur',
-      properties: {
-        id: 'rangpur',
-        name: 'Rangpur',
-        nameBn: 'রংপুর',
-        riskScore: 19,
-        riskLevel: 'LOW',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [88.35, 26.63],
-            [88.55, 26.35],
-            [88.90, 26.30],
-            [89.15, 26.25],
-            [89.70, 26.15],
-            [89.85, 25.80],
-            [89.70, 25.30],
-            [89.45, 25.10],
-            [89.15, 25.35],
-            [88.65, 25.20],
-            [88.40, 25.55],
-            [88.10, 25.90],
-            [88.20, 26.30],
-            [88.35, 26.63],
-          ],
-        ],
-      },
-    },
-
-    // 2. Rajshahi Division (West-Central)
-    {
-      type: 'Feature',
-      id: 'rajshahi',
-      properties: {
-        id: 'rajshahi',
-        name: 'Rajshahi',
-        nameBn: 'রাজশাহী',
-        riskScore: 22,
-        riskLevel: 'LOW',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [88.65, 25.20],
-            [89.15, 25.35],
-            [89.45, 25.10],
-            [89.65, 25.00],
-            [89.75, 24.60],
-            [89.80, 24.15],
-            [89.60, 23.85],
-            [89.20, 23.95],
-            [88.75, 24.10],
-            [88.25, 24.40],
-            [88.05, 24.75],
-            [88.35, 25.10],
-            [88.65, 25.20],
-          ],
-        ],
-      },
-    },
-
-    // 3. Mymensingh Division (North-Central)
-    {
-      type: 'Feature',
-      id: 'mymensingh',
-      properties: {
-        id: 'mymensingh',
-        name: 'Mymensingh',
-        nameBn: 'ময়মনসিংহ',
-        riskScore: 25,
-        riskLevel: 'LOW',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [89.70, 25.30],
-            [89.85, 25.25],
-            [90.35, 25.20],
-            [90.80, 25.15],
-            [91.10, 25.10],
-            [90.95, 24.65],
-            [90.65, 24.25],
-            [90.30, 24.15],
-            [89.95, 24.30],
-            [89.75, 24.60],
-            [89.65, 25.00],
-            [89.70, 25.30],
-          ],
-        ],
-      },
-    },
-
-    // 4. Sylhet Division (North-East)
-    {
-      type: 'Feature',
-      id: 'sylhet',
-      properties: {
-        id: 'sylhet',
-        name: 'Sylhet',
-        nameBn: 'সিলেট',
-        riskScore: 54,
-        riskLevel: 'MEDIUM',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [91.10, 25.10],
-            [91.65, 25.15],
-            [92.15, 25.10],
-            [92.50, 25.00],
-            [92.55, 24.50],
-            [92.30, 24.20],
-            [91.80, 24.10],
-            [91.40, 24.00],
-            [91.20, 24.35],
-            [90.95, 24.65],
-            [91.10, 25.10],
-          ],
-        ],
-      },
-    },
-
-    // 5. Dhaka Division (Central Core)
-    {
-      type: 'Feature',
-      id: 'dhaka',
-      properties: {
-        id: 'dhaka',
-        name: 'Dhaka',
-        nameBn: 'ঢাকা',
-        riskScore: 28,
-        riskLevel: 'LOW',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [89.80, 24.15],
-            [90.30, 24.15],
-            [90.65, 24.25],
-            [90.95, 24.65],
-            [91.20, 24.35],
-            [91.05, 23.90],
-            [90.85, 23.50],
-            [90.60, 23.20],
-            [90.20, 23.00],
-            [89.75, 23.20],
-            [89.50, 23.50],
-            [89.60, 23.85],
-            [89.80, 24.15],
-          ],
-        ],
-      },
-    },
-
-    // 6. Khulna Division (South-West / Sundarbans)
-    {
-      type: 'Feature',
-      id: 'khulna',
-      properties: {
-        id: 'khulna',
-        name: 'Khulna',
-        nameBn: 'খুলনা',
-        riskScore: 42,
-        riskLevel: 'MEDIUM',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [88.75, 24.10],
-            [89.20, 23.95],
-            [89.60, 23.85],
-            [89.50, 23.50],
-            [89.75, 23.20],
-            [89.90, 22.80],
-            [89.85, 22.20],
-            [89.50, 21.65], // Sundarbans coastal edge
-            [89.15, 21.60],
-            [88.95, 21.75],
-            [88.85, 22.30],
-            [88.70, 22.90],
-            [88.65, 23.50],
-            [88.75, 24.10],
-          ],
-        ],
-      },
-    },
-
-    // 7. Barishal Division (South-Central / Coastal Delta & Epicenter)
-    {
-      type: 'Feature',
-      id: 'barishal',
-      properties: {
-        id: 'barishal',
-        name: 'Barishal',
-        nameBn: 'বরিশাল',
-        riskScore: 88,
-        riskLevel: 'CRITICAL',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [89.75, 23.20],
-            [90.20, 23.00],
-            [90.60, 23.20],
-            [90.95, 22.80],
-            [90.90, 22.10], // Bhola & Meghna mouth
-            [90.65, 21.80],
-            [90.25, 21.85], // Kuakata / Patuakhali coast
-            [89.85, 22.00],
-            [89.85, 22.20],
-            [89.90, 22.80],
-            [89.75, 23.20],
-          ],
-        ],
-      },
-    },
-
-    // 8. Chittagong Division (South-East / Coast & Hills)
-    {
-      type: 'Feature',
-      id: 'chittagong',
-      properties: {
-        id: 'chittagong',
-        name: 'Chittagong',
-        nameBn: 'চট্টগ্রাম',
-        riskScore: 38,
-        riskLevel: 'MEDIUM',
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [91.05, 23.90],
-            [91.40, 24.00],
-            [91.80, 24.10],
-            [92.10, 23.70],
-            [92.40, 23.40],
-            [92.65, 22.60],
-            [92.50, 21.60],
-            [92.35, 20.90],
-            [92.20, 20.60], // St. Martin's & Teknaf tip
-            [91.95, 21.20], // Cox's Bazar coast
-            [91.65, 22.00], // Chittagong port coast
-            [91.30, 22.70], // Sandwip channel
-            [90.95, 22.80],
-            [90.60, 23.20],
-            [90.85, 23.50],
-            [91.05, 23.90],
-          ],
-        ],
-      },
-    },
-  ],
-};
+export const BANGLADESH_GEOJSON: GeoJSON.FeatureCollection<GeoJSON.Geometry, any> = bangladeshAdm1Json as any;
 
 /**
- * Major River Networks of Bangladesh
+ * Major River Networks of Bangladesh (Curved WGS84 Paths)
  */
 export const BANGLADESH_RIVERS = [
   // Padma (Ganges)
@@ -757,13 +607,14 @@ export const BANGLADESH_RIVERS = [
     name: 'Padma River',
     nameBn: 'পদ্মা নদী',
     path: [
-      [88.25, 24.40],
-      [88.75, 24.10],
-      [89.20, 23.95],
-      [89.60, 23.85],
-      [89.95, 23.55],
-      [90.35, 23.30],
-      [90.65, 23.10],
+      [88.20, 24.60],
+      [88.60, 24.35],
+      [89.05, 24.10],
+      [89.45, 23.95],
+      [89.75, 23.80],
+      [89.90, 23.75],
+      [90.35, 23.40],
+      [90.65, 23.25],
     ],
   },
   // Jamuna (Brahmaputra)
@@ -772,26 +623,102 @@ export const BANGLADESH_RIVERS = [
     name: 'Jamuna River',
     nameBn: 'যমুনা নদী',
     path: [
-      [89.85, 25.80],
-      [89.70, 25.30],
-      [89.65, 25.00],
-      [89.75, 24.60],
-      [89.80, 24.15],
-      [89.60, 23.85],
+      [89.70, 26.00],
+      [89.65, 25.50],
+      [89.60, 25.00],
+      [89.65, 24.50],
+      [89.75, 24.10],
+      [89.85, 23.85],
+      [89.90, 23.75],
     ],
   },
-  // Meghna (Lower) & Coastal Estuary
+  // Meghna & Estuary
   {
     id: 'meghna',
     name: 'Meghna River & Estuary',
     nameBn: 'মেঘনা নদী ও মোহনা',
     path: [
-      [90.95, 24.65],
-      [90.85, 24.00],
-      [90.60, 23.20],
-      [90.75, 22.80],
-      [90.85, 22.30],
+      [91.10, 24.60],
+      [90.95, 24.15],
+      [90.75, 23.75],
+      [90.65, 23.25],
+      [90.60, 22.85],
+      [90.65, 22.40],
       [90.75, 21.80],
+    ],
+  },
+  // Old Brahmaputra
+  {
+    id: 'old-brahmaputra',
+    name: 'Old Brahmaputra River',
+    nameBn: 'পুরাতন ব্রহ্মপুত্র নদী',
+    path: [
+      [89.68, 25.15],
+      [89.95, 24.95],
+      [90.40, 24.75],
+      [90.65, 24.45],
+      [90.95, 24.05],
+    ],
+  },
+  // Surma River (Sylhet Basin)
+  {
+    id: 'surma',
+    name: 'Surma River',
+    nameBn: 'সুরমা নদী',
+    path: [
+      [92.35, 24.90],
+      [91.85, 24.90],
+      [91.40, 25.05],
+      [91.00, 24.60],
+    ],
+  },
+  // Arial Khan & Delta Distributary
+  {
+    id: 'arial-khan',
+    name: 'Arial Khan River',
+    nameBn: 'আড়িয়াল খাঁ নদী',
+    path: [
+      [90.15, 23.50],
+      [90.25, 23.15],
+      [90.40, 22.80],
+      [90.50, 22.50],
+    ],
+  },
+  // Tetulia Channel (West of Bhola Island)
+  {
+    id: 'tetulia',
+    name: 'Tetulia River & Channel',
+    nameBn: 'তেঁতুলিয়া নদী ও চ্যানেল',
+    path: [
+      [90.58, 22.80],
+      [90.52, 22.45],
+      [90.48, 22.15],
+      [90.52, 21.85],
+    ],
+  },
+  // Rupsha - Pasur River (Khulna & Sundarbans)
+  {
+    id: 'rupsha-pasur',
+    name: 'Rupsha - Pasur River',
+    nameBn: 'রূপসা-পশুর নদী',
+    path: [
+      [89.55, 23.00],
+      [89.58, 22.75],
+      [89.55, 22.40],
+      [89.58, 22.00],
+      [89.60, 21.75],
+    ],
+  },
+  // Teesta River
+  {
+    id: 'teesta',
+    name: 'Teesta River',
+    nameBn: 'তিস্তা নদী',
+    path: [
+      [89.00, 26.20],
+      [89.20, 25.95],
+      [89.50, 25.70],
+      [89.65, 25.50],
     ],
   },
   // Karnaphuli River
@@ -800,9 +727,9 @@ export const BANGLADESH_RIVERS = [
     name: 'Karnaphuli River',
     nameBn: 'কর্ণফুলী নদী',
     path: [
-      [92.30, 22.60],
+      [92.25, 22.65],
       [92.00, 22.45],
-      [91.80, 22.30],
+      [91.85, 22.30],
       [91.75, 22.20],
     ],
   },
@@ -847,12 +774,13 @@ export const BAY_OF_BENGAL_FEATURES = {
 };
 
 /**
- * Neighboring Country Border Coordinates for Regional Context
+ * Neighboring Country & Border Labels matching the authentic administrative atlas
  */
 export const NEIGHBOR_REGIONS = [
-  { name: 'INDIA', sub: 'Meghalaya', coords: [90.5, 25.55], align: 'center' },
-  { name: 'INDIA', sub: 'West Bengal', coords: [88.1, 23.8], align: 'right' },
-  { name: 'INDIA', sub: 'Tripura', coords: [91.75, 23.5], align: 'left' },
-  { name: 'INDIA', sub: 'Assam', coords: [92.6, 24.8], align: 'left' },
-  { name: 'MYANMAR', sub: 'Burma', coords: [92.65, 21.1], align: 'left' },
+  { name: 'INDIA', nameBn: 'মে ঘাল য় (ভারত)', sub: 'Meghalaya', coords: [90.5, 25.55], align: 'center' },
+  { name: 'INDIA', nameBn: 'প শ্চি ম ব ঙ্গ (ভারত)', sub: 'West Bengal', coords: [88.1, 23.8], align: 'right' },
+  { name: 'INDIA', nameBn: 'ত্রি পু রা (ভারত)', sub: 'Tripura', coords: [91.75, 23.5], align: 'left' },
+  { name: 'INDIA', nameBn: 'আ সাম (ভারত)', sub: 'Assam', coords: [92.6, 24.8], align: 'left' },
+  { name: 'INDIA', nameBn: 'মি জো রাম (ভারত)', sub: 'Mizoram', coords: [92.8, 22.9], align: 'left' },
+  { name: 'MYANMAR', nameBn: 'মায়ানমার (বার্মা)', sub: 'Burma', coords: [92.65, 21.1], align: 'left' },
 ];
