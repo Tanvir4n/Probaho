@@ -8,6 +8,7 @@ import {
   PricingPlan,
 } from '../data/tokens';
 import { ArchitecturalBackground } from './ArchitecturalBackground';
+import { ArchitecturalMapController } from './ArchitecturalMapController';
 import { MassPricingSection } from './MassPricingSection';
 import { MassAuthModal } from './MassAuthModal';
 import { MassGlassSidebar } from './MassGlassSidebar';
@@ -84,6 +85,20 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   const [blueprintSpeed, setBlueprintSpeed] = useState<number>(1.0);
   const [mapOverlayOpacity, setMapOverlayOpacity] = useState<number>(0.18);
   const [blueprintZoom, setBlueprintZoom] = useState<number>(0.40); // Compact Zoomed-out Start (40% scale, "size ektu komay dew")
+
+  // Cartography & Blueprint Layers Visibility
+  const [layersVisibility, setLayersVisibility] = useState({
+    cartography: true,
+    cadGrid: true,
+    topographyContours: true,
+  });
+
+  const handleToggleLayer = (layerKey: 'cartography' | 'cadGrid' | 'topographyContours') => {
+    setLayersVisibility((prev) => ({
+      ...prev,
+      [layerKey]: !prev[layerKey],
+    }));
+  };
 
   // Site Analysis GIS Interactive Layer Toggles
   const [activeGisLayers, setActiveGisLayers] = useState({
@@ -174,6 +189,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           themeMode={mode}
           zoomLevel={blueprintZoom}
           onZoomChange={setBlueprintZoom}
+          layersVisibility={layersVisibility}
         />
 
         {/* 
@@ -401,32 +417,21 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           </AnimatePresence>
         </div>
 
-        {/* Hero Bottom Bar Info */}
-        <div className="relative z-20 px-6 sm:px-10 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11.52px] font-mono text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)]/70 backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)]" />
-            <span className="text-[var(--color-text-primary)] font-semibold">{t.hero.streamingCore}</span>
-            <span>
-              {isBangla
-                ? `লাইভ স্ট্রিম: ${activeMap.cityName} (${activeMap.coordinates})`
-                : `Streaming ${activeMap.cityName} (${activeMap.coordinates})`}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">
-              {t.nav.engines}
-            </a>
-            <a href="#jomichain" className="text-[var(--color-surface-raised)] hover:underline font-bold transition-colors">
-              {t.nav.jomichain} ↓
-            </a>
-            <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">
-              {t.nav.pricing}
-            </a>
-            <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">
-              {t.cases.tabAll} ↓
-            </a>
-          </div>
+        {/* Interactive Blueprint & Cartography Telemetry Controller (Shifted to Bottom Right of Hero) */}
+        <div className="relative z-30 px-6 sm:px-12 lg:px-20 pb-6 hidden sm:flex justify-end pointer-events-auto">
+          <ArchitecturalMapController
+            currentMapIndex={currentMapIndex}
+            onSelectMap={setCurrentMapIndex}
+            isPaused={isBlueprintPaused}
+            onTogglePause={() => setIsBlueprintPaused((prev) => !prev)}
+            zoomLevel={blueprintZoom}
+            onZoomChange={setBlueprintZoom}
+            overlayOpacity={mapOverlayOpacity}
+            onOverlayOpacityChange={setMapOverlayOpacity}
+            layersVisibility={layersVisibility}
+            onToggleLayer={handleToggleLayer}
+            isDay={isDay}
+          />
         </div>
       </div>
 

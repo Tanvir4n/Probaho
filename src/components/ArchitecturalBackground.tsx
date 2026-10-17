@@ -22,9 +22,9 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
   currentMapIndex: controlledMapIndex,
   onMapChange,
   className = '',
-  autoPlay = false,
+  autoPlay = true,
   speedMultiplier = 1.0,
-  isPaused = true,
+  isPaused = false,
   onTogglePause,
   onSpeedChange,
   overlayOpacity: controlledOverlayOpacity,
@@ -35,10 +35,9 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
 }) => {
   const isDay = themeMode === 'day';
   const [internalMapIndex, setInternalMapIndex] = useState(0);
-  const [internalPaused, setInternalPaused] = useState(true);
+  const [internalPaused, setInternalPaused] = useState(false);
   const [internalOverlayOpacity, setInternalOverlayOpacity] = useState(0.18);
   const [internalZoomLevel, setInternalZoomLevel] = useState(0.40); // 40% Compact Zoomed-out Start ("size ektu komay dew")
-  const [showLayerControls, setShowLayerControls] = useState(false);
 
   // Stack visibility state
   const [layersVisibility, setLayersVisibility] = useState({
@@ -199,7 +198,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
                   <img
                     src={mapData.image}
                     alt=""
-                    className={`w-full h-full object-cover transform transition-transform duration-[7000ms] ease-out ${
+                    className={`w-full h-full object-cover transform animate-mass-map-drift transition-transform duration-[7000ms] ease-out ${
                       isDay
                         ? 'invert-[0.93] hue-rotate-180 contrast-[1.12] brightness-[0.98]'
                         : 'filter contrast-[1.12] brightness-[1.08] saturate-[1.05]'
@@ -343,6 +342,17 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
 
       {/* 
         ========================================================================
+        LAYER 4: ARCHITECTURAL LASER SCAN BEAM
+        Sweeps down continuously with a green focal beam and laser shadow
+        ========================================================================
+      */}
+      <div className="absolute inset-x-0 h-44 z-4 pointer-events-none animate-mass-scan">
+        <div className={`w-full h-full bg-gradient-to-b from-transparent ${isDay ? 'via-[#16a34a]/12' : 'via-[#22c55e]/15'} to-transparent`} />
+        <div className={`absolute bottom-1/2 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent ${isDay ? 'via-[#16a34a]' : 'via-[#22c55e]'} to-transparent shadow-[0_0_18px_rgba(34,197,94,0.7)]`} />
+      </div>
+
+      {/* 
+        ========================================================================
         LAYER 5: REDUCED BLACK OPACITY LAYER FOR HIGH MAP VISIBILITY
         "dicrease the black opacity jeno tar background er map ta sundor kore dekha jay"
         ========================================================================
@@ -373,223 +383,6 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
             `,
         }}
       />
-
-      {/* 
-        ========================================================================
-        HUD TELEMETRY CONTROLS (Bottom Left, interactive controls for layer testing)
-        ========================================================================
-      */}
-      <div className="absolute bottom-6 left-6 z-20 pointer-events-auto hidden sm:flex items-center gap-2.5">
-        <div className="glass-pill px-2.5 py-1 rounded-[5px] text-[10.5px] font-mono text-[var(--color-text-secondary)] flex items-center gap-2.5 shadow-2xl">
-          <div className="flex items-center gap-1.5 text-[var(--color-text-primary)]">
-            <MapPin className="w-3 h-3 text-[var(--color-surface-raised)]" />
-            <span className="font-semibold">{activeMap.cityName}</span>
-            <span className="opacity-40">·</span>
-            <span className="text-[9.5px] text-[var(--color-text-secondary)]">{activeMap.coordinates}</span>
-          </div>
-
-          <span className="opacity-30">|</span>
-
-          {/* Layer Inspector Toggle */}
-          <button
-            onClick={() => setShowLayerControls(!showLayerControls)}
-            className="flex items-center gap-1 text-[9.5px] text-[var(--color-text-primary)] hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer"
-            title="Inspect Blueprint Stack"
-          >
-            <Layers className="w-3 h-3 text-[var(--color-surface-raised)]" />
-            <span>Layers</span>
-          </button>
-
-          <span className="opacity-30">|</span>
-
-          {/* Zoom Out / In Controls */}
-          <div className="flex items-center gap-1">
-            <span className="text-[9.5px] text-[var(--color-text-secondary)] hidden lg:inline">Zoom:</span>
-            <button
-              onClick={() => handleZoomChange(currentZoom - 0.05)}
-              className="p-0.5 rounded-[2px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors cursor-pointer"
-              title="Zoom Out Blueprint"
-            >
-              <ZoomOut className="w-3 h-3" />
-            </button>
-            <span className="text-[9.5px] font-mono font-bold text-[var(--color-surface-raised)] min-w-[26px] text-center">
-              {Math.round(currentZoom * 100)}%
-            </span>
-            <button
-              onClick={() => handleZoomChange(currentZoom + 0.05)}
-              className="p-0.5 rounded-[2px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)] transition-colors cursor-pointer"
-              title="Zoom In Blueprint"
-            >
-              <ZoomIn className="w-3 h-3" />
-            </button>
-            {Math.abs(currentZoom - 0.40) > 0.02 && (
-              <button
-                onClick={() => handleZoomChange(0.40)}
-                className="text-[8.5px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] underline ml-0.5 cursor-pointer"
-                title="Reset to default zoomed-out view (40%)"
-              >
-                reset
-              </button>
-            )}
-          </div>
-
-          <span className="opacity-30">|</span>
-
-          {/* Black/Light Layer Opacity Quick Controls */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-[var(--color-text-secondary)] hidden lg:inline">{isDay ? 'Overlay:' : 'Darkness:'}</span>
-            {[
-              { val: 0.10, label: '10%' },
-              { val: 0.18, label: '18%' },
-              { val: 0.35, label: '35%' },
-              { val: 0.55, label: '55%' },
-            ].map(({ val, label }) => {
-              const isSelected = Math.abs(currentOpacity - val) < 0.05;
-              return (
-                <button
-                  key={val}
-                  onClick={() => handleOpacityChange(val)}
-                  className={`px-1.5 py-0.5 rounded-[1px] text-[10px] font-mono transition-colors cursor-pointer ${
-                    isSelected
-                      ? 'bg-[var(--color-surface-raised)] text-white font-bold'
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-muted)]'
-                  }`}
-                  title={`Set opacity to ${label}`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-
-          <span className="opacity-30">|</span>
-
-          {/* Play/Pause Button */}
-          <button
-            onClick={() => {
-              if (onTogglePause) {
-                onTogglePause();
-              } else {
-                setInternalPaused(!internalPaused);
-              }
-            }}
-            className="p-1 hover:text-[var(--color-text-primary)] transition-colors flex items-center gap-1 cursor-pointer"
-            title={paused ? 'Resume Blueprint Sequence' : 'Pause Blueprint Sequence'}
-          >
-            {paused ? (
-              <Play className="w-3.5 h-3.5 text-[var(--color-text-secondary)]" />
-            ) : (
-              <Pause className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
-            )}
-          </button>
-
-          {/* City Indicator Dots */}
-          <div className="flex items-center gap-1.5 ml-1">
-            {URBAN_MAP_DATASETS.map((m, idx) => (
-              <button
-                key={m.id}
-                onClick={() => handleIndexChange(idx)}
-                className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-                  idx === activeIndex
-                    ? 'bg-[var(--color-surface-raised)] w-4'
-                    : 'bg-[var(--color-text-tertiary)]/40 hover:bg-[var(--color-text-secondary)]'
-                }`}
-                title={`Switch to ${m.cityName}`}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Blueprint Layer Stack Popover */}
-        {showLayerControls && (
-          <div className="absolute bottom-12 left-0 glass-panel p-3 rounded-[6px] shadow-2xl text-[10.56px] font-mono space-y-2.5 w-72 animate-in fade-in slide-in-from-bottom-2 duration-150">
-            <div className="flex items-center justify-between text-[var(--color-surface-raised)] font-semibold border-b border-[var(--color-border-subtle)] pb-1.5">
-              <span>BLUEPRINT & OVERLAY CONTROLS</span>
-              <button
-                onClick={() => setShowLayerControls(false)}
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Blueprint Zoom Slider */}
-            <div className="space-y-1 bg-[var(--color-surface-muted)] p-2 rounded-[2px]">
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="text-[var(--color-text-primary)]">Blueprint Zoom View</span>
-                <span className="text-[var(--color-surface-raised)] font-bold">{Math.round(currentZoom * 100)}%</span>
-              </div>
-              <input
-                type="range"
-                min="30"
-                max="120"
-                step="5"
-                value={Math.round(currentZoom * 100)}
-                onChange={(e) => handleZoomChange(Number(e.target.value) / 100)}
-                className="w-full accent-[var(--color-surface-raised)] cursor-pointer h-1.5 bg-[var(--color-surface-base)] rounded"
-              />
-              <div className="flex justify-between text-[8px] text-[var(--color-text-secondary)]">
-                <span>30% (Wide Macro)</span>
-                <span>50% (Default Zoom-Out)</span>
-                <span>100% (Detail)</span>
-              </div>
-            </div>
-
-            {/* Black / Light Opacity Slider */}
-            <div className="space-y-1 bg-[var(--color-surface-muted)] p-2 rounded-[2px]">
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="text-[var(--color-text-primary)]">{isDay ? 'Light Layer Opacity' : 'Black Layer Opacity'}</span>
-                <span className="text-[var(--color-surface-raised)] font-bold">{Math.round(currentOpacity * 100)}%</span>
-              </div>
-              <input
-                type="range"
-                min="5"
-                max="75"
-                step="1"
-                value={Math.round(currentOpacity * 100)}
-                onChange={(e) => handleOpacityChange(Number(e.target.value) / 100)}
-                className="w-full accent-[var(--color-surface-raised)] cursor-pointer h-1.5 bg-[var(--color-surface-base)] rounded"
-              />
-              <div className="flex justify-between text-[8px] text-[var(--color-text-secondary)]">
-                <span>5% (Ultra Clear)</span>
-                <span>18% (Vivid Map)</span>
-                <span>75% (Subtle)</span>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 text-[var(--color-text-primary)]">
-              {[
-                { key: 'cartography' as const, label: '01. GIS Cartography Map' },
-                { key: 'cadGrid' as const, label: '02. CAD Drafting Grid' },
-                { key: 'topographyContours' as const, label: '03. Elevation Contours' },
-              ].map((layer) => (
-                <button
-                  key={layer.key}
-                  onClick={() =>
-                    setLayersVisibility((prev) => ({
-                      ...prev,
-                      [layer.key]: !prev[layer.key],
-                    }))
-                  }
-                  className="w-full flex items-center justify-between p-1.5 hover:bg-[var(--color-surface-muted)] rounded-[2px] transition-colors text-left cursor-pointer"
-                >
-                  <span>{layer.label}</span>
-                  {layersVisibility[layer.key] ? (
-                    <Eye className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
-                  ) : (
-                    <EyeOff className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" />
-                  )}
-                </button>
-              ))}
-            </div>
-
-            <div className="pt-1.5 border-t border-[var(--color-border-subtle)] text-[9px] text-[var(--color-text-secondary)] flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-surface-raised)]" />
-              <span>Reduced opacity enables clear map visibility</span>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

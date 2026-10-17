@@ -291,6 +291,28 @@ body {
   animation: massCoordinatePulse calc(var(--motion-duration-slow) * 3) ease-in-out infinite;
 }
 
+@keyframes massMapDrift {
+  0% {
+    transform: scale(1.05) translate(0%, 0%);
+  }
+  25% {
+    transform: scale(1.09) translate(-1.5%, 1%);
+  }
+  50% {
+    transform: scale(1.06) translate(1%, -1.2%);
+  }
+  75% {
+    transform: scale(1.10) translate(1.2%, 1.2%);
+  }
+  100% {
+    transform: scale(1.05) translate(0%, 0%);
+  }
+}
+
+.animate-mass-map-drift {
+  animation: massMapDrift 24s ease-in-out infinite;
+}
+
 /* 
   Page and Section Transition Animations: Coming from below
 */
