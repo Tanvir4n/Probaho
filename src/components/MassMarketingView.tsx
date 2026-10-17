@@ -19,6 +19,7 @@ import { RiskAnalyticsDashboard } from './RiskAnalyticsDashboard';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
 import { TemporalOwnershipGraphStudio } from './TemporalOwnershipGraphStudio';
+import { ArchitecturalFooter } from './ArchitecturalFooter';
 import {
   OwnershipGraphWidget,
   FraudEngineGaugeWidget,
@@ -1038,40 +1039,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
       {/* 
         ====================================================================
-        QUIET EDITORIAL FOOTER:
+        MONUMENTAL ARCHITECTURAL FOOTER (White & Green Editorial Theme):
         ====================================================================
       */}
-      <footer className="py-12 bg-[var(--color-surface-strong)] border-t border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] transition-colors duration-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <ProbahoBrand size={24} textSize="text-lg" title={isBangla ? 'প্রবাহ' : 'Probaho'} />
-              <p className="text-[11.52px] mt-1 text-[var(--color-text-secondary)] max-w-sm">
-                {t.footer.desc}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-6 text-[11.52px] font-mono">
-              <a href="#tools" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.engines}</a>
-              <a href="#pricing" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.pricing}</a>
-              <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.cases}</a>
-              <a href="#methodology" className="hover:text-[var(--color-text-primary)] transition-colors">{t.nav.methodology}</a>
-              <button onClick={() => setIsAuthModalOpen(true)} className="hover:text-[var(--color-text-primary)] transition-colors cursor-pointer">{t.nav.account}</button>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10.56px]">
-            <div>
-              © {new Date().getFullYear()} Probaho Intelligence Laboratory · {t.footer.developedBy}
-            </div>
-            <div className="flex items-center gap-4 text-[var(--color-text-tertiary)]">
-              <span>{t.footer.wcag}</span>
-              <span>·</span>
-              <span className="capitalize">{mode === 'day' ? t.nav.dayMode : t.nav.nightMode} {isBangla ? 'সক্রিয়' : 'Active'}</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <ArchitecturalFooter
+        onOpenInquiry={() => setIsInquiryModalOpen(true)}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        setToastMessage={setToastMessage}
+      />
 
       {/* 
         ====================================================================
