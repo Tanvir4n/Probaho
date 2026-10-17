@@ -14,7 +14,8 @@
 
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { ChevronUp } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { ChevronUp, HelpCircle } from 'lucide-react';
 
 interface ArchitecturalFooterProps {
   onOpenInquiry?: () => void;
@@ -27,7 +28,27 @@ export const ArchitecturalFooter: React.FC<ArchitecturalFooterProps> = ({
   setToastMessage,
 }) => {
   const { isDay } = useTheme();
+  const { isBangla, t } = useLanguage();
   const [isWordmarkSelected, setIsWordmarkSelected] = useState<boolean>(false);
+
+  const faqs = [
+    {
+      q: t.pricingFaqs.q1,
+      a: t.pricingFaqs.a1,
+    },
+    {
+      q: t.pricingFaqs.q2,
+      a: t.pricingFaqs.a2,
+    },
+    {
+      q: t.pricingFaqs.q3,
+      a: t.pricingFaqs.a3,
+    },
+    {
+      q: t.pricingFaqs.q4,
+      a: t.pricingFaqs.a4,
+    },
+  ];
 
   const handleTermsClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -102,6 +123,44 @@ export const ArchitecturalFooter: React.FC<ArchitecturalFooterProps> = ({
       */}
       <div className="relative z-10 w-full pt-12 sm:pt-16 pb-0 flex flex-col justify-between items-center">
         
+        {/* 
+          ======================================================================
+          FAQ SECTION: COMMON INVESTIGATION QUESTIONS
+          Moved from pricing into footer as requested
+          ======================================================================
+        */}
+        <div id="faq" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mb-14 sm:mb-20">
+          <div className="text-center space-y-2.5 mb-8 sm:mb-12">
+            <div className="text-[11px] font-mono uppercase tracking-widest text-[#16a34a] dark:text-[#22c55e] font-bold">
+              {t.pricingFaqs.tag}
+            </div>
+            <h3 className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight ${headingColor}`}>
+              {t.pricingFaqs.heading}
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+            {faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className={`p-6 sm:p-7 rounded-[18px] sm:rounded-[22px] border transition-all duration-300 ${
+                  isDay
+                    ? 'bg-white border-black/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.035)]'
+                    : 'bg-[#121117] border-white/10 shadow-lg'
+                } space-y-2.5`}
+              >
+                <div className={`text-sm sm:text-base font-bold ${headingColor} flex items-start gap-2.5`}>
+                  <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-[#16a34a] dark:text-[#22c55e] shrink-0 mt-0.5" />
+                  <span>{faq.q}</span>
+                </div>
+                <p className={`text-xs sm:text-[13px] ${bodyColor} leading-relaxed pl-6.5 sm:pl-7.5`}>
+                  {faq.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* 
           ======================================================================
           FLOATING PRE-FOOTER CARD

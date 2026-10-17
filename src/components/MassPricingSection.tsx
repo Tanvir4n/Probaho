@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MASSLABS_PRICING, PricingPlan } from '../data/tokens';
-import { Check, ArrowRight, ShieldCheck, HelpCircle } from 'lucide-react';
+import { Check, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { motion } from 'motion/react';
@@ -13,25 +13,6 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
   const { isDay } = useTheme();
   const { isBangla, t } = useLanguage();
   const [isAnnual, setIsAnnual] = useState(true);
-
-  const faqs = [
-    {
-      q: t.pricingFaqs.q1,
-      a: t.pricingFaqs.a1,
-    },
-    {
-      q: t.pricingFaqs.q2,
-      a: t.pricingFaqs.a2,
-    },
-    {
-      q: t.pricingFaqs.q3,
-      a: t.pricingFaqs.a3,
-    },
-    {
-      q: t.pricingFaqs.q4,
-      a: t.pricingFaqs.a4,
-    },
-  ];
 
   return (
     <motion.section
@@ -178,35 +159,6 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
           >
             {isBangla ? 'প্রাতিষ্ঠানিক চুক্তি অনুরোধ' : 'Request Enterprise Terms'}
           </button>
-        </div>
-
-        {/* FAQs */}
-        <div className="pt-12 border-t border-[var(--color-border-subtle)] space-y-8">
-          <div className="text-center space-y-2">
-            <div className="text-[11px] font-mono uppercase tracking-widest text-[var(--color-text-secondary)]">
-              {t.pricingFaqs.tag}
-            </div>
-            <h3 className="text-2xl font-bold text-[var(--color-text-primary)]">
-              {t.pricingFaqs.heading}
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {faqs.map((faq, idx) => (
-              <div
-                key={idx}
-                className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-2 shadow-sm"
-              >
-                <div className="text-sm font-semibold text-[var(--color-text-primary)] flex items-start gap-2">
-                  <HelpCircle className="w-4 h-4 text-[var(--color-surface-raised)] shrink-0 mt-0.5" />
-                  <span>{faq.q}</span>
-                </div>
-                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed pl-6">
-                  {faq.a}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </motion.section>
