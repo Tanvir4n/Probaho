@@ -63,12 +63,18 @@ interface TemporalOwnershipGraphStudioProps {
   onClose?: () => void;
   initialParcelId?: string;
   defaultViewMode?: 'split' | 'graph' | 'map';
+  cities?: { id: string; cityName: string; [key: string]: any }[];
+  currentCityIndex?: number;
+  onCityChange?: (idx: number) => void;
 }
 
 export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudioProps> = ({
   onClose,
   initialParcelId = 'parcel-dhanmondi-1042',
   defaultViewMode = 'split',
+  cities,
+  currentCityIndex = 0,
+  onCityChange,
 }) => {
   const { isBangla } = useLanguage();
   const { isDay } = useTheme();
@@ -106,14 +112,14 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
   const [isPlayingTimeline, setIsPlayingTimeline] = useState<boolean>(false);
   const [isAnimationFlowActive, setIsAnimationFlowActive] = useState<boolean>(true);
 
-  // Modals & Drawers
-  const [isFolioDrawerOpen, setIsFolioDrawerOpen] = useState<boolean>(true);
+  // Modals & Drawers (Default drawer closed so split view gives 50/50 full breathing room to DAG)
+  const [isFolioDrawerOpen, setIsFolioDrawerOpen] = useState<boolean>(false);
   const [isAreaAuditorOpen, setIsAreaAuditorOpen] = useState<boolean>(false);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState<boolean>(false);
 
   // SVG Pan & Zoom Transform State for DAG Canvas
-  const [svgZoom, setSvgZoom] = useState<number>(0.92);
-  const [svgPan, setSvgPan] = useState<{ x: number; y: number }>({ x: 30, y: 35 });
+  const [svgZoom, setSvgZoom] = useState<number>(0.72);
+  const [svgPan, setSvgPan] = useState<{ x: number; y: number }>({ x: 25, y: 25 });
   const [isDraggingCanvas, setIsDraggingCanvas] = useState<boolean>(false);
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -191,42 +197,63 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
     <div className="relative w-full h-full flex flex-col bg-[var(--color-surface-base)] text-[var(--color-text-primary)] overflow-hidden font-sans select-none">
       {/* 
         ======================================================================
-        STUDIO HEADER TOOLBAR
+        UNIFIED STUDIO HEADER TOOLBAR (Single Sleek Top Bar, h-[52px])
         ======================================================================
       */}
-      <header className="relative z-30 h-14 px-4 bg-[var(--color-surface-strong)]/95 border-b border-[var(--color-border-subtle)] backdrop-blur-md flex items-center justify-between shrink-0">
-        {/* Left: Branding & Parcel Switcher */}
-        <div className="flex items-center gap-3">
+      <header className="relative z-30 h-[52px] px-3.5 bg-[var(--color-surface-strong)]/95 border-b border-[var(--color-border-subtle)] backdrop-blur-md flex items-center justify-between shrink-0 gap-3 font-mono">
+        {/* Left: Probaho Studio Branding + City Selector */}
+        <div className="flex items-center gap-2.5 shrink-0">
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-[4px] bg-[var(--color-surface-raised)]/15 border border-[var(--color-surface-raised)]/30 text-[var(--color-surface-raised)]">
               <GitBranch className="w-4 h-4" />
             </span>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold tracking-wider text-[var(--color-surface-raised)]">
-                  {isBangla ? 'প্রবাহ ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ ইঞ্জিন' : 'PROBAHO CADASTRAL & OWNERSHIP GRAPH'}
-                </span>
-                <span className="px-1.5 py-0.2 text-[9px] font-mono rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-semibold">
-                  ENGINE 01 · D3 GIS
-                </span>
-              </div>
-              <div className="text-[10px] text-[var(--color-text-secondary)] font-mono flex items-center gap-2">
-                <span>{isBangla ? 'ঐতিহাসিক জরিপ স্তর:' : 'Survey Epochs:'} CS 1940 → SA 1962 → RS 1988 → BS 2021</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold tracking-wider text-[var(--color-surface-raised)]">
+                Probaho STUDIO
+              </span>
+              <span className="text-[var(--color-text-tertiary)] hidden sm:inline">|</span>
+              <span className="text-xs text-[var(--color-text-primary)] font-semibold hidden md:inline">
+                {isBangla ? 'ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ' : 'Cadastral & Lineage Studio'}
+              </span>
             </div>
           </div>
 
-          <div className="hidden md:block h-6 w-px bg-[var(--color-border-subtle)]" />
+          {/* City Switcher Pills */}
+          {cities && cities.length > 0 && onCityChange && (
+            <div className="flex items-center gap-1 glass-pill p-0.5 rounded-[4px] ml-1">
+              {cities.map((m, idx) => (
+                <button
+                  key={m.id}
+                  onClick={() => onCityChange(idx)}
+                  className={`px-2 py-0.5 text-[10px] rounded-[3px] transition-colors cursor-pointer flex items-center gap-1 ${
+                    idx === currentCityIndex
+                      ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
+                  }`}
+                >
+                  <span>{m.cityName}</span>
+                  {m.id === 'dhaka-metro' && (
+                    <span className={`text-[8px] px-1 py-0.1 rounded font-bold ${idx === currentCityIndex ? 'bg-white/25 text-white' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                      D3
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-          {/* Parcel Selector Dropdown */}
+        {/* Middle: Auditing Parcel & Real-time Telemetry Pill */}
+        <div className="flex items-center gap-2 shrink-0">
           <div className="relative flex items-center gap-1.5">
-            <span className="text-[10px] font-mono text-[var(--color-text-secondary)] hidden lg:inline">
-              {isBangla ? 'তদন্তাধীন প্লট:' : 'Auditing Parcel:'}
+            <span className="text-[10px] text-[var(--color-text-secondary)] hidden lg:inline">
+              <MapPin className="w-3.5 h-3.5 inline mr-0.5 text-[var(--color-surface-raised)]" />
+              {isBangla ? 'প্লট:' : 'Parcel:'}
             </span>
             <select
               value={selectedParcelId}
               onChange={(e) => setSelectedParcelId(e.target.value)}
-              className="px-2.5 py-1 text-xs font-mono rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] focus:border-[var(--color-surface-raised)] focus:outline-none cursor-pointer"
+              className="px-2.5 py-1 text-xs font-mono rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] focus:border-[var(--color-surface-raised)] focus:outline-none cursor-pointer font-semibold max-w-[210px] truncate"
             >
               {ALL_TEMPORAL_PARCELS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -235,84 +262,120 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
               ))}
             </select>
           </div>
+
+          {/* Integrated Soft-lock & Dispute Pill (Replaces redundant 40px second banner) */}
+          {activeParcel.activeLockId ? (
+            <button
+              onClick={() => setIsFolioDrawerOpen(true)}
+              className="px-2 py-1 text-[10px] rounded bg-red-500/20 text-red-500 border border-red-500/40 font-bold flex items-center gap-1.5 cursor-pointer hover:bg-red-500/30 transition-colors"
+              title="Click to inspect 72h Concurrency Soft-lock & Double-Sale dossier"
+            >
+              <Lock className="w-3 h-3 animate-pulse" />
+              <span className="hidden sm:inline">72h Soft-Lock</span>
+              <span className="font-mono">#{activeParcel.activeLockId}</span>
+              <span className="text-red-400">· {activeParcel.riskScore}% Risk</span>
+            </button>
+          ) : (
+            <span className="px-2 py-1 text-[10px] rounded bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 font-bold flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3" />
+              <span>Clean</span>
+            </span>
+          )}
         </div>
 
-        {/* Center / Right: View Mode Toggle & Primary Actions */}
-        <div className="flex items-center gap-2">
+        {/* Right: View Mode Toggle & Primary Actions */}
+        <div className="flex items-center gap-1.5 shrink-0">
           {/* View Mode Switcher */}
-          <div className="flex items-center p-0.5 rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-xs font-mono">
+          <div className="flex items-center p-0.5 rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-xs">
             <button
               onClick={() => setViewMode('split')}
-              className={`px-2.5 py-1 rounded-[3px] transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 py-1 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer ${
                 viewMode === 'split'
                   ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }`}
-              title="Split View (Dhaka D3 Map + Temporal DAG Graph)"
+              title="Split View (D3 Cadastre + Temporal DAG)"
             >
               <Split className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{isBangla ? 'দ্বৈত ভিউ (নকশা + গ্রাফ)' : 'Split View'}</span>
+              <span className="hidden xl:inline">{isBangla ? 'দ্বৈত' : 'Split'}</span>
             </button>
 
             <button
               onClick={() => setViewMode('graph')}
-              className={`px-2.5 py-1 rounded-[3px] transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 py-1 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer ${
                 viewMode === 'graph'
                   ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }`}
-              title="Full Temporal Ownership DAG Canvas"
+              title="Full Temporal DAG Graph"
             >
               <GitBranch className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{isBangla ? 'সম্পূর্ণ গ্রাফ' : 'Full Graph'}</span>
+              <span className="hidden xl:inline">{isBangla ? 'গ্রাফ' : 'Graph'}</span>
             </button>
 
             <button
               onClick={() => setViewMode('map')}
-              className={`px-2.5 py-1 rounded-[3px] transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 py-1 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer ${
                 viewMode === 'map'
                   ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }`}
-              title="Full Dhaka Vector GIS Map"
+              title="Full Dhaka GIS Map"
             >
               <Compass className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{isBangla ? 'ঢাকা জিআইএস ম্যাপ' : 'Dhaka GIS Map'}</span>
+              <span className="hidden xl:inline">{isBangla ? 'ম্যাপ' : 'Map'}</span>
             </button>
           </div>
 
-          {/* Area Conservation Validator Trigger */}
+          {/* Area Conservation Trigger */}
           <button
             onClick={() => setIsAreaAuditorOpen(!isAreaAuditorOpen)}
-            className={`px-2.5 py-1 text-xs font-mono rounded-[4px] border transition-colors flex items-center gap-1.5 cursor-pointer ${
+            className={`px-2 py-1 text-xs rounded-[4px] border transition-colors flex items-center gap-1 cursor-pointer ${
               isAreaAuditorOpen
-                ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/40 font-bold'
+                ? 'bg-amber-500/20 text-amber-500 border-amber-500/40 font-bold'
                 : 'border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-base)]'
             }`}
-            title="Mathematical Area Conservation Ledger"
+            title="Area Conservation Ledger"
           >
             <Scale className="w-3.5 h-3.5 text-amber-500" />
-            <span className="hidden xl:inline">{isBangla ? 'ক্ষেত্রফল সংরক্ষণ অডিট' : 'Area Conservation'}</span>
-            <span className="text-[10px] bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-1 py-0.2 rounded font-bold">
-              Δ 0.00
+            <span className="hidden 2xl:inline">{isBangla ? 'অডিট' : 'Area'}</span>
+            <span className="text-[9.5px] bg-emerald-500/20 text-emerald-400 px-1 rounded font-bold">
+              Δ0.00
             </span>
+          </button>
+
+          {/* Folio Dossier Slide-Over Trigger */}
+          <button
+            onClick={() => setIsFolioDrawerOpen(!isFolioDrawerOpen)}
+            className={`px-2.5 py-1 text-xs rounded-[4px] border transition-all flex items-center gap-1.5 cursor-pointer ${
+              isFolioDrawerOpen
+                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 font-bold'
+                : 'border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-base)]'
+            }`}
+            title="Toggle Cadastral Folio Dossier"
+          >
+            <FileCheck2 className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
+            <span className="hidden lg:inline">{isBangla ? 'দলিল ও পরচা' : 'Folio Dossier'}</span>
+            {activeNode.isFlagged && (
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+            )}
           </button>
 
           {/* Export Title Dossier Certificate */}
           <button
             onClick={() => setIsCertificateModalOpen(true)}
-            className="px-3 py-1 text-xs font-mono rounded-[4px] bg-[var(--color-surface-raised)] text-white font-semibold hover:brightness-110 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+            className="px-2.5 py-1 text-xs rounded-[4px] bg-[var(--color-surface-raised)] text-white font-semibold hover:brightness-110 transition-all flex items-center gap-1 shadow-sm cursor-pointer"
             title="Download Verified Title Search Dossier"
           >
             <Download className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{isBangla ? 'টাইটেল সার্চ সনদ' : 'Title Dossier'}</span>
+            <span className="hidden xl:inline">{isBangla ? 'সনদ' : 'Export'}</span>
           </button>
 
           {/* Close Studio Button */}
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1.5 rounded-[4px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10 transition-colors cursor-pointer"
+              className="p-1 rounded-[4px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10 transition-colors cursor-pointer ml-1"
               aria-label="Close Studio"
             >
               <X className="w-5 h-5" />
@@ -320,53 +383,6 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
           )}
         </div>
       </header>
-
-      {/* 
-        ======================================================================
-        ACTIVE PLOT TELEMETRY & FRAUD ALERT BANNER
-        ======================================================================
-      */}
-      <div className="relative z-20 px-4 py-2 bg-[var(--color-surface-muted)]/80 border-b border-[var(--color-border-subtle)] flex flex-wrap items-center justify-between text-xs font-mono gap-2">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
-            <span>{isBangla ? activeParcel.titleBn : activeParcel.title}</span>
-          </span>
-          <span className="text-[var(--color-text-tertiary)]">|</span>
-          <span className="text-[var(--color-text-secondary)]">
-            {isBangla ? 'জে.এল. নং' : 'J.L. No.'}: {activeParcel.jlNo} · {isBangla ? 'থানা' : 'Thana'}: {isBangla ? activeParcel.thanaBn : activeParcel.thana}
-          </span>
-          <span className="text-[var(--color-text-tertiary)]">|</span>
-          <span className="text-[var(--color-text-secondary)]">
-            {isBangla ? 'মোট আয়তন' : 'Total Area'}: {activeParcel.totalCurrentDecimals} {isBangla ? 'শতক' : 'Dec'} ({activeParcel.currentKatha} {isBangla ? 'কাঠা' : 'Katha'})
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {activeParcel.activeLockId && (
-            <span className="px-2 py-0.5 rounded text-[10.5px] font-bold bg-red-500/15 text-red-500 border border-red-500/30 flex items-center gap-1 animate-pulse">
-              <Lock className="w-3 h-3" />
-              <span>{isBangla ? '৭২ ঘণ্টার কনকারেন্সি সফট লক কার্যকর' : '72h Concurrency Soft-Lock Active'}</span>
-              <span className="font-mono underline">#{activeParcel.activeLockId}</span>
-            </span>
-          )}
-
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-[var(--color-text-secondary)]">Risk Severity:</span>
-            <span
-              className={`px-2 py-0.5 rounded text-[10.5px] font-bold ${
-                activeParcel.riskScore > 70
-                  ? 'bg-red-500/20 text-red-500 border border-red-500/40'
-                  : activeParcel.riskScore > 35
-                  ? 'bg-amber-500/20 text-amber-500 border border-amber-500/40'
-                  : 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/40'
-              }`}
-            >
-              {activeParcel.riskScore}% ({activeParcel.status.replace(/_/g, ' ')})
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* 
         ======================================================================
@@ -381,8 +397,8 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
         */}
         {(viewMode === 'split' || viewMode === 'map') && (
           <div
-            className={`relative overflow-hidden border-b lg:border-b-0 lg:border-r border-[var(--color-border-subtle)] ${
-              viewMode === 'split' ? 'w-full lg:w-1/2 h-1/2 lg:h-full' : 'w-full h-full'
+            className={`relative overflow-hidden ${
+              viewMode === 'split' ? 'w-full lg:w-1/2 h-1/2 lg:h-full border-b lg:border-b-0 lg:border-r border-[var(--color-border-subtle)]' : 'w-full h-full'
             }`}
           >
             <DhakaD3CadastralMap
@@ -401,12 +417,6 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                 }
               }}
             />
-
-            {/* Map Telemetry Floating Badge */}
-            <div className="absolute bottom-14 right-3 z-20 glass-pill px-2.5 py-1 text-[10px] font-mono text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/90 backdrop-blur-sm pointer-events-none hidden sm:flex items-center gap-1.5 shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
-              <span>{isBangla ? 'ঢাকা ক্যাডাস্ট্রাল ভেক্টর সার্ভে ম্যাপ' : 'Dhaka Cadastral Vector GIS Map'}</span>
-            </div>
           </div>
         )}
 
@@ -810,8 +820,8 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
               BOTTOM ERA TIMELINE SCRUBBER (1940 TO 2026)
               ------------------------------------------------------------------
             */}
-            <div className="relative z-20 px-4 py-3 bg-[#090e17] border-t border-white/10 flex flex-col gap-2 font-mono text-xs text-white">
-              <div className="flex items-center justify-between">
+            <div className="relative z-20 px-3.5 py-2.5 bg-[#090e17]/95 border-t border-white/10 flex flex-col gap-1.5 font-mono text-xs text-white shrink-0">
+              <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {/* Play / Pause Auto-Scrubber Button */}
                   <button
@@ -821,11 +831,11 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                       }
                       setIsPlayingTimeline(!isPlayingTimeline);
                     }}
-                    className="p-1.5 rounded-[4px] bg-[var(--color-surface-raised)] text-white hover:brightness-110 transition-all cursor-pointer flex items-center gap-1.5"
+                    className="px-2.5 py-1 rounded-[4px] bg-[var(--color-surface-raised)] text-white hover:brightness-110 transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
                     title={isPlayingTimeline ? 'Pause Timeline' : 'Play Historical Lineage'}
                   >
-                    {isPlayingTimeline ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                    <span className="text-[11px] font-bold">
+                    {isPlayingTimeline ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                    <span className="text-[10.5px] font-bold">
                       {isPlayingTimeline ? (isBangla ? 'স্থগিত' : 'Pause') : (isBangla ? 'প্লে' : 'Play 86y')}
                     </span>
                   </button>
@@ -835,29 +845,31 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                       setCurrentYear(1940);
                       setIsPlayingTimeline(false);
                     }}
-                    className="p-1.5 rounded-[4px] hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer"
+                    className="p-1 rounded-[4px] hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer"
                     title="Reset to 1940 (CS Survey)"
                   >
-                    <RotateCcw className="w-3.5 h-3.5" />
+                    <RotateCcw className="w-3 h-3" />
                   </button>
 
-                  <span className="text-white/60 text-[11px]">
-                    {isBangla ? 'কালানুক্রমিক ফিল্টার:' : 'Active Historical Epoch:'}
-                  </span>
-                  <span className="font-bold text-[var(--color-surface-raised)] text-sm">{currentYear} AD</span>
+                  <div className="flex items-center gap-1.5 text-[11px] bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                    <span className="text-white/50 text-[10px]">
+                      {isBangla ? 'কালপর্ব:' : 'Epoch:'}
+                    </span>
+                    <span className="font-bold text-[var(--color-surface-raised)]">{currentYear} AD</span>
+                  </div>
                 </div>
 
-                <div className="text-[11px] text-white/60 hidden sm:flex items-center gap-3">
-                  <span>{isBangla ? 'নোড সংখ্যা:' : 'Total Graph Nodes:'} {activeParcel.nodes.length}</span>
+                <div className="text-[10.5px] text-white/50 hidden md:flex items-center gap-2">
+                  <span>{isBangla ? 'নোড:' : 'Nodes:'} {activeParcel.nodes.length}</span>
                   <span>·</span>
-                  <span className="text-emerald-400">
-                    {isBangla ? 'ক্ষেত্রফল সংরক্ষণ: ১০০% অক্ষত' : 'Area Conservation: 100% Conserved'}
+                  <span className="text-emerald-400 font-semibold">
+                    {isBangla ? 'ক্ষেত্রফল সংরক্ষণ: ১০০% অক্ষত' : 'Area Conservation: 100%'}
                   </span>
                 </div>
               </div>
 
-              {/* Scrubber Slider with Epoch Ticks */}
-              <div className="relative w-full flex flex-col pt-1">
+              {/* Scrubber Slider with Milestone Ticks */}
+              <div className="relative w-full flex flex-col pt-0.5">
                 <input
                   type="range"
                   min="1940"
@@ -871,10 +883,12 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                   className="w-full accent-[var(--color-surface-raised)] cursor-pointer h-1.5 bg-white/20 rounded-lg appearance-none"
                 />
 
-                {/* Milestone Buttons */}
-                <div className="flex justify-between items-center pt-2">
+                {/* Milestone Buttons (Clean pill row, no multiline wrapping collision!) */}
+                <div className="flex justify-between items-center pt-1.5 gap-1 overflow-x-auto">
                   {EPOCHS.map((ep) => {
                     const isPassed = currentYear >= ep.year;
+                    const isCurrent = currentYear === ep.year;
+                    const isDisputed = ep.year === 2026 && activeParcel.riskScore > 70;
                     return (
                       <button
                         key={ep.year}
@@ -882,12 +896,21 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                           setCurrentYear(ep.year);
                           setIsPlayingTimeline(false);
                         }}
-                        className={`text-[9.5px] font-mono transition-colors cursor-pointer flex flex-col items-center ${
-                          isPassed ? 'text-emerald-400 font-bold' : 'text-white/40 hover:text-white/80'
+                        title={`${ep.label} — ${ep.desc}`}
+                        className={`px-1.5 py-0.5 text-[9px] font-mono rounded transition-all cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 ${
+                          isCurrent
+                            ? isDisputed
+                              ? 'bg-red-500 text-white font-bold shadow-sm'
+                              : 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                            : isPassed
+                            ? isDisputed
+                              ? 'text-red-400 font-semibold'
+                              : 'text-emerald-400 font-semibold hover:bg-emerald-500/10'
+                            : 'text-white/40 hover:text-white/80 hover:bg-white/5'
                         }`}
                       >
+                        <span className={`w-1 h-1 rounded-full ${isPassed ? (isDisputed ? 'bg-red-400' : 'bg-emerald-400') : 'bg-white/30'}`} />
                         <span>{isBangla ? ep.labelBn : ep.label}</span>
-                        <span className="text-[8px] text-white/30 hidden md:inline">{ep.desc}</span>
                       </button>
                     );
                   })}
@@ -899,42 +922,52 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
 
         {/* 
           --------------------------------------------------------------------
-          RIGHT DRAWER: AUTHENTIC BANGLADESH LAND OFFICE FOLIO INSPECTOR
+          SLIDE-OVER DRAWER: AUTHENTIC BANGLADESH LAND OFFICE FOLIO INSPECTOR
           --------------------------------------------------------------------
         */}
         <AnimatePresence>
           {isFolioDrawerOpen && activeNode && (
             <motion.aside
-              initial={{ x: 360, opacity: 0 }}
+              initial={{ x: 420, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 360, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 backdrop-blur-md flex flex-col overflow-y-auto shrink-0 z-30 font-mono text-xs"
+              exit={{ x: 420, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute top-0 right-0 bottom-0 w-full sm:w-[400px] border-l border-white/10 bg-[#080d15]/96 backdrop-blur-2xl flex flex-col overflow-y-auto shrink-0 z-40 font-mono text-xs shadow-2xl"
             >
               {/* Drawer Header */}
-              <div className="p-3.5 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-[var(--color-surface-muted)]/50">
+              <div className="p-3 border-b border-white/10 flex items-center justify-between bg-black/40 sticky top-0 z-10 backdrop-blur-md">
                 <div className="flex items-center gap-2">
                   <FileCheck2 className="w-4 h-4 text-[var(--color-surface-raised)]" />
                   <div>
-                    <div className="font-bold text-sm text-[var(--color-text-primary)]">
+                    <div className="font-bold text-xs text-white">
                       {isBangla ? activeNode.labelBn : activeNode.label}
                     </div>
-                    <div className="text-[10px] text-[var(--color-text-secondary)]">
+                    <div className="text-[10px] text-white/50">
                       {isBangla ? 'নথি যাচাই ও আইনি পর্যালোচনাকার' : 'Official Cadastral Folio Dossier'}
                     </div>
                   </div>
                 </div>
 
-                <div
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                    activeNode.isFlagged
-                      ? 'bg-red-500/20 text-red-500 border border-red-500/40'
-                      : activeNode.type === 'CONCURRENCY_LOCK'
-                      ? 'bg-red-500/20 text-red-500 border border-red-500/40'
-                      : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40'
-                  }`}
-                >
-                  {activeNode.status}
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      activeNode.isFlagged
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/40'
+                        : activeNode.type === 'CONCURRENCY_LOCK'
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/40'
+                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                    }`}
+                  >
+                    {activeNode.status}
+                  </div>
+
+                  <button
+                    onClick={() => setIsFolioDrawerOpen(false)}
+                    className="p-1 rounded text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                    aria-label="Close Dossier"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 

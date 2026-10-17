@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  * Probaho — High-Accuracy Native Vector Cadastral GIS Engine for Dhaka Metropolitan Area
  * 
- * Direct authentic cartographic vector implementation based on user master vector artwork:
- * - 2HB5YBP.jpg: Poster Dark Mode (Midnight obsidian land silhouette with glowing white/silver streets)
- * - 2HB5YBW.jpg: Poster Light Mode (Architectural white poster with blue waterways and slate highways)
- * - Hardware-accelerated Canvas 60 FPS pan & zoom + synchronized interactive SVG overlay
+ * Clean, uncluttered, professional architectural GIS workstation:
+ * - Master vector artwork (2HB5YBP & 2HB5YBW) rendered full-bleed with hardware-accelerated 60 FPS canvas
+ * - Watermarks cleanly cropped and masked out
+ * - Floating glassmorphic HUD controls (zero stacked headers, 100% viewport utilization)
  * - Flagship Core: Dhanmondi Mouza J.L. 245 · Dag 1042 (Double-Sale Dispute & 72h Concurrency Soft Lock #RES-794021)
  * - Strategic Thana Nodes: Dhanmondi, Mirpur, Gulshan, Banani, Uttara, Tejgaon, Motijheel, Old Dhaka, HSIA Airport, Purbachal 300ft
- * - Real-time WGS84 GPS coordinate crosshair tracking, zoom controls, quick preset focus, search, layer toggles, and cadastral plot inspector
+ * - Real-time WGS84 GPS coordinate crosshair tracking, zoom controls, quick preset focus, search, layer toggles, and compact cadastral plot inspector
  */
 
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
@@ -35,7 +35,6 @@ import {
   FileText,
   ExternalLink,
 } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import {
   DHAKA_PROJECT_AREAS,
@@ -43,7 +42,7 @@ import {
   DhakaCadastralPlotFeature,
 } from '../data/dhakaGeoData';
 
-// High-resolution authentic vector poster imagery
+// Master vector poster imagery
 import dhakaMapNight from '../assets/images/dhaka_vector_map_night.jpg';
 import dhakaMapDay from '../assets/images/dhaka_vector_map_day.jpg';
 
@@ -403,7 +402,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
   initialSelectedPlotId = 'dag-1042-dhanmondi',
   onPlotSelect,
   height = '100%',
-  showInspectorPanel = true,
+  showInspectorPanel = false,
 }) => {
   const { isBangla } = useLanguage();
 
@@ -413,10 +412,10 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
   const coordsRef = useRef<HTMLSpanElement | null>(null);
   const zoomBadgeRef = useRef<HTMLSpanElement | null>(null);
 
-  // Poster style mode matching user images:
-  // - 'poster-dark': Exact 2HB5YBP.jpg (Black Land Silhouette with White Streets on White Poster Frame)
-  // - 'poster-light': Exact 2HB5YBW.jpg (Architectural Outline, Blue Waterways, Green Parks)
-  // - 'cadastral-hud': Futuristic Cyber Cartographic Blueprint
+  // Poster style mode:
+  // - 'poster-dark': Midnight obsidian land silhouette with glowing white streets on deep dark base
+  // - 'poster-light': Clean architectural poster with blue waterways
+  // - 'cadastral-hud': Futuristic Cyber Blueprint
   const [posterStyle, setPosterStyle] = useState<'poster-dark' | 'poster-light' | 'cadastral-hud'>('poster-dark');
 
   // Dimensions
@@ -435,7 +434,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
   const [selectedPlot, setSelectedPlot] = useState<CadastralPlotItem | null>(
     () => DHANMONDI_CADASTRAL_PLOTS.find((p) => p.id === initialSelectedPlotId) || DHANMONDI_CADASTRAL_PLOTS[0]
   );
-  const [isInspectorOpen, setIsInspectorOpen] = useState(showInspectorPanel);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
 
   // Hover Tooltip
   const [hoveredInfo, setHoveredInfo] = useState<{
@@ -447,12 +446,9 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
 
   // Layer Toggles
   const [layers, setLayers] = useState({
-    baseVectorPoster: true,
     cadastralPlots: true,
     beacons: true,
     districtLabels: true,
-    posterHeader: true,
-    gridOverlay: false,
   });
 
   // Base Map Coordinate Geometry (Crop bottom 75px watermark from 1390)
@@ -500,9 +496,9 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // Compute Base Fit Scale and Centering Offset
+  // Compute Base Fit Scale and Centering Offset with minimal padding for full-bleed immersion
   const { baseScale, offsetX, offsetY } = useMemo(() => {
-    const pad = Math.max(24, Math.min(dimensions.width, dimensions.height) * 0.03);
+    const pad = 8;
     const availW = dimensions.width - pad * 2;
     const availH = dimensions.height - pad * 2;
     const scale = Math.min(availW / BASE_WIDTH, availH / BASE_HEIGHT);
@@ -514,42 +510,36 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
   // Color Palette Definitions
   const palette = useMemo(() => {
     if (posterStyle === 'poster-dark') {
-      // 2HB5YBP: White poster background with black land silhouette & glowing white streets
       return {
-        canvasBg: '#ffffff',
-        frameBorder: 'rgba(15, 23, 42, 0.25)',
-        titleColor: '#0f172a',
-        subColor: '#475569',
-        accentColor: '#16a34a',
-        beaconHalo: 'rgba(34, 197, 94, 0.35)',
-        beaconStroke: '#22c55e',
+        canvasBg: '#090e17', // Seamless with studio dark atmosphere
+        landPatchColor: '#1a1f28', // Matches landmass to cleanly mask watermarks
+        textPrimary: '#ffffff',
+        textSecondary: '#94a3b8',
+        border: 'rgba(255, 255, 255, 0.12)',
+        glassBg: 'rgba(9, 14, 23, 0.82)',
       };
     } else if (posterStyle === 'poster-light') {
-      // 2HB5YBW: White poster background with architectural outline & sky blue waterways
       return {
-        canvasBg: '#ffffff',
-        frameBorder: 'rgba(15, 23, 42, 0.22)',
-        titleColor: '#0f172a',
-        subColor: '#64748b',
-        accentColor: '#0284c7',
-        beaconHalo: 'rgba(2, 132, 199, 0.35)',
-        beaconStroke: '#0284c7',
+        canvasBg: '#f8fafc',
+        landPatchColor: '#f1f5f9',
+        textPrimary: '#0f172a',
+        textSecondary: '#64748b',
+        border: 'rgba(15, 23, 42, 0.12)',
+        glassBg: 'rgba(255, 255, 255, 0.88)',
       };
     } else {
-      // Cyber HUD Blueprint
       return {
-        canvasBg: '#090d16',
-        frameBorder: 'rgba(56, 189, 248, 0.30)',
-        titleColor: '#ffffff',
-        subColor: '#94a3b8',
-        accentColor: '#10b981',
-        beaconHalo: 'rgba(16, 185, 129, 0.40)',
-        beaconStroke: '#10b981',
+        canvasBg: '#060911',
+        landPatchColor: '#0a101d',
+        textPrimary: '#38bdf8',
+        textSecondary: '#0284c7',
+        border: 'rgba(56, 189, 248, 0.25)',
+        glassBg: 'rgba(6, 9, 17, 0.88)',
       };
     }
   }, [posterStyle]);
 
-  // Draw the entire map onto HTML5 Canvas with 60 FPS hardware acceleration
+  // Draw the map onto HTML5 Canvas with 60 FPS hardware acceleration
   const drawVectorMap = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -581,48 +571,39 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     ctx.translate(offsetX, offsetY);
     ctx.scale(baseScale, baseScale);
 
-    // 2. Draw the authentic high-resolution vector artwork
-    if (layers.baseVectorPoster) {
-      const activeImg = posterStyle === 'poster-light' ? imgDayRef.current : imgNightRef.current;
-      if (activeImg && activeImg.complete && activeImg.naturalWidth > 0) {
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
+    // 2. Draw the master vector artwork
+    const activeImg = posterStyle === 'poster-light' ? imgDayRef.current : imgNightRef.current;
+    if (activeImg && activeImg.complete && activeImg.naturalWidth > 0) {
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
 
-        if (posterStyle === 'cadastral-hud') {
-          // Cyber HUD filter overlay
-          ctx.filter = 'contrast(1.2) hue-rotate(185deg) brightness(0.95)';
-        }
-
-        // Draw cropped image (excluding bottom 75px watermark)
-        const sW = activeImg.naturalWidth;
-        const sH = Math.min(activeImg.naturalHeight, activeImg.naturalHeight - 75);
-        ctx.drawImage(activeImg, 0, 0, sW, sH, 0, 0, BASE_WIDTH, BASE_HEIGHT);
-
-        ctx.filter = 'none';
+      if (posterStyle === 'cadastral-hud') {
+        ctx.filter = 'contrast(1.25) hue-rotate(185deg) brightness(0.9)';
       }
-    }
 
-    // 3. Subtle blueprint grid in HUD mode
-    if (layers.gridOverlay || posterStyle === 'cadastral-hud') {
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
-      ctx.lineWidth = 0.8;
-      const step = 80;
-      for (let x = 0; x <= BASE_WIDTH; x += step) {
+      // Draw cropped image (excluding bottom 75px watermark)
+      const sW = activeImg.naturalWidth;
+      const sH = Math.min(activeImg.naturalHeight, activeImg.naturalHeight - 75);
+      ctx.drawImage(activeImg, 0, 0, sW, sH, 0, 0, BASE_WIDTH, BASE_HEIGHT);
+
+      ctx.filter = 'none';
+
+      // Cleanly mask faint center/bottom watermark artifacts
+      if (posterStyle === 'poster-dark') {
+        ctx.fillStyle = palette.landPatchColor;
+        // Center subtle patch
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, BASE_HEIGHT);
-        ctx.stroke();
-      }
-      for (let y = 0; y <= BASE_HEIGHT; y += step) {
+        ctx.ellipse(484, 622, 42, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Lower subtle patch
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(BASE_WIDTH, y);
-        ctx.stroke();
+        ctx.ellipse(484, 915, 40, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
       }
     }
 
     ctx.restore();
-  }, [dimensions.width, dimensions.height, palette, offsetX, offsetY, baseScale, posterStyle, layers, isImagesLoaded]);
+  }, [dimensions.width, dimensions.height, palette, offsetX, offsetY, baseScale, posterStyle, isImagesLoaded]);
 
   // RequestAnimationFrame scheduler for redraws
   const scheduleRedraw = useCallback(() => {
@@ -753,7 +734,7 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
       .call(zoomBehaviorRef.current.scaleBy, 1.8, [clickX, clickY]);
   };
 
-  // Live Coordinate Tracker (Zero React Overhead)
+  // Live Coordinate Tracker
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     if (!coordsRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
@@ -820,104 +801,324 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full overflow-hidden select-none flex flex-col font-sans transition-colors duration-200 ${className}`}
-      style={{ height, backgroundColor: palette.canvasBg }}
+      className={`relative w-full h-full overflow-hidden select-none font-sans bg-[#090e17] ${className}`}
+      style={{ height }}
     >
       {/* 
         ====================================================================
-        TOP CONTROL DOCK: Search, Coordinates HUD, Day/Night & Presets
+        LAYER 1: Hardware-Accelerated 2D Canvas (Master Vector Map)
         ====================================================================
       */}
-      <div className="relative z-20 px-3 py-2 sm:px-4 sm:py-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/92 backdrop-blur-md transition-colors shadow-sm">
-        {/* Left: Quick Search */}
-        <form onSubmit={handleSearch} className="flex items-center gap-1.5 max-w-xs sm:max-w-sm w-full">
-          <div className="relative flex-1">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={isBangla ? 'দাগ নং বা মৌজা খুঁজুন (যেমন: ১০৪২)...' : 'Search Dag # or Mouza (e.g. 1042)...'}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-[4px] border border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:border-[var(--color-surface-raised)] font-mono transition-colors"
-            />
-          </div>
-          <button
-            type="submit"
-            className="px-2.5 py-1.5 rounded-[4px] bg-[var(--color-surface-raised)] text-white text-xs font-mono font-medium hover:opacity-90 transition-opacity cursor-pointer flex-shrink-0"
-          >
-            {isBangla ? 'অনুসন্ধান' : 'Search'}
-          </button>
-        </form>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+      />
 
-        {/* Center: Live Coordinate HUD (Direct DOM, 0% React lag) */}
-        <div className="hidden md:flex items-center gap-3 font-mono text-[11px] text-[var(--color-text-secondary)] bg-[var(--color-surface-base)]/80 px-3 py-1 rounded-[4px] border border-[var(--color-border-subtle)]">
-          <div className="flex items-center gap-1.5">
-            <Crosshair className="w-3.5 h-3.5 text-[var(--color-surface-raised)] animate-spin-slow" />
-            <span ref={coordsRef} className="font-semibold text-[var(--color-text-primary)]">
-              23.7461° N, 90.3752° E
-            </span>
-          </div>
-          <span className="text-[var(--color-border-subtle)]">|</span>
-          <div className="flex items-center gap-1">
-            <span>CRS:</span>
-            <span className="text-[var(--color-text-primary)] font-semibold">WGS84</span>
-          </div>
-          <span className="text-[var(--color-border-subtle)]">|</span>
-          <div className="flex items-center gap-1">
-            <span>Zoom:</span>
-            <span ref={zoomBadgeRef} className="text-[var(--color-surface-raised)] font-bold">
-              1.0x
-            </span>
-          </div>
-        </div>
+      {/* 
+        ====================================================================
+        LAYER 2: Interactive SVG Overlay (Pan/Zoom Target & Cadastre)
+        ====================================================================
+      */}
+      <svg
+        ref={svgOverlayRef}
+        className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
+        onDoubleClick={handleDoubleClick}
+        onMouseMove={handleMouseMove}
+      >
+        <defs>
+          {/* Dispute Hatched Pattern for Dag 1042 */}
+          <pattern id="cad-dispute-hatch" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(239, 68, 68, 0.9)" strokeWidth="2.4" />
+          </pattern>
+        </defs>
 
-        {/* Right: Quick Zoom, Disputed Core Button & Poster Style Switcher */}
-        <div className="flex items-center gap-1.5">
-          {/* Zoom Buttons */}
-          <div className="flex items-center bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] rounded-[4px] p-0.5">
-            <button
-              onClick={handleZoomIn}
-              className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-strong)] rounded-[3px] transition-colors cursor-pointer"
-              title="Zoom In (+)"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={handleZoomOut}
-              className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-strong)] rounded-[3px] transition-colors cursor-pointer"
-              title="Zoom Out (-)"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={handleReset}
-              className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-strong)] rounded-[3px] transition-colors cursor-pointer"
-              title="Reset View"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          </div>
+        {/* Dynamic D3 Zoom Transform Container */}
+        <g className="svg-map-transform-group">
+          {/* 1. CADASTRAL PARCEL POLYGONS (Dhanmondi Mouza J.L. 245) */}
+          {layers.cadastralPlots && (
+            <g className="cadastral-parcels-group">
+              {DHANMONDI_CADASTRAL_PLOTS.map((plot) => {
+                const isSelected = selectedPlot?.id === plot.id;
+                const isFlagged = plot.status === 'FLAGGED_DOUBLE_SALE';
+                const isDiscrepancy = plot.status === 'MUTATION_DISCREPANCY';
 
-          {/* Preset: Disputed Dag 1042 Focus */}
+                const pathStr = plot.points
+                  .map((pt, idx) => `${idx === 0 ? 'M' : 'L'} ${pt[0]} ${pt[1]}`)
+                  .join(' ') + ' Z';
+
+                let fill = 'rgba(34, 197, 94, 0.35)';
+                let stroke = '#22c55e';
+
+                if (isFlagged) {
+                  fill = 'url(#cad-dispute-hatch)';
+                  stroke = '#ef4444';
+                } else if (isDiscrepancy) {
+                  fill = 'rgba(245, 158, 11, 0.40)';
+                  stroke = '#f59e0b';
+                }
+
+                return (
+                  <g
+                    key={plot.id}
+                    className="cursor-pointer transition-all duration-200"
+                    onClick={() => {
+                      setSelectedPlot(plot);
+                      setIsInspectorOpen(true);
+                      zoomToBasePoint(plot.center[0], plot.center[1], 8.5);
+                    }}
+                    onMouseEnter={() => {
+                      setHoveredInfo({
+                        title: isBangla ? `দাগ নং ${plot.dagNo} (${plot.mouzaBn})` : `Dag #${plot.dagNo} (${plot.mouza})`,
+                        sub: isBangla
+                          ? `মালিক: ${plot.ownerBn} · ${plot.areaDec} শতক (${plot.katha} কাঠা)`
+                          : `Owner: ${plot.owner} · ${plot.areaDec} Dec (${plot.katha} Katha)`,
+                        risk: plot.riskScore,
+                        status: plot.status,
+                      });
+                    }}
+                    onMouseLeave={() => setHoveredInfo(null)}
+                  >
+                    <path
+                      d={pathStr}
+                      fill={fill}
+                      stroke={isSelected ? '#ffffff' : stroke}
+                      strokeWidth={isSelected ? 2.8 : 1.6}
+                      vectorEffect="non-scaling-stroke"
+                      className="hover:brightness-125 transition-colors"
+                    />
+
+                    {/* Dag Number Tag */}
+                    <text
+                      x={plot.center[0]}
+                      y={plot.center[1] + 3}
+                      textAnchor="middle"
+                      fontSize="7"
+                      fontWeight="bold"
+                      fontFamily="monospace"
+                      fill={isFlagged ? '#ef4444' : '#ffffff'}
+                      className="pointer-events-none drop-shadow-md select-none"
+                    >
+                      {plot.dagNo}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          )}
+
+          {/* 2. STRATEGIC PROJECT BEACONS & CALLOUT TAGS */}
+          {layers.beacons && (
+            <g className="beacons-group">
+              {STRATEGIC_BEACONS.map((beacon) => {
+                const px = beacon.x;
+                const py = beacon.y;
+                const isPrimary = beacon.role === 'PRIMARY_CORE';
+
+                return (
+                  <g
+                    key={beacon.id}
+                    className="cursor-pointer group"
+                    onClick={() => {
+                      setSelectedBeacon(beacon);
+                      setIsInspectorOpen(true);
+                      if (isPrimary) {
+                        focusPrimaryPlot();
+                      } else {
+                        zoomToBasePoint(beacon.x, beacon.y, 6.0);
+                      }
+                    }}
+                    onMouseEnter={() => {
+                      setHoveredInfo({
+                        title: isBangla ? beacon.nameBn : beacon.name,
+                        sub: isBangla
+                          ? `${beacon.targetPlotBn} · খতিয়ান: ${beacon.khatianNo}`
+                          : `${beacon.targetPlot} · Khatian: ${beacon.khatianNo}`,
+                        risk: beacon.riskScore,
+                        status: beacon.status,
+                      });
+                    }}
+                    onMouseLeave={() => setHoveredInfo(null)}
+                  >
+                    {/* Fixed Radar Targeting Ring */}
+                    <circle
+                      cx={px}
+                      cy={py}
+                      r={isPrimary ? 16 : 8}
+                      fill="none"
+                      stroke={isPrimary ? '#ef4444' : '#38bdf8'}
+                      strokeWidth="1.2"
+                      opacity="0.45"
+                      strokeDasharray="2 2"
+                      vectorEffect="non-scaling-stroke"
+                      className="pointer-events-none"
+                    />
+
+                    {/* Outer halo circle */}
+                    <circle
+                      cx={px}
+                      cy={py}
+                      r={isPrimary ? 8 : 4.5}
+                      fill={isPrimary ? 'rgba(239, 68, 68, 0.40)' : 'rgba(56, 189, 248, 0.35)'}
+                      stroke={isPrimary ? '#ef4444' : '#38bdf8'}
+                      strokeWidth="1.6"
+                      vectorEffect="non-scaling-stroke"
+                    />
+
+                    {/* Center Point */}
+                    <circle
+                      cx={px}
+                      cy={py}
+                      r={isPrimary ? 3 : 2}
+                      fill="#ffffff"
+                      stroke={isPrimary ? '#ef4444' : '#0284c7'}
+                      strokeWidth="1"
+                    />
+
+                    {/* PRIMARY CORE CALLOUT BANNER (Dhanmondi Mouza Dag 1042) */}
+                    {isPrimary && (
+                      <g className="callout-tag pointer-events-none transition-transform group-hover:scale-105">
+                        <path
+                          d={`M ${px} ${py} L ${px - 18} ${py - 18} L ${px - 110} ${py - 18}`}
+                          fill="none"
+                          stroke="#ef4444"
+                          strokeWidth="1.4"
+                          strokeDasharray="3 2"
+                          vectorEffect="non-scaling-stroke"
+                        />
+
+                        <rect
+                          x={px - 260}
+                          y={py - 42}
+                          width="240"
+                          height="36"
+                          rx="4"
+                          fill="rgba(15, 23, 42, 0.95)"
+                          stroke="#ef4444"
+                          strokeWidth="1.4"
+                          className="drop-shadow-xl"
+                        />
+
+                        <text
+                          x={px - 250}
+                          y={py - 28}
+                          fontSize="9"
+                          fontWeight="bold"
+                          fontFamily="monospace"
+                          fill="#f87171"
+                        >
+                          ★ {isBangla ? 'প্রধান প্রকল্প তদন্ত: ধানমন্ডি ১০৪২' : 'CORE INVESTIGATION: DAG 1042'}
+                        </text>
+
+                        <text
+                          x={px - 250}
+                          y={py - 15}
+                          fontSize="7.5"
+                          fontFamily="monospace"
+                          fill="#cbd5e1"
+                        >
+                          {isBangla ? 'দ্বৈত-বিক্রয় সংঘাত · সফট লক সক্রিয়' : 'Double-Sale Collision · 72h Soft Lock Active'}
+                        </text>
+                      </g>
+                    )}
+
+                    {/* Label for Secondary Nodes */}
+                    {!isPrimary && (
+                      <text
+                        x={px}
+                        y={py + 12}
+                        textAnchor="middle"
+                        fontSize="7.5"
+                        fontWeight="bold"
+                        fontFamily="monospace"
+                        fill="#ffffff"
+                        stroke="#090e17"
+                        strokeWidth="2.5"
+                        paintOrder="stroke fill"
+                        className="opacity-90 select-none drop-shadow-sm pointer-events-none"
+                      >
+                        {isBangla ? beacon.nameBn.split(' ')[0] : beacon.name.split(' ')[0]}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
+            </g>
+          )}
+
+          {/* 3. AUTHENTIC DHAKA CITY DISTRICT LABELS */}
+          {layers.districtLabels && (
+            <g className="city-district-labels pointer-events-none select-none">
+              {DHAKA_CITY_DISTRICTS.map((dist) => {
+                const isDhanmondi = dist.id === 'dist-dhanmondi';
+
+                return (
+                  <g key={dist.id} transform={`translate(${dist.x}, ${dist.y})`}>
+                    <text
+                      textAnchor="middle"
+                      fontSize={isDhanmondi ? '10' : '8'}
+                      fontWeight="900"
+                      letterSpacing="1.5"
+                      fontFamily="sans-serif"
+                      fill="#ffffff"
+                      opacity={isDhanmondi ? 0.95 : 0.75}
+                      stroke="#090e17"
+                      strokeWidth="2.5"
+                      paintOrder="stroke fill"
+                      className="drop-shadow-sm font-sans uppercase"
+                    >
+                      {isBangla ? dist.nameBn : dist.name}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          )}
+        </g>
+      </svg>
+
+      {/* 
+        ====================================================================
+        FLOATING TOP CONTROLS HUD (Single Sleek Bar · Zero Stacking!)
+        ====================================================================
+      */}
+      <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2 pointer-events-none">
+        {/* Left: Quick Search & Core Preset */}
+        <div className="flex items-center gap-1.5 pointer-events-auto">
+          <form onSubmit={handleSearch} className="flex items-center">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={isBangla ? 'দাগ বা মৌজা (১০৪২)...' : 'Search Dag # / Mouza (1042)...'}
+                className="w-36 sm:w-48 pl-7 pr-2.5 py-1 text-xs rounded-[4px] border border-white/15 bg-black/60 backdrop-blur-md text-white placeholder:text-white/40 focus:outline-none focus:border-emerald-500 font-mono transition-colors"
+              />
+            </div>
+          </form>
+
+          {/* Quick Focus Button */}
           <button
             onClick={focusPrimaryPlot}
-            className="px-2.5 py-1 rounded-[4px] bg-red-500/15 text-red-500 border border-red-500/30 font-bold hover:bg-red-500/25 transition-colors cursor-pointer flex items-center gap-1 text-xs font-mono"
+            className="px-2.5 py-1 rounded-[4px] bg-red-500/20 text-red-400 border border-red-500/40 font-bold hover:bg-red-500/30 transition-colors cursor-pointer flex items-center gap-1 text-xs font-mono backdrop-blur-md"
             title="Focus on Disputed Dag 1042"
           >
-            <Target className="w-3 h-3 text-red-500" />
-            <span>{isBangla ? 'ধানমন্ডি দাগ ১০৪২ (৮.৫x)' : 'Dag 1042 (8.5x)'}</span>
+            <Target className="w-3 h-3 text-red-400" />
+            <span className="hidden sm:inline">{isBangla ? 'দাগ ১০৪২' : 'Dag 1042'}</span>
           </button>
+        </div>
 
-          {/* Poster Style Switcher: Dark (2HB5YBP) / Light (2HB5YBW) / HUD */}
-          <div className="flex items-center border border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] rounded-[4px] p-0.5 text-[11px] font-mono">
+        {/* Right: Style Pill & Zoom Controls */}
+        <div className="flex items-center gap-1.5 pointer-events-auto">
+          {/* Poster Style Switcher */}
+          <div className="flex items-center border border-white/15 bg-black/60 backdrop-blur-md rounded-[4px] p-0.5 text-[10.5px] font-mono">
             <button
               onClick={() => setPosterStyle('poster-dark')}
               className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
                 posterStyle === 'poster-dark'
-                  ? 'bg-zinc-800 text-white font-bold'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                  ? 'bg-zinc-800 text-white font-bold shadow-sm'
+                  : 'text-white/60 hover:text-white'
               }`}
-              title="Poster Dark Mode (Exact 2HB5YBP)"
             >
               Dark
             </button>
@@ -925,10 +1126,9 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
               onClick={() => setPosterStyle('poster-light')}
               className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
                 posterStyle === 'poster-light'
-                  ? 'bg-sky-500 text-white font-bold'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                  ? 'bg-sky-500 text-white font-bold shadow-sm'
+                  : 'text-white/60 hover:text-white'
               }`}
-              title="Poster Light Mode (Exact 2HB5YBW)"
             >
               Light
             </button>
@@ -936,12 +1136,36 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
               onClick={() => setPosterStyle('cadastral-hud')}
               className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
                 posterStyle === 'cadastral-hud'
-                  ? 'bg-emerald-600 text-white font-bold'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                  ? 'bg-emerald-600 text-white font-bold shadow-sm'
+                  : 'text-white/60 hover:text-white'
               }`}
-              title="Cyber Blueprint HUD Mode"
             >
               HUD
+            </button>
+          </div>
+
+          {/* Zoom Buttons */}
+          <div className="flex items-center bg-black/60 backdrop-blur-md border border-white/15 rounded-[4px] p-0.5 text-white/70">
+            <button
+              onClick={handleZoomIn}
+              className="p-1 hover:text-white hover:bg-white/10 rounded-[3px] transition-colors cursor-pointer"
+              title="Zoom In (+)"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleZoomOut}
+              className="p-1 hover:text-white hover:bg-white/10 rounded-[3px] transition-colors cursor-pointer"
+              title="Zoom Out (-)"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleReset}
+              className="p-1 hover:text-white hover:bg-white/10 rounded-[3px] transition-colors cursor-pointer"
+              title="Reset View"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -949,607 +1173,137 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
 
       {/* 
         ====================================================================
-        MAP VIEWPORT: HTML5 Canvas (60 FPS Vector Base) + SVG Interactive Layer
+        FLOATING BOTTOM STATUS BAR (Telemetry + Layers)
         ====================================================================
       */}
-      <div className="relative flex-1 w-full h-full overflow-hidden">
-        {/* Layer 1: Hardware-Accelerated 2D Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full pointer-events-none"
-        />
-
-        {/* Layer 2: Interactive SVG Overlay */}
-        <svg
-          ref={svgOverlayRef}
-          className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
-          onDoubleClick={handleDoubleClick}
-          onMouseMove={handleMouseMove}
-        >
-          <defs>
-            {/* Dispute Hatched Pattern for Dag 1042 */}
-            <pattern id="cad-dispute-hatch" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-              <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(239, 68, 68, 0.85)" strokeWidth="2.2" />
-            </pattern>
-          </defs>
-
-          {/* Architectural Poster Framing Border */}
-          <rect
-            x="14"
-            y="14"
-            width={Math.max(10, dimensions.width - 28)}
-            height={Math.max(10, dimensions.height - 28)}
-            fill="none"
-            stroke={palette.frameBorder}
-            strokeWidth="1.2"
-            className="pointer-events-none"
-          />
-          <rect
-            x="18"
-            y="18"
-            width={Math.max(10, dimensions.width - 36)}
-            height={Math.max(10, dimensions.height - 36)}
-            fill="none"
-            stroke={palette.frameBorder}
-            strokeWidth="0.6"
-            className="pointer-events-none opacity-60"
-          />
-
-          {/* Dynamic D3 Zoom Transform Container */}
-          <g className="svg-map-transform-group">
-            {/* 1. CADASTRAL PARCEL POLYGONS (Dhanmondi Mouza J.L. 245) */}
-            {layers.cadastralPlots && (
-              <g className="cadastral-parcels-group">
-                {DHANMONDI_CADASTRAL_PLOTS.map((plot) => {
-                  const isSelected = selectedPlot?.id === plot.id;
-                  const isFlagged = plot.status === 'FLAGGED_DOUBLE_SALE';
-                  const isDiscrepancy = plot.status === 'MUTATION_DISCREPANCY';
-
-                  const pathStr = plot.points
-                    .map((pt, idx) => `${idx === 0 ? 'M' : 'L'} ${pt[0]} ${pt[1]}`)
-                    .join(' ') + ' Z';
-
-                  let fill = 'rgba(34, 197, 94, 0.35)';
-                  let stroke = '#22c55e';
-
-                  if (isFlagged) {
-                    fill = 'url(#cad-dispute-hatch)';
-                    stroke = '#ef4444';
-                  } else if (isDiscrepancy) {
-                    fill = 'rgba(245, 158, 11, 0.40)';
-                    stroke = '#f59e0b';
-                  }
-
-                  return (
-                    <g
-                      key={plot.id}
-                      className="cursor-pointer transition-all duration-200"
-                      onClick={() => {
-                        setSelectedPlot(plot);
-                        setIsInspectorOpen(true);
-                        zoomToBasePoint(plot.center[0], plot.center[1], 8.5);
-                      }}
-                      onMouseEnter={() => {
-                        setHoveredInfo({
-                          title: isBangla ? `দাগ নং ${plot.dagNo} (${plot.mouzaBn})` : `Dag #${plot.dagNo} (${plot.mouza})`,
-                          sub: isBangla
-                            ? `মালিক: ${plot.ownerBn} · ${plot.areaDec} শতক (${plot.katha} কাঠা)`
-                            : `Owner: ${plot.owner} · ${plot.areaDec} Dec (${plot.katha} Katha)`,
-                          risk: plot.riskScore,
-                          status: plot.status,
-                        });
-                      }}
-                      onMouseLeave={() => setHoveredInfo(null)}
-                    >
-                      <path
-                        d={pathStr}
-                        fill={fill}
-                        stroke={isSelected ? '#ffffff' : stroke}
-                        strokeWidth={isSelected ? 2.8 : 1.6}
-                        vectorEffect="non-scaling-stroke"
-                        className="hover:brightness-125 transition-colors"
-                      />
-
-                      {/* Dag Number Tag */}
-                      <text
-                        x={plot.center[0]}
-                        y={plot.center[1] + 3}
-                        textAnchor="middle"
-                        fontSize="7"
-                        fontWeight="bold"
-                        fontFamily="monospace"
-                        fill={isFlagged ? '#ef4444' : '#ffffff'}
-                        className="pointer-events-none drop-shadow-md select-none"
-                      >
-                        {plot.dagNo}
-                      </text>
-                    </g>
-                  );
-                })}
-              </g>
-            )}
-
-            {/* 2. STRATEGIC PROJECT BEACONS & CALLOUT TAGS */}
-            {layers.beacons && (
-              <g className="beacons-group">
-                {STRATEGIC_BEACONS.map((beacon) => {
-                  const px = beacon.x;
-                  const py = beacon.y;
-                  const isPrimary = beacon.role === 'PRIMARY_CORE';
-
-                  return (
-                    <g
-                      key={beacon.id}
-                      className="cursor-pointer group"
-                      onClick={() => {
-                        setSelectedBeacon(beacon);
-                        setIsInspectorOpen(true);
-                        if (isPrimary) {
-                          focusPrimaryPlot();
-                        } else {
-                          zoomToBasePoint(beacon.x, beacon.y, 6.0);
-                        }
-                      }}
-                      onMouseEnter={() => {
-                        setHoveredInfo({
-                          title: isBangla ? beacon.nameBn : beacon.name,
-                          sub: isBangla
-                            ? `${beacon.targetPlotBn} · খতিয়ান: ${beacon.khatianNo}`
-                            : `${beacon.targetPlot} · Khatian: ${beacon.khatianNo}`,
-                          risk: beacon.riskScore,
-                          status: beacon.status,
-                        });
-                      }}
-                      onMouseLeave={() => setHoveredInfo(null)}
-                    >
-                      {/* Fixed Radar Targeting Ring */}
-                      <circle
-                        cx={px}
-                        cy={py}
-                        r={isPrimary ? 16 : 9}
-                        fill="none"
-                        stroke={isPrimary ? '#ef4444' : '#38bdf8'}
-                        strokeWidth="1.2"
-                        opacity="0.5"
-                        strokeDasharray="2 2"
-                        vectorEffect="non-scaling-stroke"
-                        className="pointer-events-none"
-                      />
-
-                      {/* Outer halo circle */}
-                      <circle
-                        cx={px}
-                        cy={py}
-                        r={isPrimary ? 9 : 5}
-                        fill={isPrimary ? 'rgba(239, 68, 68, 0.40)' : 'rgba(56, 189, 248, 0.35)'}
-                        stroke={isPrimary ? '#ef4444' : '#38bdf8'}
-                        strokeWidth="1.8"
-                        vectorEffect="non-scaling-stroke"
-                      />
-
-                      {/* Center Point */}
-                      <circle
-                        cx={px}
-                        cy={py}
-                        r={isPrimary ? 3.5 : 2}
-                        fill={isPrimary ? '#ffffff' : '#ffffff'}
-                        stroke={isPrimary ? '#ef4444' : '#0284c7'}
-                        strokeWidth="1.2"
-                      />
-
-                      {/* PRIMARY CORE CALLOUT BANNER (Dhanmondi Mouza Dag 1042) */}
-                      {isPrimary && (
-                        <g className="callout-tag pointer-events-none transition-transform group-hover:scale-105">
-                          {/* Leader Line */}
-                          <path
-                            d={`M ${px} ${py} L ${px - 22} ${py - 22} L ${px - 140} ${py - 22}`}
-                            fill="none"
-                            stroke="#ef4444"
-                            strokeWidth="1.5"
-                            strokeDasharray="3 2"
-                            vectorEffect="non-scaling-stroke"
-                          />
-
-                          {/* Callout Box */}
-                          <rect
-                            x={px - 310}
-                            y={py - 50}
-                            width="290"
-                            height="44"
-                            rx="5"
-                            fill="rgba(15, 23, 42, 0.96)"
-                            stroke="#ef4444"
-                            strokeWidth="1.5"
-                            className="drop-shadow-xl"
-                          />
-
-                          {/* Banner Header */}
-                          <text
-                            x={px - 298}
-                            y={py - 33}
-                            fontSize="9.5"
-                            fontWeight="bold"
-                            fontFamily="monospace"
-                            fill="#f87171"
-                          >
-                            ★ {isBangla ? 'প্রধান প্রকল্প তদন্ত: ধানমন্ডি (দাগ ১০৪২)' : 'PROJECT CORE: DHANMONDI (DAG 1042)'}
-                          </text>
-
-                          {/* Banner Subtitle */}
-                          <text
-                            x={px - 298}
-                            y={py - 18}
-                            fontSize="8.5"
-                            fontFamily="monospace"
-                            fill="#e2e8f0"
-                          >
-                            {isBangla ? 'দ্বৈত-বিক্রয় আপস বণ্টন সংঘাত · সফট লক সক্রিয়' : 'Dual-Sale Partition Dispute · 72h Soft Lock Active'}
-                          </text>
-                        </g>
-                      )}
-
-                      {/* Label for Secondary Nodes */}
-                      {!isPrimary && (
-                        <text
-                          x={px}
-                          y={py + 14}
-                          textAnchor="middle"
-                          fontSize="8"
-                          fontWeight="bold"
-                          fontFamily="monospace"
-                          fill={palette.titleColor}
-                          stroke={palette.canvasBg}
-                          strokeWidth="2.5"
-                          paintOrder="stroke fill"
-                          className="opacity-95 select-none drop-shadow-sm pointer-events-none"
-                        >
-                          {isBangla ? beacon.nameBn.split(' ')[0] : beacon.name.split(' ')[0]}
-                        </text>
-                      )}
-                    </g>
-                  );
-                })}
-              </g>
-            )}
-
-            {/* 3. AUTHENTIC DHAKA CITY DISTRICT LABELS */}
-            {layers.districtLabels && (
-              <g className="city-district-labels pointer-events-none select-none">
-                {DHAKA_CITY_DISTRICTS.map((dist) => {
-                  const isDhanmondi = dist.id === 'dist-dhanmondi';
-
-                  return (
-                    <g key={dist.id} transform={`translate(${dist.x}, ${dist.y})`}>
-                      <text
-                        textAnchor="middle"
-                        fontSize={isDhanmondi ? '11.5' : '9'}
-                        fontWeight="900"
-                        letterSpacing="2"
-                        fontFamily="sans-serif"
-                        fill={palette.titleColor}
-                        opacity={isDhanmondi ? 0.98 : 0.82}
-                        stroke={palette.canvasBg}
-                        strokeWidth="2.8"
-                        paintOrder="stroke fill"
-                        className="drop-shadow-sm font-sans uppercase"
-                      >
-                        {isBangla ? dist.nameBn : dist.name}
-                      </text>
-                    </g>
-                  );
-                })}
-              </g>
-            )}
-          </g>
-
-          {/* 
-            ====================================================================
-            POSTER TITLE & COORDINATES TYPOGRAPHY (Top Right)
-            Matches the Authentic Vector Poster Art from 2HB5YBW & 2HB5YBP
-            ====================================================================
-          */}
-          {layers.posterHeader && (
-            <g
-              className="poster-title-block select-none pointer-events-none"
-              transform={`translate(${Math.max(20, dimensions.width - 270)}, 52)`}
-            >
-              <text
-                x="0"
-                y="0"
-                fontSize="26"
-                fontWeight="900"
-                letterSpacing="4"
-                fill={palette.titleColor}
-                fontFamily="sans-serif"
-                className="drop-shadow-sm font-sans"
-              >
-                DHAKA
-              </text>
-              <text
-                x="2"
-                y="18"
-                fontSize="11"
-                letterSpacing="6"
-                fontWeight="600"
-                fill={palette.subColor}
-                fontFamily="sans-serif"
-              >
-                BANGLADESH
-              </text>
-              <line
-                x1="2"
-                y1="25"
-                x2="160"
-                y2="25"
-                stroke={palette.frameBorder}
-                strokeWidth="1.2"
-              />
-              <text
-                x="2"
-                y="37"
-                fontSize="8"
-                letterSpacing="1"
-                fill={palette.subColor}
-                fontFamily="monospace"
-              >
-                23°42′37″ N · 90°24′26″ E
-              </text>
-              <text
-                x="2"
-                y="48"
-                fontSize="7"
-                letterSpacing="0.5"
-                fill={palette.accentColor}
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                PROBAHO CADASTRAL GIS ENGINE
-              </text>
-            </g>
-          )}
-
-          {/* Compass Rose (Top Left under search) */}
-          <g transform="translate(42, 60)" className="pointer-events-none select-none opacity-80">
-            <circle cx="0" cy="0" r="14" fill="none" stroke={palette.frameBorder} strokeWidth="1" />
-            <line x1="0" y1="-14" x2="0" y2="14" stroke={palette.subColor} strokeWidth="1" />
-            <line x1="-14" y1="0" x2="14" y2="0" stroke={palette.subColor} strokeWidth="1" />
-            <polygon points="0,-13 -3,-3 0,0" fill={palette.accentColor} />
-            <polygon points="0,-13 3,-3 0,0" fill={palette.subColor} />
-            <text x="0" y="-16" textAnchor="middle" fontSize="8" fontWeight="bold" fill={palette.titleColor} fontFamily="sans-serif">
-              N
-            </text>
-          </g>
-        </svg>
-
-        {/* 
-          ====================================================================
-          HOVER TOOLTIP OVERLAY
-          ====================================================================
-        */}
-        {hoveredInfo && (
-          <div className="absolute top-4 left-4 z-30 pointer-events-none glass-tile p-3 rounded-[6px] max-w-xs shadow-xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 backdrop-blur-md font-mono text-xs animate-in fade-in duration-150">
-            <div className="font-bold text-[var(--color-text-primary)] text-sm mb-1">{hoveredInfo.title}</div>
-            <div className="text-[11px] text-[var(--color-text-secondary)] mb-2 leading-relaxed">{hoveredInfo.sub}</div>
-            {hoveredInfo.risk !== undefined && (
-              <div className="flex items-center justify-between text-[10px] pt-1 border-t border-[var(--color-border-subtle)]">
-                <span className="text-[var(--color-text-secondary)]">Risk Severity:</span>
-                <span
-                  className={`font-bold px-1.5 py-0.5 rounded ${
-                    hoveredInfo.risk > 70
-                      ? 'bg-red-500/15 text-red-500'
-                      : hoveredInfo.risk > 40
-                      ? 'bg-amber-500/15 text-amber-500'
-                      : 'bg-emerald-500/15 text-emerald-500'
-                  }`}
-                >
-                  {hoveredInfo.risk}% ({hoveredInfo.status?.replace(/_/g, ' ') || 'ACTIVE'})
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* 
-          ====================================================================
-          LAYER TOGGLE POPUP DOCK (Bottom Left Floating Pill)
-          ====================================================================
-        */}
-        <div className="absolute bottom-4 left-4 z-20 flex flex-wrap items-center gap-1.5 glass-panel p-1.5 rounded-[6px] shadow-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/90 backdrop-blur-md text-[10px] font-mono">
-          <div className="flex items-center gap-1 text-[var(--color-text-secondary)] px-1.5 font-bold">
-            <Layers className="w-3 h-3 text-[var(--color-surface-raised)]" />
-            <span>{isBangla ? 'স্তরসমূহ:' : 'Layers:'}</span>
-          </div>
-
-          <button
-            onClick={() => setLayers((prev) => ({ ...prev, baseVectorPoster: !prev.baseVectorPoster }))}
-            className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
-              layers.baseVectorPoster
-                ? 'bg-[var(--color-surface-raised)] text-white font-semibold'
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-base)]'
-            }`}
-          >
-            {isBangla ? 'ভেক্টর ম্যাপ' : 'Vector Map'}
-          </button>
-
+      <div className="absolute bottom-3 left-3 right-3 z-30 flex items-center justify-between gap-2 pointer-events-none">
+        {/* Layer Controls */}
+        <div className="flex items-center gap-1 glass-panel p-1 rounded-[4px] border border-white/15 bg-black/65 backdrop-blur-md text-[10px] font-mono pointer-events-auto">
+          <span className="text-white/50 px-1 font-semibold">{isBangla ? 'স্তর:' : 'Layers:'}</span>
           <button
             onClick={() => setLayers((prev) => ({ ...prev, cadastralPlots: !prev.cadastralPlots }))}
-            className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
-              layers.cadastralPlots
-                ? 'bg-[var(--color-surface-raised)] text-white font-semibold'
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-base)]'
+            className={`px-1.5 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
+              layers.cadastralPlots ? 'bg-emerald-500/25 text-emerald-400 font-bold' : 'text-white/40 hover:text-white'
             }`}
           >
-            {isBangla ? 'দাগ নকশা' : 'Cadastre'}
+            {isBangla ? 'দাগ নকশা' : 'Plots'}
           </button>
-
           <button
             onClick={() => setLayers((prev) => ({ ...prev, beacons: !prev.beacons }))}
-            className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
-              layers.beacons
-                ? 'bg-[var(--color-surface-raised)] text-white font-semibold'
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-base)]'
+            className={`px-1.5 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
+              layers.beacons ? 'bg-emerald-500/25 text-emerald-400 font-bold' : 'text-white/40 hover:text-white'
             }`}
           >
             {isBangla ? 'হটস্পট' : 'Hotspots'}
           </button>
-
           <button
             onClick={() => setLayers((prev) => ({ ...prev, districtLabels: !prev.districtLabels }))}
-            className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
-              layers.districtLabels
-                ? 'bg-[var(--color-surface-raised)] text-white font-semibold'
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-base)]'
+            className={`px-1.5 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
+              layers.districtLabels ? 'bg-emerald-500/25 text-emerald-400 font-bold' : 'text-white/40 hover:text-white'
             }`}
           >
-            {isBangla ? 'এলাকা লেবেল' : 'Labels'}
-          </button>
-
-          <button
-            onClick={() => setIsInspectorOpen((prev) => !prev)}
-            className={`px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
-              isInspectorOpen
-                ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 font-semibold border border-amber-500/30'
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-base)]'
-            }`}
-          >
-            {isBangla ? 'প্লট ইনস্পেক্টর' : 'Inspector'}
+            {isBangla ? 'লেবেল' : 'Labels'}
           </button>
         </div>
 
-        {/* 
-          ====================================================================
-          RIGHT INSPECTOR DOCK (Plot Details & Disputed Investigation Telemetry)
-          ====================================================================
-        */}
-        {isInspectorOpen && selectedPlot && (
-          <div className="absolute top-4 right-4 z-20 w-80 max-w-[calc(100vw-2rem)] glass-tile p-4 rounded-[8px] shadow-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 backdrop-blur-md space-y-3 font-mono text-xs max-h-[calc(100%-2rem)] overflow-y-auto">
-            {/* Inspector Header */}
-            <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-2.5">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-[var(--color-surface-raised)]" />
-                <div>
-                  <div className="font-bold text-sm text-[var(--color-text-primary)]">
-                    {isBangla ? `দাগ নং ${selectedPlot.dagNo}` : `Dag #${selectedPlot.dagNo}`}
-                  </div>
-                  <div className="text-[10px] text-[var(--color-text-secondary)]">
-                    {isBangla ? selectedPlot.mouzaBn : selectedPlot.mouza}
-                  </div>
-                </div>
-              </div>
+        {/* Live WGS84 GPS Readout */}
+        <div className="flex items-center gap-2 glass-panel px-2.5 py-1 rounded-[4px] border border-white/15 bg-black/65 backdrop-blur-md text-[10px] font-mono text-white/70 pointer-events-auto">
+          <Crosshair className="w-3 h-3 text-emerald-400" />
+          <span ref={coordsRef} className="font-semibold text-white">23.7461° N, 90.3752° E</span>
+          <span className="text-white/20">|</span>
+          <span ref={zoomBadgeRef} className="text-emerald-400 font-bold">1.0x</span>
+        </div>
+      </div>
 
-              <div className="flex items-center gap-2">
-                <div
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                    selectedPlot.status === 'FLAGGED_DOUBLE_SALE'
-                      ? 'bg-red-500/15 text-red-500 border border-red-500/30'
-                      : selectedPlot.status === 'MUTATION_DISCREPANCY'
-                      ? 'bg-amber-500/15 text-amber-500 border border-amber-500/30'
-                      : 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
-                  }`}
-                >
-                  {selectedPlot.status === 'FLAGGED_DOUBLE_SALE'
-                    ? isBangla
-                      ? 'দ্বৈত বিক্রয় চিহ্নিত'
-                      : 'FLAGGED DISPUTE'
-                    : selectedPlot.status === 'MUTATION_DISCREPANCY'
-                    ? isBangla
-                      ? 'নামজারি অসঙ্গতি'
-                      : 'DISCREPANCY'
-                    : isBangla
-                    ? 'যাচাইকৃত'
-                    : 'VERIFIED'}
-                </div>
-                <button
-                  onClick={() => setIsInspectorOpen(false)}
-                  className="p-1 rounded text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
+      {/* Hover Tooltip */}
+      {hoveredInfo && (
+        <div className="absolute top-12 left-4 z-40 pointer-events-none glass-tile p-2.5 rounded-[6px] max-w-xs shadow-2xl border border-white/20 bg-slate-950/95 backdrop-blur-md font-mono text-xs text-white animate-in fade-in duration-100">
+          <div className="font-bold text-emerald-400 text-xs mb-0.5">{hoveredInfo.title}</div>
+          <div className="text-[10.5px] text-white/80 leading-snug">{hoveredInfo.sub}</div>
+          {hoveredInfo.risk !== undefined && (
+            <div className="flex items-center justify-between text-[9.5px] pt-1 mt-1 border-t border-white/10">
+              <span className="text-white/50">Risk Severity:</span>
+              <span className={`font-bold px-1 rounded ${hoveredInfo.risk > 70 ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                {hoveredInfo.risk}% ({hoveredInfo.status?.replace(/_/g, ' ') || 'ACTIVE'})
+              </span>
             </div>
+          )}
+        </div>
+      )}
 
-            {/* Active Concurrency Lock Alert Banner */}
-            {selectedPlot.activeLock && (
-              <div className="p-2.5 rounded-[4px] bg-red-500/10 border border-red-500/30 space-y-1">
-                <div className="flex items-center justify-between text-red-500 font-bold text-[11px]">
-                  <span className="flex items-center gap-1.5">
-                    <Lock className="w-3.5 h-3.5" />
-                    <span>{isBangla ? 'সফট লক সক্রিয়' : 'CONCURRENCY LOCK ACTIVE'}</span>
-                  </span>
-                  <span className="text-[10px] bg-red-500/20 px-1.5 py-0.2 rounded font-mono">
-                    #{selectedPlot.activeLock.token}
-                  </span>
+      {/* Floating Inspector Panel (Only shown when plot is active/selected) */}
+      {isInspectorOpen && selectedPlot && (
+        <div className="absolute top-12 right-4 z-40 w-72 glass-tile p-3.5 rounded-[8px] shadow-2xl border border-white/20 bg-slate-950/95 backdrop-blur-md space-y-2.5 font-mono text-xs text-white max-h-[calc(100%-4rem)] overflow-y-auto">
+          <div className="flex items-center justify-between border-b border-white/10 pb-2">
+            <div className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+              <div>
+                <div className="font-bold text-xs text-white">
+                  {isBangla ? `দাগ নং ${selectedPlot.dagNo}` : `Dag #${selectedPlot.dagNo}`}
                 </div>
-                <div className="text-[10.5px] text-[var(--color-text-secondary)] leading-relaxed">
-                  {isBangla
-                    ? `${selectedPlot.activeLock.officeBn} হতে ৭২ ঘণ্টার জন্য ক্রয়-বিক্রয় অস্থায়ীভাবে স্থগিত। অবশিষ্টাংশ: ${selectedPlot.activeLock.expiresIn}`
-                    : `Drafting hold dispatched from ${selectedPlot.activeLock.office}. Lock window expires in ${selectedPlot.activeLock.expiresIn}.`}
-                </div>
-              </div>
-            )}
-
-            {/* Key Cadastral Metrics Grid */}
-            <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <div className="p-2 rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)]">
-                <div className="text-[10px] text-[var(--color-text-secondary)]">{isBangla ? 'খতিয়ান নং' : 'Khatian'}</div>
-                <div className="font-bold text-[var(--color-text-primary)]">{selectedPlot.khatianNo}</div>
-              </div>
-              <div className="p-2 rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)]">
-                <div className="text-[10px] text-[var(--color-text-secondary)]">{isBangla ? 'জমির পরিমাণ' : 'Plot Area'}</div>
-                <div className="font-bold text-[var(--color-text-primary)]">
-                  {selectedPlot.areaDec} {isBangla ? 'শতক' : 'Dec'} ({selectedPlot.katha} {isBangla ? 'কাঠা' : 'Katha'})
+                <div className="text-[9.5px] text-white/50">
+                  {isBangla ? selectedPlot.mouzaBn : selectedPlot.mouza}
                 </div>
               </div>
             </div>
+            <button
+              onClick={() => setIsInspectorOpen(false)}
+              className="p-1 rounded text-white/50 hover:text-white hover:bg-white/10 cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
-            {/* Ownership & NID Telemetry */}
-            <div className="p-2 rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] space-y-1 text-[11px]">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[var(--color-text-secondary)]">{isBangla ? 'দাবীকৃত মালিক' : 'Claimed Owner'}:</span>
-                <span className="font-semibold text-[var(--color-text-primary)]">
-                  {isBangla ? selectedPlot.ownerBn : selectedPlot.owner}
+          {selectedPlot.activeLock && (
+            <div className="p-2 rounded-[4px] bg-red-500/15 border border-red-500/40 text-[10px] space-y-0.5">
+              <div className="flex items-center justify-between text-red-400 font-bold">
+                <span className="flex items-center gap-1">
+                  <Lock className="w-3 h-3" />
+                  <span>{isBangla ? 'সফট লক সক্রিয়' : 'CONCURRENCY LOCKED'}</span>
                 </span>
+                <span>#{selectedPlot.activeLock.token}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[var(--color-text-secondary)]">NID:</span>
-                <span className="text-[var(--color-text-secondary)] font-mono">{selectedPlot.nid}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[var(--color-text-secondary)]">Risk Score:</span>
-                <span
-                  className={`font-bold ${
-                    selectedPlot.riskScore > 70
-                      ? 'text-red-500'
-                      : selectedPlot.riskScore > 40
-                      ? 'text-amber-500'
-                      : 'text-emerald-500'
-                  }`}
-                >
-                  {selectedPlot.riskScore} / 100
-                </span>
+              <div className="text-white/70 leading-relaxed text-[9.5px]">
+                {isBangla ? '৭২ ঘণ্টার প্রি-সেল সফট লক কার্যকর।' : 'Active 72h Pre-Sale lock hold.'}
               </div>
             </div>
+          )}
 
-            {/* Alert / Findings Note */}
-            <div className="text-[10.5px] leading-relaxed text-[var(--color-text-secondary)] bg-[var(--color-surface-base)]/50 p-2 rounded-[4px] border border-[var(--color-border-subtle)]">
-              {isBangla ? selectedPlot.alertNoteBn : selectedPlot.alertNote}
+          <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
+            <div className="p-1.5 rounded-[4px] bg-white/5 border border-white/10">
+              <div className="text-[9px] text-white/50">{isBangla ? 'খতিয়ান নং' : 'Khatian'}</div>
+              <div className="font-bold text-white">{selectedPlot.khatianNo}</div>
             </div>
-
-            {/* Fast Action Buttons */}
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                onClick={() => {
-                  zoomToBasePoint(selectedPlot.center[0], selectedPlot.center[1], 8.5);
-                }}
-                className="flex-1 py-1.5 rounded-[4px] bg-[var(--color-surface-raised)] text-white text-[11px] font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-1 cursor-pointer"
-              >
-                <Crosshair className="w-3 h-3" />
-                <span>{isBangla ? 'প্লটে জুম করুন' : 'Focus Plot'}</span>
-              </button>
+            <div className="p-1.5 rounded-[4px] bg-white/5 border border-white/10">
+              <div className="text-[9px] text-white/50">{isBangla ? 'জমির পরিমাণ' : 'Plot Area'}</div>
+              <div className="font-bold text-white">{selectedPlot.areaDec} Dec ({selectedPlot.katha} K)</div>
             </div>
           </div>
-        )}
-      </div>
+
+          <div className="p-1.5 rounded-[4px] bg-white/5 border border-white/10 text-[10.5px] space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] text-white/50">{isBangla ? 'দাবীকৃত মালিক' : 'Owner'}:</span>
+              <span className="font-semibold text-white">{isBangla ? selectedPlot.ownerBn : selectedPlot.owner}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] text-white/50">Risk Severity:</span>
+              <span className={`font-bold ${selectedPlot.riskScore > 70 ? 'text-red-400' : 'text-emerald-400'}`}>
+                {selectedPlot.riskScore}%
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              zoomToBasePoint(selectedPlot.center[0], selectedPlot.center[1], 8.5);
+            }}
+            className="w-full py-1 rounded-[4px] bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer"
+          >
+            <Crosshair className="w-3 h-3" />
+            <span>{isBangla ? 'প্লটে জুম করুন' : 'Focus Plot'}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

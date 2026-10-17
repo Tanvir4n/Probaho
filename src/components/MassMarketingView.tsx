@@ -1164,53 +1164,44 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               role="dialog"
               aria-modal="true"
             >
-              {/* Header */}
-              <div className="p-3.5 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm shrink-0">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
-                  <span className="text-[var(--color-text-tertiary)]">|</span>
-                  <span className="text-xs text-[var(--color-text-primary)] font-semibold">
-                    {isBangla ? `${activeStudioMap.cityName} ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ স্টুডিও` : `${activeStudioMap.cityName} Cadastral & Ownership Graph Studio`}
-                  </span>
-                  <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeStudioMap.coordinates})</span>
-                  {activeStudioMap.id === 'dhaka-metro' && (
-                    <span className="px-2 py-0.5 text-[9.5px] font-mono rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      D3.js Vector GIS · 86y Temporal DAG
+              {/* Outer Header (Only for static image cities; Dhaka Metro provides its own unified top bar) */}
+              {activeStudioMap.id !== 'dhaka-metro' && (
+                <div className="p-3.5 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/30 backdrop-blur-sm shrink-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-mono font-bold text-[var(--color-surface-raised)]">Probaho STUDIO</span>
+                    <span className="text-[var(--color-text-tertiary)]">|</span>
+                    <span className="text-xs text-[var(--color-text-primary)] font-semibold">
+                      {isBangla ? `${activeStudioMap.cityName} ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ স্টুডিও` : `${activeStudioMap.cityName} Cadastral & Ownership Graph Studio`}
                     </span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1 glass-pill p-1 rounded-[4px]">
-                    {URBAN_MAP_DATASETS.map((m, idx) => (
-                      <button
-                        key={m.id}
-                        onClick={() => setStudioCityIndex(idx)}
-                        className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer flex items-center gap-1.5 ${idx === studioCityIndex
-                            ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
-                            : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
-                          }`}
-                      >
-                        <span>{m.cityName}</span>
-                        {m.id === 'dhaka-metro' && (
-                          <span className={`text-[8px] px-1 py-0.2 rounded font-bold ${idx === studioCityIndex ? 'bg-white/25 text-white' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                            D3
-                          </span>
-                        )}
-                      </button>
-                    ))}
+                    <span className="text-[10px] text-[var(--color-text-secondary)] font-mono hidden sm:inline">({activeStudioMap.coordinates})</span>
                   </div>
 
-                  <button
-                    onClick={() => setIsSiteAnalysisStudioOpen(false)}
-                    className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
-                    aria-label="Close Studio"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 glass-pill p-1 rounded-[4px]">
+                      {URBAN_MAP_DATASETS.map((m, idx) => (
+                        <button
+                          key={m.id}
+                          onClick={() => setStudioCityIndex(idx)}
+                          className={`px-2.5 py-1 text-[10px] font-mono rounded-[3px] transition-colors cursor-pointer flex items-center gap-1.5 ${idx === studioCityIndex
+                              ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
+                            }`}
+                        >
+                          <span>{m.cityName}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={() => setIsSiteAnalysisStudioOpen(false)}
+                      className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] cursor-pointer"
+                      aria-label="Close Studio"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Workspace: Map Viewport + Layer Control Panel */}
               <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
@@ -1219,6 +1210,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     <TemporalOwnershipGraphStudio
                       onClose={() => setIsSiteAnalysisStudioOpen(false)}
                       defaultViewMode="split"
+                      cities={URBAN_MAP_DATASETS}
+                      currentCityIndex={studioCityIndex}
+                      onCityChange={setStudioCityIndex}
                     />
                   </div>
                 ) : (
