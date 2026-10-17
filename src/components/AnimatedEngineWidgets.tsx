@@ -28,6 +28,10 @@ import {
   Layers,
   Fingerprint,
   Lock,
+  RotateCcw,
+  SlidersHorizontal,
+  Scale,
+  ShieldCheck,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -442,47 +446,258 @@ export const OwnershipGraphWidget: React.FC<{ onLaunchStudio?: () => void }> = (
 // ============================================================================
 // 2. FRAUDENGINE RADIAL RISK GAUGE WIDGET (Engine 02)
 // ============================================================================
-export const FraudEngineGaugeWidget: React.FC = () => {
-  const { isBangla } = useLanguage();
-  const [score, setScore] = useState(84);
+export interface FraudEngineGaugeWidgetProps {
+  isSimulated?: boolean;
+  onToggleSimulate?: (simulated: boolean) => void;
+  onOpenStudio?: () => void;
+}
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setScore((prev) => (prev === 84 ? 86 : 84));
-    }, 3200);
-    return () => clearInterval(interval);
-  }, []);
+interface DeedScenario {
+  id: string;
+  nameEn: string;
+  nameBn: string;
+  locationEn: string;
+  locationBn: string;
+  ruleCodeEn: string;
+  ruleCodeBn: string;
+  statuteCitationEn: string;
+  statuteCitationBn: string;
+  baseScore: number;
+  remediedScore: number;
+  severity: 'CRITICAL' | 'ELEVATED' | 'PRISTINE' | 'MODERATE';
+  themeColor: string;
+  glowColor: string;
+  signals: {
+    nameEn: string;
+    nameBn: string;
+    baseVal: number;
+    remediedVal: number;
+    color: string;
+  }[];
+  rawNoticeEn: string;
+  rawNoticeBn: string;
+  remedyNoticeEn: string;
+  remedyNoticeBn: string;
+}
+
+const FRAUD_SCENARIOS: DeedScenario[] = [
+  {
+    id: 'dhanmondi',
+    nameEn: 'Dhanmondi #142',
+    nameBn: 'ধানমন্ডি #১৪২',
+    locationEn: 'Dhanmondi · Plot #142',
+    locationBn: 'ধানমন্ডি · দাগ নং ১৪২',
+    ruleCodeEn: 'RULE #P3-04 TRIGGERED',
+    ruleCodeBn: 'আইনি ধারা #P3-04 সক্রিয়',
+    statuteCitationEn: 'TP Act §53A · Double-Sale Pre-Lock',
+    statuteCitationBn: 'সম্পত্তি হস্তান্তর আইন ৫৩এ ধারা',
+    baseScore: 88,
+    remediedScore: 12,
+    severity: 'CRITICAL',
+    themeColor: '#f43f5e',
+    glowColor: 'rgba(244, 63, 94, 0.45)',
+    signals: [
+      { nameEn: 'Double-Sale Pre-Lock', nameBn: 'দ্বৈত-বিক্রয় প্রি-লক', baseVal: 96, remediedVal: 0, color: '#f43f5e' },
+      { nameEn: 'Area Share Inflation', nameBn: 'হিস্যা অতিরিক্ত হিসেব', baseVal: 18, remediedVal: 4, color: '#f59e0b' },
+      { nameEn: 'Bangla NLP Phonetics', nameBn: 'বাংলা এনএলপি ফনেটিক্স', baseVal: 84, remediedVal: 98, color: '#10b981' },
+    ],
+    rawNoticeEn: 'CONCURRENCY COLLISION: 72H SOFT-LOCK ENFORCED ✕',
+    rawNoticeBn: 'কনকারেন্সি সংঘাত: ৭২ ঘণ্টা সফট-লক কার্যকর ✕',
+    remedyNoticeEn: 'CURED: BIOMETRIC NID + 4-HEIR CONSENT HASH (Δ -76 PTS) ✓',
+    remedyNoticeBn: 'সমাধান: বায়োমেট্রিক এনআইডি + ওয়ারিশ সম্মতি হ্যাশ (Δ -৭৬) ✓',
+  },
+  {
+    id: 'gulshan',
+    nameEn: 'Gulshan #88',
+    nameBn: 'গুলশান #৮৮',
+    locationEn: 'Gulshan-2 · Plot #88',
+    locationBn: 'গুলশান-২ · দাগ নং ৮৮',
+    ruleCodeEn: 'RULE #A7-12 TRIGGERED',
+    ruleCodeBn: 'আইনি ধারা #A7-12 সক্রিয়',
+    statuteCitationEn: 'SAT Act §89 · Excess Share Deeding',
+    statuteCitationBn: 'রাষ্ট্রীয় অধিগ্রহণ আইন ৮৯ ধারা',
+    baseScore: 64,
+    remediedScore: 14,
+    severity: 'ELEVATED',
+    themeColor: '#f59e0b',
+    glowColor: 'rgba(245, 158, 11, 0.45)',
+    signals: [
+      { nameEn: 'Double-Sale Pre-Lock', nameBn: 'দ্বৈত-বিক্রয় প্রি-লক', baseVal: 6, remediedVal: 0, color: '#f43f5e' },
+      { nameEn: 'Area Share Inflation', nameBn: 'হিস্যা অতিরিক্ত হিসেব', baseVal: 92, remediedVal: 2, color: '#f59e0b' },
+      { nameEn: 'Bangla NLP Phonetics', nameBn: 'বাংলা এনএলপি ফনেটিক্স', baseVal: 48, remediedVal: 94, color: '#10b981' },
+    ],
+    rawNoticeEn: 'ANOMALY: 2.4 KATHA OVER CS KHATIAN CEILING ✕',
+    rawNoticeBn: 'অসঙ্গতি: সিএস খতিয়ানের চেয়ে ২.৪ কাঠা বেশি ✕',
+    remedyNoticeEn: 'CURED: RECTIFICATION DEED (ভ্রম সংশোধন) EXECUTED (Δ -50 PTS) ✓',
+    remedyNoticeBn: 'সমাধান: ভ্রম সংশোধন দলিল সম্পাদন ও হিস্যা সমন্বয় (Δ -৫০) ✓',
+  },
+  {
+    id: 'uttara',
+    nameEn: 'Uttara #204',
+    nameBn: 'উত্তরা #২০৪',
+    locationEn: 'Uttara Sec-4 · Plot #204',
+    locationBn: 'উত্তরা ৪ নং সেক্টর · দাগ ২০৪',
+    ruleCodeEn: 'RULE #V1-01 VERIFIED',
+    ruleCodeBn: 'আইনি ধারা #V1-01 যাচাইকৃত',
+    statuteCitationEn: 'CS→SA→RS→BS Continuous Lineage Chain',
+    statuteCitationBn: 'সিএস→এসএ→আরএস→বিএস নিরবচ্ছিন্ন ধারা',
+    baseScore: 8,
+    remediedScore: 8,
+    severity: 'PRISTINE',
+    themeColor: '#10b981',
+    glowColor: 'rgba(16, 185, 129, 0.45)',
+    signals: [
+      { nameEn: 'Double-Sale Pre-Lock', nameBn: 'দ্বৈত-বিক্রয় প্রি-লক', baseVal: 0, remediedVal: 0, color: '#10b981' },
+      { nameEn: 'Area Share Inflation', nameBn: 'হিস্যা অতিরিক্ত হিসেব', baseVal: 2, remediedVal: 2, color: '#10b981' },
+      { nameEn: 'Bangla NLP Phonetics', nameBn: 'বাংলা এনএলপি ফনেটিক্স', baseVal: 99, remediedVal: 99, color: '#10b981' },
+    ],
+    rawNoticeEn: 'PRISTINE TITLE: ZERO ENCUMBRANCE · FULL DAG CLEARANCE ✓',
+    rawNoticeBn: 'নিখুঁত মালিকানা: কোনো দায় নেই · সম্পূর্ণ দাগ বৈধ ✓',
+    remedyNoticeEn: 'PRISTINE TITLE: 86-YEAR LINEAGE VERIFIED ON LEDGER ✓',
+    remedyNoticeBn: 'নিখুঁত মালিকানা: লেজারে ৮৬ বছরের ধারাবাহিকতা প্রমাণিত ✓',
+  },
+  {
+    id: 'mirpur',
+    nameEn: 'Mirpur #409',
+    nameBn: 'মিরপুর #৪০৯',
+    locationEn: 'Mirpur Mouza · Plot #409',
+    locationBn: 'মিরপুর মৌজা · দাগ নং ৪০৯',
+    ruleCodeEn: 'RULE #N2-03 RESOLVED',
+    ruleCodeBn: 'আইনি ধারা #N2-03 মীমাংসিত',
+    statuteCitationEn: 'Phonetic Levenshtein Distance & Soundex',
+    statuteCitationBn: 'বাংলা ফোনেটিক লেভেনস্টাইন দূরত্ব বিশ্লেষণ',
+    baseScore: 38,
+    remediedScore: 6,
+    severity: 'MODERATE',
+    themeColor: '#06b6d4',
+    glowColor: 'rgba(6, 182, 212, 0.45)',
+    signals: [
+      { nameEn: 'Double-Sale Pre-Lock', nameBn: 'দ্বৈত-বিক্রয় প্রি-লক', baseVal: 4, remediedVal: 0, color: '#f43f5e' },
+      { nameEn: 'Area Share Inflation', nameBn: 'হিস্যা অতিরিক্ত হিসেব', baseVal: 8, remediedVal: 0, color: '#f59e0b' },
+      { nameEn: 'Bangla NLP Phonetics', nameBn: 'বাংলা এনএলপি ফনেটিক্স', baseVal: 76, remediedVal: 99, color: '#06b6d4' },
+    ],
+    rawNoticeEn: 'PHONETIC ALIAS: "মোসাঃ সালেহা" vs "সালেহা খাতুন" ✕',
+    rawNoticeBn: 'নামের বানানে অমিল: "মোসাঃ সালেহা" বনাম "সালেহা খাতুন" ✕',
+    remedyNoticeEn: 'CURED: NID BIOMETRIC MATCH RECONCILED IDENTITY (Δ -32 PTS) ✓',
+    remedyNoticeBn: 'সমাধান: স্মার্ট এনআইডি বায়োমেট্রিক দিয়ে নাম সমন্বয় (Δ -৩২) ✓',
+  },
+];
+
+export const FraudEngineGaugeWidget: React.FC<FraudEngineGaugeWidgetProps> = ({
+  isSimulated: externalSimulated,
+  onToggleSimulate,
+  onOpenStudio,
+}) => {
+  const { isBangla } = useLanguage();
+  const [selectedCaseId, setSelectedCaseId] = useState<string>('dhanmondi');
+  const [internalSimulated, setInternalSimulated] = useState<boolean>(false);
+
+  const isWhatIfActive = externalSimulated !== undefined ? externalSimulated : internalSimulated;
+
+  const handleToggleWhatIf = () => {
+    const nextVal = !isWhatIfActive;
+    if (onToggleSimulate) {
+      onToggleSimulate(nextVal);
+    } else {
+      setInternalSimulated(nextVal);
+    }
+  };
+
+  const scenario = FRAUD_SCENARIOS.find((s) => s.id === selectedCaseId) || FRAUD_SCENARIOS[0];
+  const currentScore = isWhatIfActive ? scenario.remediedScore : scenario.baseScore;
+  const isCured = isWhatIfActive && scenario.baseScore > scenario.remediedScore;
+  const activeColor = isWhatIfActive ? '#10b981' : scenario.themeColor;
+
+  // Arc math: circumference of radius 38 is ~238.8. A 240-degree arc has length 159.2.
+  const arcTotal = 160;
+  const arcOffset = Math.max(0, arcTotal - (currentScore / 100) * arcTotal);
 
   return (
-    <div className="relative w-full h-[155px] rounded-[8px] bg-[#070b13] border border-rose-500/30 dark:border-rose-500/35 overflow-hidden p-3.5 flex flex-col justify-between select-none shadow-[0_8px_30px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.08)]">
+    <div className="relative w-full rounded-[8px] bg-[#070b13] border border-[var(--color-border-subtle)] dark:border-rose-500/25 overflow-hidden p-3.5 flex flex-col justify-between select-none shadow-[0_8px_30px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.08)]">
       {/* Background Cartographic Micro-Grid with Radial Vignette */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-20"
         style={{
-          backgroundImage: 'radial-gradient(circle, rgba(244, 63, 94, 0.35) 1px, transparent 1px)',
+          backgroundImage: `radial-gradient(circle, ${activeColor}55 1px, transparent 1px)`,
           backgroundSize: '16px 16px',
         }}
       />
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,#070b13_95%)]" />
 
-      {/* Top Header */}
-      <div className="relative z-10 flex items-center justify-between text-[10px] font-mono mb-1 pb-1 border-b border-white/5">
-        <div className="flex items-center gap-1.5 text-rose-400">
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-          <span className="font-bold tracking-wider">
-            {isBangla ? 'আইনি ধারা #P3-04 সক্রিয়' : 'RULE #P3-04 TRIGGERED'}
+      {/* Interactive Scenario Selector & What-If Switch */}
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-1.5 pb-2 border-b border-white/5 mb-2">
+        {/* Scenario Tabs */}
+        <div className="flex items-center gap-1 overflow-x-auto py-0.5 no-scrollbar">
+          {FRAUD_SCENARIOS.map((s) => {
+            const isSelected = s.id === selectedCaseId;
+            return (
+              <button
+                key={s.id}
+                onClick={() => setSelectedCaseId(s.id)}
+                className={`px-2 py-0.5 text-[9.5px] font-mono rounded-[3px] transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 ${
+                  isSelected
+                    ? 'bg-white/15 text-white font-semibold border border-white/20 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                }`}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                  style={{ backgroundColor: s.themeColor }}
+                />
+                <span>{isBangla ? s.nameBn : s.nameEn}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* What-If Counterfactual Toggle Switch */}
+        <button
+          onClick={handleToggleWhatIf}
+          className={`px-2 py-0.5 text-[9px] font-mono rounded-[3px] border transition-all cursor-pointer flex items-center gap-1 shrink-0 ${
+            isWhatIfActive
+              ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300 font-semibold shadow-[0_0_8px_rgba(16,185,129,0.35)]'
+              : 'bg-white/5 border-white/10 text-slate-300 hover:text-white hover:bg-white/10'
+          }`}
+          title={isBangla ? 'কাউন্টারফ্যাকচুয়াল প্রতিকার সিমুলেশন চালু/বন্ধ' : 'Toggle Counterfactual Remedy Simulation'}
+        >
+          <RotateCcw className={`w-2.5 h-2.5 ${isWhatIfActive ? 'rotate-180 text-emerald-400' : 'text-slate-400'} transition-transform duration-500`} />
+          <span>{isBangla ? 'প্রতিকার সিমুলেশন' : 'What-If Remedy'}</span>
+          <span className={`w-1.5 h-1.5 rounded-full ${isWhatIfActive ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
+        </button>
+      </div>
+
+      {/* Top Header: Active Rule & Statutory Citation */}
+      <div className="relative z-10 flex items-center justify-between text-[10px] font-mono mb-2 pb-1.5 border-b border-white/5">
+        <div className="flex items-center gap-1.5 truncate">
+          <span
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{
+              backgroundColor: activeColor,
+              boxShadow: `0 0 8px ${activeColor}`,
+            }}
+          />
+          <span
+            className="font-bold tracking-wider truncate"
+            style={{ color: activeColor }}
+          >
+            {isCured
+              ? (isBangla ? `${scenario.ruleCodeBn} নিরাময়কৃত` : `${scenario.ruleCodeEn.replace('TRIGGERED', 'CURED')}`)
+              : (isBangla ? scenario.ruleCodeBn : scenario.ruleCodeEn)}
+          </span>
+          <span className="text-[9px] text-slate-400 truncate hidden sm:inline">
+            ({isBangla ? scenario.statuteCitationBn : scenario.statuteCitationEn})
           </span>
         </div>
-        <span className="text-slate-400 text-[9px]">
-          {isBangla ? '০-১০০ ব্যাখ্যাযোগ্য' : '0-100 EXPLAINABLE'}
+        <span className="text-slate-400 text-[9px] shrink-0 font-mono">
+          {isBangla ? '০-১০০ ব্যাখ্যাযোগ্য' : '0-100 SHAP SCORE'}
         </span>
       </div>
 
       {/* Split Body: Left Circular Gauge, Right Multi-Signal Breakdown */}
-      <div className="relative z-10 grid grid-cols-12 gap-2 items-center my-auto">
+      <div className="relative z-10 grid grid-cols-12 gap-3 items-center my-1">
         {/* Left Gauge */}
         <div className="col-span-5 flex items-center justify-center relative">
-          <svg viewBox="0 0 100 100" className="w-[84px] h-[84px]">
+          <svg viewBox="0 0 100 100" className="w-[88px] h-[88px]">
             {/* Background Track Arc */}
             <circle
               cx="50"
@@ -491,74 +706,107 @@ export const FraudEngineGaugeWidget: React.FC = () => {
               fill="none"
               stroke="rgba(255,255,255,0.12)"
               strokeWidth="7"
-              strokeDasharray="180 60"
+              strokeDasharray="160 80"
               strokeLinecap="round"
               transform="rotate(135 50 50)"
             />
-            {/* Active Risk Value Arc (Gradient Red-Amber) */}
+            {/* Active Risk Value Arc */}
             <circle
               cx="50"
               cy="50"
               r="38"
               fill="none"
-              stroke="#f43f5e"
+              stroke={activeColor}
               strokeWidth="7.5"
-              strokeDasharray="155 85"
+              strokeDasharray="160 80"
+              strokeDashoffset={arcOffset}
               strokeLinecap="round"
               transform="rotate(135 50 50)"
               className="transition-all duration-700 ease-out"
-              style={{ filter: 'drop-shadow(0 0 8px rgba(244,63,94,0.8))' }}
+              style={{ filter: `drop-shadow(0 0 8px ${activeColor})` }}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="text-xl font-bold font-mono text-rose-300 leading-none">{score}</span>
-            <span className="text-[7.5px] font-mono text-rose-400 uppercase tracking-tighter mt-0.5 font-bold">
-              {isBangla ? 'উচ্চ ঝুঁকি' : 'HIGH RISK'}
+            <span
+              className="text-2xl font-bold font-mono leading-none transition-colors duration-500"
+              style={{ color: activeColor }}
+            >
+              {currentScore}
             </span>
+            <span
+              className="text-[7.5px] font-mono uppercase tracking-tighter mt-0.5 font-bold transition-colors duration-500"
+              style={{ color: activeColor }}
+            >
+              {isCured
+                ? (isBangla ? 'ঝুঁকিমুক্ত দলিল' : 'CLEAN TITLE')
+                : (scenario.severity === 'CRITICAL'
+                    ? (isBangla ? 'উচ্চ ঝুঁকি' : 'CRITICAL RISK')
+                    : scenario.severity === 'ELEVATED'
+                    ? (isBangla ? 'মাঝারি ঝুঁকি' : 'ELEVATED RISK')
+                    : scenario.severity === 'MODERATE'
+                    ? (isBangla ? 'যাচাইযোগ্য' : 'MODERATE RISK')
+                    : (isBangla ? 'নিখুঁত দলিল' : 'PRISTINE TITLE'))}
+            </span>
+            {isCured && (
+              <span className="text-[7px] font-mono text-emerald-400 font-bold bg-emerald-500/15 px-1 rounded mt-0.5 animate-pulse">
+                Δ -{scenario.baseScore - scenario.remediedScore} PTS
+              </span>
+            )}
           </div>
         </div>
 
         {/* Right Multi-Signal Meters */}
         <div className="col-span-7 space-y-1.5 text-[9.5px] font-mono">
-          <div>
-            <div className="flex justify-between text-slate-300 mb-0.5">
-              <span>{isBangla ? 'দ্বৈত-বিক্রয় প্রি-লক' : 'Double-Sale Pre-Lock'}</span>
-              <span className="text-rose-400 font-bold">96%</span>
-            </div>
-            <div className="h-1.5 w-full bg-slate-800/80 rounded-full overflow-hidden">
-              <div className="h-full bg-rose-500 rounded-full w-[96%] animate-pulse shadow-[0_0_6px_#f43f5e]" />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between text-slate-300 mb-0.5">
-              <span>{isBangla ? 'হিস্যা অতিরিক্ত হিসেব' : 'Area Share Inflation'}</span>
-              <span className="text-amber-400 font-bold">14%</span>
-            </div>
-            <div className="h-1.5 w-full bg-slate-800/80 rounded-full overflow-hidden">
-              <div className="h-full bg-amber-400 rounded-full w-[14%]" />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between text-slate-300 mb-0.5">
-              <span>{isBangla ? 'বাংলা এনএলপি ফনেটিক্স' : 'Bangla NLP Phonetics'}</span>
-              <span className="text-emerald-400 font-bold">88%</span>
-            </div>
-            <div className="h-1.5 w-full bg-slate-800/80 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 rounded-full w-[88%] shadow-[0_0_6px_#10b981]" />
-            </div>
-          </div>
+          {scenario.signals.map((sig, idx) => {
+            const val = isWhatIfActive ? sig.remediedVal : sig.baseVal;
+            const barColor = isWhatIfActive && val <= 10 ? '#10b981' : sig.color;
+            return (
+              <div key={idx}>
+                <div className="flex justify-between text-slate-300 mb-0.5 text-[9px]">
+                  <span className="truncate pr-1">{isBangla ? sig.nameBn : sig.nameEn}</span>
+                  <span
+                    className="font-bold transition-colors duration-500 shrink-0"
+                    style={{ color: barColor }}
+                  >
+                    {val}%
+                  </span>
+                </div>
+                <div className="h-1.5 w-full bg-slate-800/80 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    style={{
+                      width: `${val}%`,
+                      backgroundColor: barColor,
+                      boxShadow: val > 50 ? `0 0 6px ${barColor}` : undefined,
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Bottom Action Footer */}
-      <div className="relative z-10 flex items-center justify-between bg-rose-950/45 border border-rose-500/35 px-2.5 py-1.5 rounded-[5px] text-[9.5px] font-mono text-rose-200 shadow-inner">
-        <span className="truncate">
-          {isBangla ? 'কনকারেন্সি সংঘাত: ৭২ ঘণ্টা সফট-লক' : 'CONCURRENCY COLLISION: 72H SOFT-LOCK'}
+      {/* Bottom Action Footer: Contextual Verdict Notice */}
+      <div
+        className={`relative z-10 flex items-center justify-between px-2.5 py-1.5 rounded-[5px] text-[9.5px] font-mono transition-all duration-500 border mt-2 shadow-inner ${
+          isCured || scenario.id === 'uttara'
+            ? 'bg-emerald-950/40 border-emerald-500/35 text-emerald-200'
+            : 'bg-rose-950/45 border-rose-500/35 text-rose-200'
+        }`}
+      >
+        <span className="truncate pr-2">
+          {isWhatIfActive
+            ? (isBangla ? scenario.remedyNoticeBn : scenario.remedyNoticeEn)
+            : (isBangla ? scenario.rawNoticeBn : scenario.rawNoticeEn)}
         </span>
-        <span className="text-rose-400 font-bold shrink-0 ml-1">
-          {isBangla ? 'কার্যকর ✕' : 'ENFORCED ✕'}
+        <span
+          className="font-bold shrink-0 ml-1"
+          style={{ color: isCured || scenario.id === 'uttara' ? '#34d399' : '#f87171' }}
+        >
+          {isCured || scenario.id === 'uttara'
+            ? (isBangla ? 'যাচাইকৃত ✓' : 'VERIFIED ✓')
+            : (isBangla ? 'কার্যকর ✕' : 'ENFORCED ✕')}
         </span>
       </div>
     </div>

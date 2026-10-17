@@ -54,6 +54,11 @@ import {
   Bell,
   Sun,
   Moon,
+  Scale,
+  Hash,
+  FileCheck2,
+  SlidersHorizontal,
+  RotateCcw,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -75,6 +80,9 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false);
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
   const [isSiteAnalysisStudioOpen, setIsSiteAnalysisStudioOpen] = useState(false);
+  const [isFraudStudioOpen, setIsFraudStudioOpen] = useState(false);
+  const [isWhatIfSimulated, setIsWhatIfSimulated] = useState(false);
+  const [isHashVerified, setIsHashVerified] = useState(false);
   const [studioCityIndex, setStudioCityIndex] = useState(0); // Anchored to 0 (Dhaka) for Cadastral Studio
 
   // Authentication State
@@ -582,25 +590,117 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   {t.suite.tool2.desc}
                 </p>
 
-                {/* Micro-Animated Radial Risk Gauge Widget */}
-                <FraudEngineGaugeWidget />
+                {/* Micro-Animated Radial Risk Gauge Widget with Scenario and What-If Sync */}
+                <FraudEngineGaugeWidget
+                  isSimulated={isWhatIfSimulated}
+                  onToggleSimulate={setIsWhatIfSimulated}
+                  onOpenStudio={() => {
+                    setIsFraudStudioOpen(true);
+                    setActiveToolId('laserfish');
+                  }}
+                />
 
-                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>{t.suite.tool2.f1}</div>
-                  <div>{t.suite.tool2.f2}</div>
-                  <div>{t.suite.tool2.f3}</div>
+                {/* Practical Interactive Legal & Evidence Intelligence Deck */}
+                <div className="space-y-2 text-[11px] font-mono">
+                  {/* Feature 1: Deterministic Legal Rules Engine */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-rose-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <Scale className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                        <span>{isBangla ? 'আইনি বিধি ইঞ্জিন (নিশ্চিত কোড)' : 'Deterministic Legal Rules AST'}</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/25">
+                        42 {isBangla ? 'ধারা' : 'Rules'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                        TP Act §53A
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                        SAT Act §89
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                        Reg Act §17
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                        Penal §420
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Feature 2: Verifiable Evidence Dossier with Integrity Hashes */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <FileCheck2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span>{isBangla ? 'সততা হ্যাশযুক্ত প্রামাণ্য ডসিয়ার' : 'Verifiable Evidence Dossier'}</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsHashVerified(true);
+                          setToastMessage(isBangla ? '✓ মারকেল রুট যাচাইকৃত: ব্লক #৮৪৯,২০১ (জমিচেইন লেজার)' : '✓ Merkle Root Verified: Block #849,201 on JomiChain Ledger');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }}
+                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                          isHashVerified
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
+                            : 'bg-white/5 hover:bg-emerald-500/10 text-[var(--color-text-secondary)] hover:text-emerald-400 border border-white/10'
+                        }`}
+                        title={isBangla ? 'ক্রিপ্টোগ্রাফিক হ্যাশ যাচাই করুন' : 'Verify Cryptographic Hash on Ledger'}
+                      >
+                        <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />
+                        <span>{isHashVerified ? (isBangla ? 'যাচাইকৃত ✓' : 'VERIFIED ✓') : (isBangla ? 'যাচাই' : 'Verify')}</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] font-mono bg-black/20 px-2 py-1 rounded">
+                      <span className="truncate">SHA256: 9f8a3c42e81b...7b94</span>
+                      <span className="text-emerald-400 shrink-0 ml-1">256-bit</span>
+                    </div>
+                  </div>
+
+                  {/* Feature 3: Counterfactual What-If Risk Analysis Simulator */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-cyan-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span>{isBangla ? 'কাউন্টারফ্যাকচুয়াল ঝুঁকি বিশ্লেষণ' : 'Counterfactual What-If Engine'}</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsWhatIfSimulated(!isWhatIfSimulated);
+                        }}
+                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                          isWhatIfSimulated
+                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold shadow-sm'
+                            : 'bg-white/5 hover:bg-cyan-500/10 text-[var(--color-text-secondary)] hover:text-cyan-400 border border-white/10'
+                        }`}
+                        title={isBangla ? 'গেজে প্রতিকার পরীক্ষা করুন' : 'Run What-If Test in Gauge'}
+                      >
+                        <RotateCcw className={`w-2.5 h-2.5 ${isWhatIfSimulated ? 'rotate-180 text-cyan-300' : ''} transition-transform`} />
+                        <span>{isWhatIfSimulated ? (isBangla ? 'সিমুলেশন চলছে' : 'Active Test') : (isBangla ? 'পরীক্ষা করুন' : 'Run Test')}</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)]">
+                      <span>{isBangla ? 'প্রতিকার প্রভাব (Causal Δ):' : 'Causal Remedy Estimate:'}</span>
+                      <span className="text-emerald-400 font-bold font-mono">ΔRisk = -76 pts (p &lt; 0.001)</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <button
                 onClick={() => {
+                  setIsFraudStudioOpen(true);
                   setActiveToolId('laserfish');
-                  setToastMessage(isBangla ? 'ফ্রডইঞ্জিন সক্রিয়: বহু-সংকেত ঝুঁকি পাইপলাইন প্রস্তুত।' : 'FraudEngine activated: Multi-signal risk assessment pipeline ready.');
-                  setTimeout(() => setToastMessage(null), 4000);
+                  setToastMessage(isBangla ? 'ফ্রডইঞ্জিন অ্যানালিটিক্স স্টুডিও লোড হচ্ছে...' : 'Launching FraudEngine Risk Analytics Studio...');
+                  setTimeout(() => setToastMessage(null), 3000);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-amber-500 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(244,63,94,0.35)] hover:shadow-[0_6px_24px_rgba(244,63,94,0.5)] flex items-center justify-center gap-2 group/btn"
               >
                 <span>{t.suite.tool2.cta}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
@@ -1295,6 +1395,59 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                     </div>
                   </>
                 )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 
+        ====================================================================
+        INTERACTIVE FRAUDENGINE RISK ANALYTICS STUDIO MODAL
+        ====================================================================
+      */}
+      <AnimatePresence>
+        {isFraudStudioOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 35, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 25, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="glass-panel rounded-[10px] w-full max-w-[96vw] xl:max-w-[1580px] h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-rose-500/25"
+            >
+              {/* Top Studio Control Header */}
+              <div className="p-3.5 border-b border-[var(--color-border-subtle)] flex items-center justify-between bg-black/40 backdrop-blur-md shrink-0">
+                <div className="flex items-center gap-3">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+                  <span className="text-xs font-mono font-bold text-rose-400">PROBAHO FRAUDENGINE STUDIO</span>
+                  <span className="text-[var(--color-text-tertiary)]">|</span>
+                  <span className="text-xs text-[var(--color-text-primary)] font-semibold">
+                    {isBangla ? 'রিয়েল-টাইম ভূমি জালিয়াতি ও ঝুঁকি বিশ্লেষণ পাইপলাইন' : 'Real-Time Land Fraud Risk Analytics & National Radar'}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setIsFraudStudioOpen(false)}
+                  className="px-3 py-1.5 text-xs font-mono rounded-[4px] bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                >
+                  <X className="w-4 h-4" />
+                  <span>{isBangla ? 'স্টুডিও বন্ধ করুন' : 'Close Studio'}</span>
+                </button>
+              </div>
+
+              {/* Full Risk Analytics Dashboard Container */}
+              <div className="flex-1 overflow-y-auto">
+                <RiskAnalyticsDashboard
+                  onClose={() => setIsFraudStudioOpen(false)}
+                  defaultZoneId="dhanmondi"
+                />
               </div>
             </motion.div>
           </motion.div>

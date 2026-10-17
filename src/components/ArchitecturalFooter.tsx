@@ -14,6 +14,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { ChevronUp } from 'lucide-react';
+import { ProbahoLogo } from './ProbahoLogo';
 
 interface ArchitecturalFooterProps {
   onOpenInquiry?: () => void;
@@ -58,6 +59,15 @@ export const ArchitecturalFooter: React.FC<ArchitecturalFooterProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer
       className={`relative w-full overflow-hidden transition-colors duration-500 select-none ${
@@ -94,67 +104,236 @@ export const ArchitecturalFooter: React.FC<ArchitecturalFooterProps> = ({
         MAIN FOOTER CONTENT CONTAINER
         ========================================================================
       */}
-      <div className="relative z-10 w-full pt-10 sm:pt-14 md:pt-20 pb-0 flex flex-col justify-between items-center">
+      <div className="relative z-10 w-full pt-10 sm:pt-14 md:pt-16 pb-0 flex flex-col justify-between items-center">
         
         {/* 
-          ----------------------------------------------------------------------
-          TOP ROW: QUIET CENTERED LINKS ("Terms of Service" & "Privacy Policy")
-          Matches exact composition from user's Mobile & Desktop screenshots
-          ----------------------------------------------------------------------
+          ======================================================================
+          REACT BITS-STYLE MODULAR PRE-FOOTER CARD
+          - Matches exact layout from reference: Left Brand & Bio, Right 3 Link Columns
+          - Fully customized for Probaho LandTech Cadastral Ecosystem
+          ======================================================================
         */}
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-14 text-xs sm:text-sm font-sans tracking-wide px-4">
-          <button
-            type="button"
-            onClick={handleTermsClick}
-            className={`transition-colors duration-200 cursor-pointer ${
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mb-8 sm:mb-12">
+          <div
+            className={`rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 transition-all duration-300 border ${
               isDay
-                ? 'text-[#5a5750] hover:text-[#16a34a]'
-                : 'text-white/65 hover:text-white'
-            }`}
+                ? 'bg-white/85 border-black/10 shadow-[0_12px_40px_rgba(0,0,0,0.05)] text-[#1c1b18]'
+                : 'bg-[#121117]/90 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-[#f2efe9]'
+            } backdrop-blur-xl flex flex-col lg:flex-row justify-between gap-8 sm:gap-12`}
           >
-            {isBangla ? 'সেবা শর্তাবলী' : 'Terms of Service'}
-          </button>
+            {/* Left Side: Brand Identity, Tagline, Copyright */}
+            <div className="flex flex-col justify-between space-y-6 sm:space-y-8 max-w-sm">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <ProbahoLogo className="w-8 h-8 text-[var(--color-surface-raised)]" />
+                  <span className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
+                    {isBangla ? 'প্রবাহ' : 'Probaho'}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-[13px] text-[var(--color-text-secondary)] leading-relaxed">
+                  {isBangla ? (
+                    <>
+                      ক্যাডাস্ট্রাল ইন্টেলিজেন্স ও ভূমির মালিকানা গ্রাফ ইঞ্জিন।
+                      <br />
+                      আইনি বিধিমালা ও ক্রিপ্টোগ্রাফিক প্রামাণ্য ডসিয়ার প্ল্যাটফর্ম।
+                    </>
+                  ) : (
+                    <>
+                      Bangladesh Cadastral Intelligence &amp; Land Title Graph Engine.
+                      <br />
+                      Deterministic legal AST. Cryptographic SHA-256 evidence dossiers.
+                    </>
+                  )}
+                </p>
+              </div>
 
-          <button
-            type="button"
-            onClick={handlePrivacyClick}
-            className={`transition-colors duration-200 cursor-pointer ${
-              isDay
-                ? 'text-[#5a5750] hover:text-[#16a34a]'
-                : 'text-white/65 hover:text-white'
-            }`}
-          >
-            {isBangla ? 'গোপনীয়তা নীতি' : 'Privacy Policy'}
-          </button>
+              {/* Bottom Copyright line matching React Bits */}
+              <div className="text-[11px] sm:text-xs text-[var(--color-text-tertiary)] font-sans">
+                {isBangla ? (
+                  <span>© ২০২৬ প্রবাহ · নির্ভুল ভূমি রেকর্ড ও স্বচ্ছতার প্রত্যয়ে · ওপেন সোর্স</span>
+                ) : (
+                  <span>© 2026 Probaho · Built for Bangladesh Land Transparency · Open Source</span>
+                )}
+              </div>
+            </div>
 
-          {/* Optional dispatch / inquiry link for quick access */}
-          {onOpenInquiry && (
-            <button
-              type="button"
-              onClick={onOpenInquiry}
-              className={`hidden md:inline-flex items-center gap-1.5 transition-colors duration-200 cursor-pointer ${
-                isDay
-                  ? 'text-[#5a5750] hover:text-[#16a34a]'
-                  : 'text-white/50 hover:text-[#22c55e]'
-              }`}
-            >
-              <span>{isBangla ? 'অনুসন্ধান ভল্ট' : 'Inquiry Portal'}</span>
-              <span className={`w-1 h-1 rounded-full ${isDay ? 'bg-[#16a34a]' : 'bg-[#22c55e]'}`} />
-            </button>
-          )}
+            {/* Right Side: 3 Columns matching React Bits layout */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 md:gap-12 text-xs sm:text-[13px]">
+              {/* Column 1: Platform / Engines */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-[var(--color-text-primary)] tracking-tight text-xs sm:text-sm">
+                  {isBangla ? 'প্লাটফর্ম' : 'Platform'}
+                </h4>
+                <ul className="space-y-2 sm:space-y-2.5 text-[var(--color-text-secondary)]">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('tools')}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'ক্যাডাস্ট্রাল জিআইএস' : 'Cadastral GIS'}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('tools')}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'ফ্রডইঞ্জিন' : 'FraudEngine'}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('tools')}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'দলিল তুলনাকারী' : 'DocCompare'}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('tools')}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'ঝুঁকি সিমুলেটর' : 'Adversarial Sim'}
+                    </button>
+                  </li>
+                </ul>
+              </div>
 
-          {/* Scroll to Top Trigger */}
+              {/* Column 2: Cadastre & Legal Rules */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-[var(--color-text-primary)] tracking-tight text-xs sm:text-sm">
+                  {isBangla ? 'রেকর্ড ও আইন' : 'Cadastre & Laws'}
+                </h4>
+                <ul className="space-y-2 sm:space-y-2.5 text-[var(--color-text-secondary)]">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (setToastMessage) {
+                          setToastMessage(isBangla ? 'সিএস (১৯৪০), এসএ (১৯৬২), আরএস (১৯৮৮) ও বিএস (২০২১) জরিপ ধারা যাচাইকৃত।' : 'CS (1940), SA (1962), RS (1988), and BS (2021) survey DAG verified.');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }
+                      }}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'সিএস/এসএ/আরএস/বিএস' : 'CS · SA · RS · BS'}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (setToastMessage) {
+                          setToastMessage(isBangla ? 'মৌজা ক্যাডাস্ট্রাল প্লট ও দাগ সীমানা ভেক্টর লোড হচ্ছে।' : 'Mouza cadastral plot boundaries and vector topology loaded.');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }
+                      }}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'মৌজা দাগ নকশা' : 'Mouza Plot Vectors'}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (setToastMessage) {
+                          setToastMessage(isBangla ? 'সাব-রেজিস্ট্রি ৭২ ঘণ্টা কনকারেন্সি সফট-লক কার্যকর।' : '72h Sub-Registry concurrency pre-lock active.');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }
+                      }}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'সাব-রেজিস্ট্রি প্রি-লক' : '72h Pre-Lock'}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (setToastMessage) {
+                          setToastMessage(isBangla ? 'সম্পত্তি হস্তান্তর আইন ৫৩এ ও রাষ্ট্রীয় অধিগ্রহণ আইন ৮৯ ধারা।' : 'Transfer of Property Act §53A and SAT Act §89 deterministic rules.');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }
+                      }}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'আইনি বিধিমালা AST' : 'Legal Rules AST'}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 3: Resources & Actions */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-[var(--color-text-primary)] tracking-tight text-xs sm:text-sm">
+                  {isBangla ? 'রিসোর্স ও সেবা' : 'Resources'}
+                </h4>
+                <ul className="space-y-2 sm:space-y-2.5 text-[var(--color-text-secondary)]">
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('risk-analytics')}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'জাতীয় ঝুঁকি রাডার' : 'Risk Radar 360°'}
+                    </button>
+                  </li>
+                  <li>
+                    {onOpenInquiry ? (
+                      <button
+                        type="button"
+                        onClick={onOpenInquiry}
+                        className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                      >
+                        {isBangla ? 'তদন্ত পোর্টাল' : 'Inquiry Portal'}
+                      </button>
+                    ) : (
+                      <span className="opacity-60">{isBangla ? 'তদন্ত পোর্টাল' : 'Inquiry Portal'}</span>
+                    )}
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={handleTermsClick}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'সেবা শর্তাবলী' : 'Terms of Service'}
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={handlePrivacyClick}
+                      className="hover:text-[var(--color-surface-raised)] transition-colors cursor-pointer text-left"
+                    >
+                      {isBangla ? 'গোপনীয়তা নীতি' : 'Privacy Policy'}
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll to Top Trigger */}
+        <div className="flex items-center justify-center gap-6 text-xs font-sans tracking-wide px-4 mb-2">
           <button
             type="button"
             onClick={scrollToTop}
-            className={`transition-colors duration-200 cursor-pointer inline-flex items-center gap-1 ${
+            className={`transition-colors duration-200 cursor-pointer inline-flex items-center gap-1.5 ${
               isDay
                 ? 'text-[#5a5750] hover:text-[#16a34a]'
                 : 'text-white/50 hover:text-white'
             }`}
             title="Scroll to Top"
           >
-            <span>{isBangla ? 'শীর্ষে' : 'Top'}</span>
+            <span>{isBangla ? 'পৃষ্ঠার শীর্ষে যান' : 'Back to top'}</span>
             <ChevronUp className="w-3.5 h-3.5" />
           </button>
         </div>

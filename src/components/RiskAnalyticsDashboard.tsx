@@ -78,12 +78,14 @@ interface RiskAnalyticsDashboardProps {
   id?: string;
   className?: string;
   defaultZoneId?: string;
+  onClose?: () => void;
 }
 
 export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
   id = 'risk-analytics',
   className = '',
   defaultZoneId = 'dhanmondi',
+  onClose,
 }) => {
   const { isBangla } = useLanguage();
   const { isDay } = useTheme();
@@ -444,6 +446,18 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
               <Download className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
               <span>{isBangla ? 'রিপোর্ট রপ্তানি' : 'Export Dossier'}</span>
             </button>
+
+            {/* Optional Close Studio Button when hosted in modal */}
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="px-3 py-1.5 text-xs font-mono font-semibold rounded border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 transition-colors flex items-center gap-1.5 cursor-pointer self-start sm:self-auto shadow-sm"
+                title={isBangla ? 'স্টুডিও বন্ধ করুন' : 'Close Studio'}
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>{isBangla ? 'স্টুডিও বন্ধ' : 'Close'}</span>
+              </button>
+            )}
           </div>
         </div>
 
