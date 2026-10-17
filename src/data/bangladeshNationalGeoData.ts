@@ -740,9 +740,274 @@ export const BANGLADESH_RIVERS = [
 ];
 
 /**
- * Bay of Bengal Bathymetry & Oceanic Landmarks
+ * Bay of Bengal (বঙ্গোপসাগর) — High-Precision Marine & Hydrographic Features
+ * Delimited Maritime Boundaries (ITLOS 2012 & PCA 2014), Submarine Canyon
+ * (Swatch of No Ground / সোয়াচ অব নো গ্রাউন্ড), Bathymetric Isobaths,
+ * Offshore Coral Islands, Historic Lighthouses, and Shipping Fairways.
  */
 export const BAY_OF_BENGAL_FEATURES = {
+  // Grand Ocean Title Metadata
+  grandTitle: {
+    nameBn: 'ব ঙ্গো প সা গ র',
+    nameEn: 'BAY OF BENGAL',
+    center: [90.30, 20.85] as [number, number],
+    subtextBn: 'উত্তর ভারত মহাসাগর • আন্তর্জাতিক সমুদ্রসীমা (ITLOS ও PCA ট্রাইব্যুনাল রায়ে নির্ধারিত)',
+    subtextEn: 'Northern Indian Ocean • Sovereign Maritime Boundary (ITLOS & PCA Delimited)',
+  },
+
+  // Coastlines of neighboring land (to prevent ocean leaking into India and Myanmar land)
+  coastalLandmasses: {
+    westBengalCoast: [
+      [87.00, 26.50],
+      [88.20, 26.50],
+      [88.20, 24.50],
+      [88.00, 23.50],
+      [88.50, 22.80],
+      [88.90, 22.50],
+      [89.15, 21.65], // Raimangal estuary border with Bangladesh
+      [88.85, 21.60], // Indian Sundarbans coast
+      [88.35, 21.62], // Sagar Island / Hooghly mouth
+      [87.50, 21.65], // Digha / Mandarmani coast
+      [87.00, 21.65],
+      [87.00, 26.50],
+    ] as [number, number][],
+    myanmarCoast: [
+      [92.36, 20.70], // Naf River mouth border with Bangladesh
+      [92.45, 21.15],
+      [92.65, 21.50],
+      [92.70, 21.90],
+      [93.50, 22.00],
+      [93.50, 19.50],
+      [93.00, 19.50],
+      [92.70, 20.00],
+      [92.50, 20.35],
+      [92.36, 20.70],
+    ] as [number, number][],
+  },
+
+  // Real Bathymetric Depth Contours (মহীসোপান ও গভীরতা স্তর)
+  bathymetry: {
+    isobath10m: [
+      [88.80, 21.55],
+      [89.15, 21.58],
+      [89.55, 21.65],
+      [90.12, 21.72],
+      [90.70, 21.78],
+      [91.30, 21.90],
+      [91.80, 21.65],
+      [92.00, 21.25],
+      [92.25, 20.75],
+    ] as [number, number][],
+    isobath20m: [
+      [88.80, 21.35],
+      [89.20, 21.42],
+      [89.60, 21.40],
+      [90.20, 21.45],
+      [90.80, 21.40],
+      [91.50, 21.35],
+      [91.90, 21.00],
+      [92.15, 20.65],
+    ] as [number, number][],
+    isobath50m: [
+      [88.80, 21.00],
+      [89.30, 21.05],
+      [89.80, 20.95],
+      [90.50, 21.00],
+      [91.20, 20.85],
+      [91.80, 20.55],
+      [92.10, 20.30],
+    ] as [number, number][],
+    isobath100m: [
+      [88.80, 20.65],
+      [89.40, 20.70],
+      [90.10, 20.55],
+      [90.80, 20.45],
+      [91.50, 20.25],
+      [91.90, 20.00],
+    ] as [number, number][],
+    isobath200m: [
+      [88.80, 20.20],
+      [89.50, 20.15],
+      [90.30, 20.05],
+      [91.20, 19.80],
+      [91.80, 19.50],
+    ] as [number, number][],
+  },
+
+  // Sovereign Maritime Boundaries (সমুদ্রসীমা - ITLOS 2012 & PCA 2014)
+  maritimeBoundaries: {
+    areaKm2: 118813,
+    eezBoundaryIndia: [
+      [89.15, 21.65], // Raimangal mouth
+      [89.12, 21.30],
+      [89.05, 20.80],
+      [88.90, 20.20],
+      [88.65, 19.50],
+      [88.40, 18.80],
+    ] as [number, number][],
+    eezBoundaryMyanmar: [
+      [92.36, 20.70], // Naf River mouth
+      [92.42, 20.55], // St. Martin's 12NM territorial boundary
+      [92.20, 20.15],
+      [91.65, 19.30],
+      [91.00, 18.60],
+    ] as [number, number][],
+    eezOuterArc: [
+      [88.40, 18.80],
+      [89.20, 18.60],
+      [90.10, 18.50],
+      [91.00, 18.60],
+    ] as [number, number][],
+    territorialBaseline: [
+      [89.15, 21.65], // Basepoint 1 (Raimangal)
+      [89.36, 21.60], // Basepoint 2 (Malancha)
+      [89.58, 21.55], // Basepoint 3 (Pussur)
+      [89.85, 21.60], // Basepoint 4 (Haringhata / Dubla)
+      [90.25, 21.75], // Basepoint 5 (Rabnabad / Kuakata)
+      [90.70, 21.85], // Basepoint 6 (Dhal Char)
+      [91.80, 21.80], // Basepoint 7 (Kutubdia)
+      [92.35, 20.60], // Basepoint 8 (St. Martin's)
+    ] as [number, number][],
+  },
+
+  // Swatch of No Ground Submarine Canyon (সোয়াচ অব নো গ্রাউন্ড)
+  swatchOfNoGround: {
+    center: [89.30, 21.25] as [number, number],
+    label: 'SWATCH OF NO GROUND',
+    labelBn: 'সোয়াচ অব নো গ্রাউন্ড',
+    depthM: 1340,
+    widthKm: 14,
+    lengthKm: 134,
+    sanctuaryBn: 'সামুদ্রিক সংরক্ষিত এলাকা (Marine Protected Area)',
+    canyonContourOuter: [
+      [89.45, 21.45],
+      [89.40, 21.30],
+      [89.32, 21.10],
+      [89.20, 20.85],
+      [89.05, 20.75],
+      [89.10, 20.95],
+      [89.20, 21.20],
+      [89.30, 21.45],
+    ] as [number, number][],
+    canyonContourDeep: [
+      [89.38, 21.35],
+      [89.30, 21.18],
+      [89.22, 20.95],
+      [89.15, 21.05],
+      [89.25, 21.25],
+      [89.32, 21.38],
+    ] as [number, number][],
+  },
+
+  // Offshore Coral Islands, Char Islands & Historic Lighthouses
+  offshoreIslands: [
+    {
+      id: 'st-martins',
+      nameBn: 'সেন্ট মার্টিন্স দ্বীপ',
+      nameEn: "St. Martin's Island",
+      subBn: 'নারিকেল জিঞ্জিরা (কোরাল দ্বীপ)',
+      coords: [92.323, 20.628] as [number, number],
+      r: 4.5,
+      type: 'coral',
+    },
+    {
+      id: 'chhera-dwip',
+      nameBn: 'ছেঁড়া দ্বীপ',
+      nameEn: 'Chhera Dwip',
+      subBn: 'বাংলাদেশের সর্বদক্ষিণ ভূমি',
+      coords: [92.336, 20.605] as [number, number],
+      r: 3.0,
+      type: 'southernmost',
+    },
+    {
+      id: 'kutubdia',
+      nameBn: 'কুতুবদিয়া দ্বীপ',
+      nameEn: 'Kutubdia Island',
+      subBn: 'ঐতিহাসিক বাতিঘর (১৮৪৬)',
+      coords: [91.85, 21.82] as [number, number],
+      r: 4.0,
+      type: 'lighthouse',
+    },
+    {
+      id: 'maheshkhali',
+      nameBn: 'মহেশখালী দ্বীপ',
+      nameEn: 'Maheshkhali Island',
+      subBn: 'মাতারবাড়ি গভীর সমুদ্র বন্দর',
+      coords: [91.95, 21.55] as [number, number],
+      r: 4.5,
+      type: 'port',
+    },
+    {
+      id: 'dublar-char',
+      nameBn: 'দুবলার চর',
+      nameEn: 'Dublar Char',
+      subBn: 'সুন্দরবন উপকূলীয় শুঁটকি দ্বীপ',
+      coords: [89.55, 21.75] as [number, number],
+      r: 3.5,
+      type: 'char',
+    },
+    {
+      id: 'nijhum-dwip',
+      nameBn: 'নিঝুম দ্বীপ',
+      nameEn: 'Nijhum Dwip',
+      subBn: 'জাতীয় উদ্যান ও হরিণ অভয়ারণ্য',
+      coords: [91.00, 22.05] as [number, number],
+      r: 3.5,
+      type: 'national-park',
+    },
+    {
+      id: 'bhashan-char',
+      nameBn: 'ভাসান চর',
+      nameEn: 'Bhashan Char',
+      subBn: 'উপকূলীয় সুরক্ষিত আবাসন চর',
+      coords: [91.35, 22.32] as [number, number],
+      r: 3.2,
+      type: 'char',
+    },
+    {
+      id: 'kuakata-beach',
+      nameBn: 'কুয়াকাটা সমুদ্র সৈকত',
+      nameEn: 'Kuakata Marine Beach',
+      subBn: 'সূর্যোদয় ও সূর্যাস্তের সৈকত',
+      coords: [90.12, 21.82] as [number, number],
+      r: 3.0,
+      type: 'beach',
+    },
+  ],
+
+  // Port Approaches, Outer Anchorages & Fairway Buoys
+  maritimeWaypoints: [
+    {
+      id: 'chattogram-anchorage',
+      nameBn: 'চট্টগ্রাম বহির্নোঙ্গর',
+      nameEn: 'Chattogram Outer Anchorage',
+      coords: [91.75, 22.20] as [number, number],
+      tag: 'PORT TERMINAL',
+    },
+    {
+      id: 'mongla-fairway',
+      nameBn: 'মংলা ফেয়ারওয়ে বয়',
+      nameEn: 'Mongla Fairway Buoy',
+      coords: [89.50, 21.45] as [number, number],
+      tag: 'FAIRWAY BUOY',
+    },
+    {
+      id: 'payra-channel',
+      nameBn: 'পায়রা গভীর চ্যানেল',
+      nameEn: 'Payra Deep Channel',
+      coords: [90.25, 21.60] as [number, number],
+      tag: 'DEEP CHANNEL',
+    },
+    {
+      id: 'matarbari-terminal',
+      nameBn: 'মাতারবাড়ি গভীর সমুদ্র টার্মিনাল',
+      nameEn: 'Matarbari Deep Sea Terminal',
+      coords: [91.88, 21.70] as [number, number],
+      tag: 'DEEP SEA PORT',
+    },
+  ],
+
+  // Backward compatibility legacy accessors
   shelf20m: [
     [89.00, 21.40],
     [89.50, 21.35],
@@ -750,7 +1015,7 @@ export const BAY_OF_BENGAL_FEATURES = {
     [90.80, 21.40],
     [91.50, 21.50],
     [92.00, 21.10],
-  ],
+  ] as [number, number][],
   isobath50m: [
     [89.00, 21.05],
     [89.60, 20.90],
@@ -758,22 +1023,16 @@ export const BAY_OF_BENGAL_FEATURES = {
     [91.00, 20.95],
     [91.70, 21.00],
     [92.15, 20.60],
-  ],
-  swatchOfNoGround: {
-    center: [89.30, 21.25], // [lng, lat]
-    label: 'SWATCH OF NO GROUND',
-    labelBn: 'সোয়াচ অব নো গ্রাউন্ড',
-    depthM: 1340,
-  },
+  ] as [number, number][],
   dublarChar: {
-    center: [89.55, 21.75],
+    center: [89.55, 21.75] as [number, number],
     label: 'Dublar Char',
     labelBn: 'দুবলার চর',
   },
   riverAnnotations: [
-    { name: 'Jamuna (Brahmaputra)', nameBn: 'যমুনা (ব্রহ্মপুত্র)', coords: [89.65, 24.85] },
-    { name: 'Meghna (Upper & Lower)', nameBn: 'মেঘনা (উচ্চ ও নিম্ন)', coords: [90.65, 23.10] },
-    { name: 'Padma River', nameBn: 'পদ্মা নদী', coords: [89.85, 23.70] },
+    { name: 'Jamuna (Brahmaputra)', nameBn: 'যমুনা (ব্রহ্মপুত্র)', coords: [89.65, 24.85] as [number, number] },
+    { name: 'Meghna (Upper & Lower)', nameBn: 'মেঘনা (উচ্চ ও নিম্ন)', coords: [90.65, 23.10] as [number, number] },
+    { name: 'Padma River', nameBn: 'পদ্মা নদী', coords: [89.85, 23.70] as [number, number] },
   ],
 };
 

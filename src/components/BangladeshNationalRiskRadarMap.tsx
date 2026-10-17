@@ -397,16 +397,36 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* Oceanic Azure Water Gradient (Bay of Bengal) */}
           <linearGradient id="oceanGradientAdmin" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={isDay ? '#99f6e4' : '#042f2e'} stopOpacity="0.45" />
-            <stop offset="35%" stopColor={isDay ? '#38bdf8' : '#075985'} stopOpacity="0.75" />
-            <stop offset="100%" stopColor={isDay ? '#0284c7' : '#0c4a6e'} stopOpacity="0.95" />
+            <stop offset="0%" stopColor={isDay ? '#c7ecfc' : '#042238'} stopOpacity="0.80" />
+            <stop offset="20%" stopColor={isDay ? '#90daf8' : '#063656'} stopOpacity="0.90" />
+            <stop offset="55%" stopColor={isDay ? '#38bdf8' : '#034a75'} stopOpacity="0.98" />
+            <stop offset="100%" stopColor={isDay ? '#0284c7' : '#02243d'} stopOpacity="1.0" />
           </linearGradient>
 
           <linearGradient id="oceanGradientRadar" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={isDay ? '#d0e5f5' : '#081728'} stopOpacity="0.4" />
-            <stop offset="40%" stopColor={isDay ? '#b8d8ef' : '#04101e'} stopOpacity="0.8" />
-            <stop offset="100%" stopColor={isDay ? '#9ec7e6' : '#020b16'} stopOpacity="1.0" />
+            <stop offset="0%" stopColor={isDay ? '#b8dcf2' : '#041628'} stopOpacity="0.75" />
+            <stop offset="30%" stopColor={isDay ? '#9ecdec' : '#021020'} stopOpacity="0.90" />
+            <stop offset="70%" stopColor={isDay ? '#70b3e0' : '#010a14'} stopOpacity="0.98" />
+            <stop offset="100%" stopColor={isDay ? '#4a99d0' : '#00050a'} stopOpacity="1.0" />
           </linearGradient>
+
+          {/* Submarine Depth Gradient for Bathymetric Basin */}
+          <linearGradient id="deepBathymetryGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.12" />
+            <stop offset="50%" stopColor="#0284c7" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#0c4a6e" stopOpacity="0.45" />
+          </linearGradient>
+
+          {/* Wavelet Texture Pattern for Bay of Bengal Surface */}
+          <pattern id="wavePattern" width="40" height="12" patternUnits="userSpaceOnUse">
+            <path
+              d="M 0 6 Q 10 2, 20 6 T 40 6"
+              fill="none"
+              stroke={isDay ? '#ffffff' : '#38bdf8'}
+              strokeWidth="0.75"
+              strokeOpacity={isDay ? '0.35' : '0.12'}
+            />
+          </pattern>
 
           {/* Threat Heatmaps (Patuakhali & Sylhet) */}
           <radialGradient id="heatGlowCritical" cx="50%" cy="50%" r="50%">
@@ -431,9 +451,10 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
           </radialGradient>
 
           {/* Swatch of No Ground Submarine Canyon Gradient */}
-          <radialGradient id="canyonGradient" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={isDay ? '#0284c7' : '#0369a1'} stopOpacity="0.85" />
-            <stop offset="60%" stopColor={isDay ? '#38bdf8' : '#075985'} stopOpacity="0.45" />
+          <radialGradient id="canyonGradient" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stopColor={isDay ? '#075985' : '#0369a1'} stopOpacity="0.95" />
+            <stop offset="45%" stopColor={isDay ? '#0284c7' : '#075985'} stopOpacity="0.75" />
+            <stop offset="85%" stopColor={isDay ? '#38bdf8' : '#0284c7'} stopOpacity="0.30" />
             <stop offset="100%" stopColor="#0284c7" stopOpacity="0" />
           </radialGradient>
         </defs>
@@ -452,15 +473,66 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
             />
           )}
 
-          {/* Bay of Bengal Water Body */}
+          {/* 
+            ====================================================================
+            1. BAY OF BENGAL OCEAN WATER SURFACE & COASTAL LANDMASSES
+            ====================================================================
+          */}
+          {/* Base Ocean Water covering the Southern Marine Basin */}
           <rect
-            x="-500"
-            y={dimensions.height * 0.62}
-            width={dimensions.width + 1000}
-            height={dimensions.height * 0.8}
+            x="-2000"
+            y={dimensions.height * 0.55}
+            width="6000"
+            height="3000"
             fill={mapThemeMode === 'administrative' ? 'url(#oceanGradientAdmin)' : 'url(#oceanGradientRadar)'}
             className="pointer-events-none"
           />
+          <rect
+            x="-2000"
+            y={dimensions.height * 0.55}
+            width="6000"
+            height="3000"
+            fill="url(#wavePattern)"
+            className="pointer-events-none"
+          />
+
+          {/* West Bengal & Indian Sundarbans Landmass (Preserves authentic West Bengal land without ocean bleeding) */}
+          {(() => {
+            const lineGen = d3
+              .line<[number, number]>()
+              .x((d) => projection(d)![0])
+              .y((d) => projection(d)![1]);
+            const d = lineGen(BAY_OF_BENGAL_FEATURES.coastalLandmasses.westBengalCoast);
+            if (!d) return null;
+            return (
+              <path
+                d={`${d} Z`}
+                fill={isDay ? '#f8fafc' : '#070d19'}
+                stroke={isDay ? '#cbd5e1' : '#1e293b'}
+                strokeWidth="1.2"
+                className="pointer-events-none select-none opacity-90"
+              />
+            );
+          })()}
+
+          {/* Myanmar / Rakhine Coast Landmass (Preserves authentic Myanmar land without ocean bleeding) */}
+          {(() => {
+            const lineGen = d3
+              .line<[number, number]>()
+              .x((d) => projection(d)![0])
+              .y((d) => projection(d)![1]);
+            const d = lineGen(BAY_OF_BENGAL_FEATURES.coastalLandmasses.myanmarCoast);
+            if (!d) return null;
+            return (
+              <path
+                d={`${d} Z`}
+                fill={isDay ? '#f8fafc' : '#070d19'}
+                stroke={isDay ? '#cbd5e1' : '#1e293b'}
+                strokeWidth="1.2"
+                className="pointer-events-none select-none opacity-90"
+              />
+            );
+          })()}
 
           {/* 
             ====================================================================
@@ -563,140 +635,400 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* 
             ====================================================================
-            BAY OF BENGAL BATHYMETRY & SOUTHERN OCEAN LABELS
+            BAY OF BENGAL (বঙ্গোপসাগর) — HIGH-PRECISION HYDROGRAPHIC LAYER
+            Bathymetry (-10m to -200m), Swatch of No Ground V-Canyon,
+            Sovereign Maritime Boundaries (ITLOS & PCA EEZ), Offshore Coral
+            Islands, Lighthouses, Deep Ports, and Grand Ocean Typography.
             ====================================================================
           */}
           {showBathymetry && (
             <g className="bathymetry-layer pointer-events-none select-none">
-              {/* -20m Shelf Curve */}
+              {/* 1. BATHYMETRIC DEPTH CONTOURS (-10m, -20m, -50m, -100m, -200m) */}
               {(() => {
-                const shelfLineGen = d3
+                const lineGen = d3
                   .line<[number, number]>()
                   .x((d) => projection(d)![0])
                   .y((d) => projection(d)![1])
                   .curve(d3.curveBasis);
-                const pathStr = shelfLineGen(BAY_OF_BENGAL_FEATURES.shelf20m as [number, number][]);
-                const labelPos = projection([89.8, 21.4]);
+
+                const isobaths = [
+                  { coords: BAY_OF_BENGAL_FEATURES.bathymetry.isobath10m, label: '-10m Coastal Shelf', labelBn: '-১০মি উপকূলীয় মহীসোপান', labelCoord: [90.70, 21.78] as [number, number], dash: '3 3', color: isDay ? '#38bdf8' : '#0284c7', width: 0.9 },
+                  { coords: BAY_OF_BENGAL_FEATURES.bathymetry.isobath20m, label: '-20m Continental Shelf', labelBn: '-২০মি অভ্যন্তরীণ মহীসোপান', labelCoord: [89.80, 21.40] as [number, number], dash: '4 3', color: isDay ? '#0284c7' : '#0369a1', width: 1.1 },
+                  { coords: BAY_OF_BENGAL_FEATURES.bathymetry.isobath50m, label: '-50m Intermediate Shelf', labelBn: '-৫০মি মধ্য মহীসোপান', labelCoord: [90.50, 21.00] as [number, number], dash: '6 4', color: isDay ? '#0369a1' : '#075985', width: 1.2 },
+                  { coords: BAY_OF_BENGAL_FEATURES.bathymetry.isobath100m, label: '-100m Shelf Break', labelBn: '-১০০মি মহীসোপান প্রান্ত', labelCoord: [91.50, 20.25] as [number, number], dash: '8 5', color: isDay ? '#075985' : '#0c4a6e', width: 1.3 },
+                  { coords: BAY_OF_BENGAL_FEATURES.bathymetry.isobath200m, label: '-200m Continental Slope', labelBn: '-২০০মি মহীঢাল', labelCoord: [90.30, 20.05] as [number, number], dash: '10 6', color: isDay ? '#0c4a6e' : '#082f49', width: 1.4 },
+                ];
+
                 return (
-                  pathStr && (
-                    <g>
+                  <g className="bathymetric-isobaths">
+                    {isobaths.map((iso, i) => {
+                      const pathStr = lineGen(iso.coords);
+                      const pt = projection(iso.labelCoord);
+                      if (!pathStr) return null;
+                      return (
+                        <g key={`iso-${i}`}>
+                          <path
+                            d={pathStr}
+                            fill="none"
+                            stroke={iso.color}
+                            strokeWidth={iso.width}
+                            strokeDasharray={iso.dash}
+                            opacity={mapThemeMode === 'administrative' ? '0.65' : '0.45'}
+                          />
+                          {pt && (
+                            <text
+                              x={pt[0]}
+                              y={pt[1] - 4}
+                              fill={iso.color}
+                              fontSize="8"
+                              fontFamily="monospace"
+                              opacity={mapThemeMode === 'administrative' ? '0.75' : '0.6'}
+                              stroke={isDay ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'}
+                              strokeWidth="1.5"
+                              paintOrder="stroke"
+                            >
+                              {isBangla ? iso.labelBn : iso.label}
+                            </text>
+                          )}
+                        </g>
+                      );
+                    })}
+                  </g>
+                );
+              })()}
+
+              {/* 2. SWATCH OF NO GROUND SUBMARINE CANYON (সোয়াচ অব নো গ্রাউন্ড) */}
+              {(() => {
+                const lineGenClose = d3
+                  .line<[number, number]>()
+                  .x((d) => projection(d)![0])
+                  .y((d) => projection(d)![1])
+                  .curve(d3.curveBasisClosed);
+
+                const outerD = lineGenClose(BAY_OF_BENGAL_FEATURES.swatchOfNoGround.canyonContourOuter);
+                const deepD = lineGenClose(BAY_OF_BENGAL_FEATURES.swatchOfNoGround.canyonContourDeep);
+                const centerPt = projection(BAY_OF_BENGAL_FEATURES.swatchOfNoGround.center);
+                if (!centerPt) return null;
+
+                return (
+                  <g className="swatch-of-no-ground">
+                    {/* Outer Canyon Rim (-200m to -500m) */}
+                    {outerD && (
                       <path
-                        d={pathStr}
-                        fill="none"
-                        stroke={isDay ? '#38bdf8' : '#0284c7'}
+                        d={outerD}
+                        fill="url(#canyonGradient)"
+                        stroke={isDay ? '#0284c7' : '#38bdf8'}
                         strokeWidth="1.2"
-                        strokeDasharray="5 4"
-                        opacity="0.65"
+                        strokeDasharray="4 2"
+                        opacity={mapThemeMode === 'administrative' ? '0.85' : '0.65'}
                       />
-                      {labelPos && (
-                        <text
-                          x={labelPos[0]}
-                          y={labelPos[1] - 5}
-                          fill={isDay ? '#0284c7' : '#38bdf8'}
-                          fontSize="8.5"
-                          fontFamily="monospace"
-                          opacity="0.8"
-                        >
-                          -20m Shelf
-                        </text>
-                      )}
-                    </g>
-                  )
-                );
-              })()}
+                    )}
 
-              {/* -50m Isobath Curve */}
-              {(() => {
-                const isobathLineGen = d3
-                  .line<[number, number]>()
-                  .x((d) => projection(d)![0])
-                  .y((d) => projection(d)![1])
-                  .curve(d3.curveBasis);
-                const pathStr = isobathLineGen(BAY_OF_BENGAL_FEATURES.isobath50m as [number, number][]);
-                const labelPos = projection([90.5, 20.95]);
-                return (
-                  pathStr && (
-                    <g>
+                    {/* Inner Abyssal Gorge Floor (-1000m to -1340m) */}
+                    {deepD && (
                       <path
-                        d={pathStr}
-                        fill="none"
-                        stroke={isDay ? '#0284c7' : '#0369a1'}
+                        d={deepD}
+                        fill={isDay ? '#042742' : '#021020'}
+                        fillOpacity="0.85"
+                        stroke={isDay ? '#38bdf8' : '#0284c7'}
                         strokeWidth="1.0"
-                        strokeDasharray="6 6"
-                        opacity="0.55"
+                        strokeDasharray="3 2"
                       />
-                      {labelPos && (
-                        <text
-                          x={labelPos[0]}
-                          y={labelPos[1] - 5}
-                          fill={isDay ? '#0369a1' : '#0284c7'}
-                          fontSize="8.5"
-                          fontFamily="monospace"
-                          opacity="0.75"
-                        >
-                          -50m Isobath
-                        </text>
-                      )}
-                    </g>
-                  )
-                );
-              })()}
+                    )}
 
-              {/* Dublar Char Coastal Landmark */}
-              {(() => {
-                const pt = projection(BAY_OF_BENGAL_FEATURES.dublarChar.center as [number, number]);
-                if (!pt) return null;
-                return (
-                  <text
-                    x={pt[0]}
-                    y={pt[1]}
-                    fill={isDay ? '#0284c7' : '#38bdf8'}
-                    fontSize="9"
-                    fontFamily="monospace"
-                    fontStyle="italic"
-                    fontWeight="600"
-                    stroke={isDay ? '#ffffff' : '#000000'}
-                    strokeWidth="2"
-                    paintOrder="stroke"
-                  >
-                    {isBangla ? BAY_OF_BENGAL_FEATURES.dublarChar.labelBn : BAY_OF_BENGAL_FEATURES.dublarChar.label}
-                  </text>
-                );
-              })()}
-
-              {/* Swatch of No Ground Submarine Canyon Vortex */}
-              {(() => {
-                const pt = projection(BAY_OF_BENGAL_FEATURES.swatchOfNoGround.center as [number, number]);
-                if (!pt) return null;
-                return (
-                  <g transform={`translate(${pt[0]}, ${pt[1]})`}>
-                    <ellipse rx="38" ry="22" transform="rotate(-25)" fill="url(#canyonGradient)" opacity="0.65" />
-                    <ellipse rx="38" ry="22" transform="rotate(-25)" fill="none" stroke={isDay ? '#0284c7' : '#38bdf8'} strokeWidth="1.2" strokeDasharray="4 3" />
-                    <ellipse rx="22" ry="12" transform="rotate(-25)" fill="none" stroke={isDay ? '#0369a1' : '#0284c7'} strokeWidth="0.8" strokeDasharray="2 3" />
-                    <text y="32" textAnchor="middle" fill={isDay ? '#0284c7' : '#38bdf8'} fontSize="8" fontFamily="monospace" fontWeight="bold" letterSpacing="1">
-                      {isBangla ? 'সোয়াচ অব নো গ্রাউন্ড (-১৩৪০মি)' : 'SWATCH OF NO GROUND (-1340m)'}
+                    {/* Canyon Center Marker & Sounding Depth */}
+                    <circle cx={centerPt[0]} cy={centerPt[1]} r="3" fill="#38bdf8" stroke="#ffffff" strokeWidth="1" />
+                    <text
+                      x={centerPt[0]}
+                      y={centerPt[1] - 8}
+                      textAnchor="middle"
+                      fill={isDay ? '#ffffff' : '#38bdf8'}
+                      fontSize="9"
+                      fontWeight="800"
+                      fontFamily="serif, sans-serif"
+                      stroke={isDay ? '#075985' : '#000000'}
+                      strokeWidth="2.5"
+                      paintOrder="stroke"
+                    >
+                      {isBangla ? 'সোয়াচ অব নো গ্রাউন্ড' : 'SWATCH OF NO GROUND'}
+                    </text>
+                    <text
+                      x={centerPt[0]}
+                      y={centerPt[1] + 8}
+                      textAnchor="middle"
+                      fill={isDay ? '#bae6fd' : '#7dd3fc'}
+                      fontSize="7.5"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                    >
+                      {isBangla ? 'গভীরতা: -১৩৪০ মিটার • সামুদ্রিক অভয়ারণ্য' : 'DEPTH: -1340M • MARINE PROTECTED AREA'}
                     </text>
                   </g>
                 );
               })()}
 
-              {/* Bay of Bengal Grand Label (ব ঙ্গো প সা গ র) */}
-              <text
-                x={dimensions.width * 0.50}
-                y={dimensions.height - 24}
-                textAnchor="middle"
-                fill={mapThemeMode === 'administrative' ? (isDay ? '#0369a1' : '#38bdf8') : isDay ? '#0369a1' : '#38bdf8'}
-                fontSize={mapThemeMode === 'administrative' ? '22' : '18'}
-                fontFamily="serif, sans-serif"
-                fontWeight="900"
-                letterSpacing={mapThemeMode === 'administrative' ? '16' : '12'}
-                opacity={mapThemeMode === 'administrative' ? '0.85' : '0.4'}
-                stroke={isDay ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'}
-                strokeWidth="2"
-                paintOrder="stroke"
-              >
-                {isBangla ? 'ব ঙ্গো প সা গ র' : 'B A Y   O F   B E N G A L'}
-              </text>
+              {/* 3. BANGLADESH SOVEREIGN MARITIME BOUNDARY (ITLOS 2012 & PCA 2014 DELIMITED EEZ) */}
+              {(() => {
+                const lineGen = d3
+                  .line<[number, number]>()
+                  .x((d) => projection(d)![0])
+                  .y((d) => projection(d)![1])
+                  .curve(d3.curveLinear);
+
+                const indiaLine = lineGen(BAY_OF_BENGAL_FEATURES.maritimeBoundaries.eezBoundaryIndia);
+                const myanmarLine = lineGen(BAY_OF_BENGAL_FEATURES.maritimeBoundaries.eezBoundaryMyanmar);
+                const outerArc = lineGen(BAY_OF_BENGAL_FEATURES.maritimeBoundaries.eezOuterArc);
+                const baseline = lineGen(BAY_OF_BENGAL_FEATURES.maritimeBoundaries.territorialBaseline);
+                const badgePt = projection([90.30, 19.30]);
+
+                const strokeColor = mapThemeMode === 'administrative' ? (isDay ? '#d97706' : '#f59e0b') : '#06b6d4';
+
+                return (
+                  <g className="maritime-boundary-layer">
+                    {/* 12 NM Territorial Baseline */}
+                    {baseline && (
+                      <path
+                        d={baseline}
+                        fill="none"
+                        stroke={strokeColor}
+                        strokeWidth="1.0"
+                        strokeDasharray="2 3"
+                        opacity="0.65"
+                      />
+                    )}
+
+                    {/* India-Bangladesh PCA 2014 Delimited Line */}
+                    {indiaLine && (
+                      <path
+                        d={indiaLine}
+                        fill="none"
+                        stroke={strokeColor}
+                        strokeWidth="1.8"
+                        strokeDasharray="6 4"
+                        opacity="0.85"
+                      />
+                    )}
+
+                    {/* Myanmar-Bangladesh ITLOS 2012 Delimited Line */}
+                    {myanmarLine && (
+                      <path
+                        d={myanmarLine}
+                        fill="none"
+                        stroke={strokeColor}
+                        strokeWidth="1.8"
+                        strokeDasharray="6 4"
+                        opacity="0.85"
+                      />
+                    )}
+
+                    {/* 200 NM Outer EEZ Limit Arc */}
+                    {outerArc && (
+                      <path
+                        d={outerArc}
+                        fill="none"
+                        stroke={strokeColor}
+                        strokeWidth="1.8"
+                        strokeDasharray="6 4"
+                        opacity="0.85"
+                      />
+                    )}
+
+                    {/* Maritime Sovereignty Badge */}
+                    {badgePt && (
+                      <g transform={`translate(${badgePt[0]}, ${badgePt[1]})`}>
+                        <rect
+                          x="-125"
+                          y="-10"
+                          width="250"
+                          height="20"
+                          rx="4"
+                          fill={isDay ? '#0f172a' : '#020b16'}
+                          fillOpacity="0.8"
+                          stroke={strokeColor}
+                          strokeWidth="1.2"
+                        />
+                        <text
+                          x="0"
+                          y="4"
+                          textAnchor="middle"
+                          fill={strokeColor}
+                          fontSize="8.5"
+                          fontFamily="serif, sans-serif"
+                          fontWeight="bold"
+                          letterSpacing="0.5"
+                        >
+                          {isBangla
+                            ? 'বাংলাদেশ সমুদ্রসীমা (ITLOS ও PCA ট্রাইব্যুনাল • EEZ - ২০০ NM)'
+                            : 'BANGLADESH MARITIME BOUNDARY (ITLOS & PCA EEZ 200 NM)'}
+                        </text>
+                      </g>
+                    )}
+                  </g>
+                );
+              })()}
+
+              {/* 4. OFFSHORE CORAL ISLANDS, LIGHTHOUSES & COASTAL CHAIRS */}
+              <g className="offshore-islands-layer">
+                {BAY_OF_BENGAL_FEATURES.offshoreIslands.map((isl) => {
+                  const pt = projection(isl.coords);
+                  if (!pt) return null;
+                  const isStMartins = isl.id === 'st-martins';
+
+                  return (
+                    <g key={isl.id} transform={`translate(${pt[0]}, ${pt[1]})`}>
+                      {/* Island Pin Marker */}
+                      <circle
+                        r={isl.r}
+                        fill={isStMartins ? '#10b981' : '#f59e0b'}
+                        stroke="#ffffff"
+                        strokeWidth={isStMartins ? 1.8 : 1.2}
+                        filter="drop-shadow(0 1px 3px rgba(0,0,0,0.5))"
+                      />
+                      {isStMartins && (
+                        <circle
+                          r={isl.r + 3}
+                          fill="none"
+                          stroke="#10b981"
+                          strokeWidth="1"
+                          strokeDasharray="2 2"
+                          className="animate-spin"
+                        />
+                      )}
+
+                      {/* Island Label with Zero-Collision Offset */}
+                      <text
+                        x={isl.id === 'st-martins' ? 8 : isl.id === 'chhera-dwip' ? 7 : 0}
+                        y={isl.id === 'st-martins' ? 3 : isl.id === 'chhera-dwip' ? 10 : -(isl.r + 5)}
+                        textAnchor={isl.id === 'st-martins' || isl.id === 'chhera-dwip' ? 'start' : 'middle'}
+                        fill={isDay ? '#0f172a' : '#f8fafc'}
+                        fontSize="9"
+                        fontWeight="800"
+                        fontFamily="serif, sans-serif"
+                        stroke={isDay ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.95)'}
+                        strokeWidth="2.8"
+                        paintOrder="stroke"
+                      >
+                        {isBangla ? isl.nameBn : isl.nameEn}
+                      </text>
+
+                      {/* Island Subtitle Tag */}
+                      <text
+                        x={isl.id === 'st-martins' ? 8 : isl.id === 'chhera-dwip' ? 7 : 0}
+                        y={isl.id === 'st-martins' ? 12 : isl.id === 'chhera-dwip' ? 18 : -(isl.r + 14)}
+                        textAnchor={isl.id === 'st-martins' || isl.id === 'chhera-dwip' ? 'start' : 'middle'}
+                        fill={isDay ? '#0369a1' : '#38bdf8'}
+                        fontSize="7"
+                        fontWeight="700"
+                        fontFamily="monospace"
+                        stroke={isDay ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)'}
+                        strokeWidth="2"
+                        paintOrder="stroke"
+                      >
+                        {isBangla ? isl.subBn : isl.nameEn}
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
+
+              {/* 5. COMMERCIAL SEAPORTS, FAIRWAYS & APPROACH BUOYS */}
+              <g className="maritime-waypoints-layer">
+                {BAY_OF_BENGAL_FEATURES.maritimeWaypoints.map((wp) => {
+                  const pt = projection(wp.coords);
+                  if (!pt) return null;
+                  return (
+                    <g key={wp.id} transform={`translate(${pt[0]}, ${pt[1]})`}>
+                      <rect x="-3" y="-3" width="6" height="6" fill="#38bdf8" stroke="#ffffff" strokeWidth="1" transform="rotate(45)" />
+                      <text
+                        x="7"
+                        y="3"
+                        fill={isDay ? '#0284c7' : '#38bdf8'}
+                        fontSize="7.5"
+                        fontWeight="700"
+                        fontFamily="monospace"
+                        stroke={isDay ? '#ffffff' : '#000000'}
+                        strokeWidth="2"
+                        paintOrder="stroke"
+                      >
+                        {isBangla ? wp.nameBn : wp.nameEn}
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
+
+              {/* 6. GRAND BAY OF BENGAL LABEL (ব ঙ্গো প সা গ র) */}
+              {(() => {
+                const titlePt = projection(BAY_OF_BENGAL_FEATURES.grandTitle.center);
+                const tx = titlePt ? titlePt[0] : dimensions.width * 0.50;
+                const ty = titlePt ? titlePt[1] : dimensions.height - 35;
+
+                return (
+                  <g className="grand-ocean-title" transform={`translate(${tx}, ${ty})`}>
+                    {/* Primary Bengali Header */}
+                    <text
+                      x="0"
+                      y="0"
+                      textAnchor="middle"
+                      fill={
+                        mapThemeMode === 'administrative'
+                          ? isDay
+                            ? '#0369a1'
+                            : '#7dd3fc'
+                          : '#38bdf8'
+                      }
+                      fontSize={mapThemeMode === 'administrative' ? '26' : '22'}
+                      fontFamily="serif, sans-serif"
+                      fontWeight="900"
+                      letterSpacing={mapThemeMode === 'administrative' ? '20' : '15'}
+                      stroke={isDay ? 'rgba(255,255,255,0.9)' : 'rgba(2,11,22,0.9)'}
+                      strokeWidth={mapThemeMode === 'administrative' ? '3.5' : '2.5'}
+                      paintOrder="stroke"
+                      filter="drop-shadow(0 2px 5px rgba(0,0,0,0.25))"
+                    >
+                      {isBangla ? BAY_OF_BENGAL_FEATURES.grandTitle.nameBn : BAY_OF_BENGAL_FEATURES.grandTitle.nameEn}
+                    </text>
+
+                    {/* Secondary English Header */}
+                    <text
+                      x="0"
+                      y="18"
+                      textAnchor="middle"
+                      fill={isDay ? '#0284c7' : '#38bdf8'}
+                      fontSize="10"
+                      fontFamily="serif, sans-serif"
+                      fontWeight="800"
+                      letterSpacing="8"
+                      opacity="0.9"
+                      stroke={isDay ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)'}
+                      strokeWidth="2"
+                      paintOrder="stroke"
+                    >
+                      BAY OF BENGAL
+                    </text>
+
+                    {/* Oceanographic Metadata / Subtitle */}
+                    <text
+                      x="0"
+                      y="30"
+                      textAnchor="middle"
+                      fill={isDay ? '#075985' : '#94a3b8'}
+                      fontSize="7.5"
+                      fontFamily="serif, sans-serif"
+                      fontWeight="600"
+                      letterSpacing="2"
+                      opacity="0.8"
+                      stroke={isDay ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'}
+                      strokeWidth="1.5"
+                      paintOrder="stroke"
+                    >
+                      {isBangla
+                        ? BAY_OF_BENGAL_FEATURES.grandTitle.subtextBn
+                        : BAY_OF_BENGAL_FEATURES.grandTitle.subtextEn}
+                    </text>
+                  </g>
+                );
+              })()}
             </g>
           )}
 
