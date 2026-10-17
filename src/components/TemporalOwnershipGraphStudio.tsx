@@ -97,10 +97,14 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
     return flagged ? flagged.id : activeParcel.nodes[activeParcel.nodes.length - 1]?.id || '';
   });
 
+  // Hovered Node in Graph (Smooth, vibration-free hover feedback)
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+
   // Whenever parcel changes, reset selected node
   useEffect(() => {
     const flagged = activeParcel.nodes.find((n) => n.isFlagged);
     setSelectedNodeId(flagged ? flagged.id : activeParcel.nodes[activeParcel.nodes.length - 1]?.id || '');
+    setHoveredNodeId(null);
   }, [selectedParcelId, activeParcel]);
 
   const activeNode = useMemo(() => {
@@ -117,9 +121,9 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
   const [isAreaAuditorOpen, setIsAreaAuditorOpen] = useState<boolean>(false);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState<boolean>(false);
 
-  // SVG Pan & Zoom Transform State for DAG Canvas
-  const [svgZoom, setSvgZoom] = useState<number>(0.72);
-  const [svgPan, setSvgPan] = useState<{ x: number; y: number }>({ x: 25, y: 25 });
+  // SVG Pan & Zoom Transform State for DAG Canvas (Optimized for crystal-clear readability)
+  const [svgZoom, setSvgZoom] = useState<number>(1.08);
+  const [svgPan, setSvgPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDraggingCanvas, setIsDraggingCanvas] = useState<boolean>(false);
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -189,8 +193,29 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
   };
 
   const handleResetGraphView = () => {
-    setSvgZoom(0.92);
-    setSvgPan({ x: 30, y: 35 });
+    setSvgZoom(1.08);
+    setSvgPan({ x: 0, y: 0 });
+  };
+
+  const handleFocusDispute = () => {
+    setSvgZoom(1.38);
+    setSvgPan({ x: -260, y: -10 });
+  };
+
+  const handleWheelCanvas = (e: React.WheelEvent) => {
+    e.preventDefault();
+    // Pinch / ctrl-wheel or standard mouse wheel zoom
+    if (e.ctrlKey || (!e.shiftKey && Math.abs(e.deltaY) > Math.abs(e.deltaX) * 2)) {
+      const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+      setSvgZoom((prev) => Math.min(2.6, Math.max(0.6, Number((prev * zoomFactor).toFixed(2)))));
+    } else {
+      // Pan horizontally or vertically
+      const deltaX = e.shiftKey ? e.deltaY : e.deltaX;
+      setSvgPan((prev) => ({
+        x: Math.round(prev.x - deltaX * 0.9),
+        y: Math.round(prev.y - e.deltaY * 0.9),
+      }));
+    }
   };
 
   return (
@@ -426,7 +451,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
             }`}
           >
             {/* Canvas Control Dock (Top Right) */}
-            <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 glass-panel p-1 rounded-[6px] border border-white/10 bg-black/70 backdrop-blur-md text-xs font-mono text-white/80">
+            <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 glass-panel p-1 rounded-[6px] border border-white/15 bg-black/80 backdrop-blur-md text-xs font-mono text-white/80 shadow-lg">
               <button
                 onClick={() => setIsAnimationFlowActive(!isAnimationFlowActive)}
                 className={`px-2 py-1 rounded-[3px] transition-colors cursor-pointer flex items-center gap-1 ${
@@ -435,20 +460,32 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                 title="Toggle Live Lineage Pulse Streams"
               >
                 <Activity className="w-3 h-3" />
-                <span className="text-[10px]">{isBangla ? 'প্রবাহ অ্যানিমেশন' : 'Energy Stream'}</span>
+                <span className="text-[10px]">{isBangla ? 'প্রবাহ' : 'Energy Stream'}</span>
+              </button>
+
+              <button
+                onClick={handleFocusDispute}
+                className="px-2 py-1 rounded-[3px] bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 transition-colors cursor-pointer flex items-center gap-1 font-semibold"
+                title="Focus Camera on BS 1042 / Fraud / Soft-Lock Cluster"
+              >
+                <AlertTriangle className="w-3 h-3 text-red-400" />
+                <span className="text-[10px]">{isBangla ? 'দ্বৈত বিক্রয় ফোকাস' : 'Focus Dispute'}</span>
               </button>
 
               <div className="h-4 w-px bg-white/20" />
 
               <button
-                onClick={() => setSvgZoom((z) => Math.min(2.0, z + 0.15))}
+                onClick={() => setSvgZoom((z) => Math.min(2.5, Number((z + 0.15).toFixed(2))))}
                 className="p-1 hover:text-white hover:bg-white/10 rounded-[3px] transition-colors cursor-pointer"
-                title="Zoom In"
+                title="Zoom In (or use Mouse Wheel)"
               >
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
+              <span className="text-[9.5px] px-1 text-white/70 font-semibold min-w-[34px] text-center">
+                {Math.round(svgZoom * 100)}%
+              </span>
               <button
-                onClick={() => setSvgZoom((z) => Math.max(0.4, z - 0.15))}
+                onClick={() => setSvgZoom((z) => Math.max(0.6, Number((z - 0.15).toFixed(2))))}
                 className="p-1 hover:text-white hover:bg-white/10 rounded-[3px] transition-colors cursor-pointer"
                 title="Zoom Out"
               >
@@ -457,19 +494,35 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
               <button
                 onClick={handleResetGraphView}
                 className="p-1 hover:text-white hover:bg-white/10 rounded-[3px] transition-colors cursor-pointer"
-                title="Reset Graph Canvas"
+                title="Reset Graph Zoom & Position"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
+
+              <div className="h-4 w-px bg-white/20" />
+
+              {/* Fullscreen / Split Toggle directly on Graph Canvas */}
+              <button
+                onClick={() => setViewMode(viewMode === 'graph' ? 'split' : 'graph')}
+                className="p-1 hover:text-white hover:bg-white/10 rounded-[3px] transition-colors cursor-pointer"
+                title={viewMode === 'graph' ? 'Switch to Split Map/DAG View' : 'Maximize DAG to Fullscreen'}
+              >
+                {viewMode === 'graph' ? (
+                  <Minimize2 className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <Maximize2 className="w-3.5 h-3.5 text-white/70" />
+                )}
+              </button>
             </div>
 
-            {/* Interactive SVG DAG Network */}
+            {/* Interactive SVG DAG Network with Pan, Wheel Zoom, and Centered Origin */}
             <div
-              className="relative flex-1 w-full h-full cursor-grab active:cursor-grabbing overflow-hidden"
+              className="relative flex-1 w-full h-full cursor-grab active:cursor-grabbing overflow-hidden flex items-center justify-center select-none"
               onMouseDown={handleMouseDownCanvas}
               onMouseMove={handleMouseMoveCanvas}
               onMouseUp={handleMouseUpCanvas}
               onMouseLeave={handleMouseUpCanvas}
+              onWheel={handleWheelCanvas}
             >
               {/* Background Cartographic Coordinate Grid */}
               <div
@@ -482,37 +535,84 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
 
               <svg
                 className="w-full h-full"
-                viewBox="0 0 1400 380"
+                viewBox="0 0 1340 330"
                 style={{
                   transform: `translate(${svgPan.x}px, ${svgPan.y}px) scale(${svgZoom})`,
-                  transformOrigin: '0 0',
+                  transformOrigin: 'center center',
                   transition: isDraggingCanvas ? 'none' : 'transform 0.1s ease-out',
                 }}
               >
                 <defs>
                   {/* Neon Glow Filters */}
-                  <filter id="emerald-glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
+                  <filter id="emerald-glow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="5" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
-                  <filter id="crimson-glow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feGaussianBlur stdDeviation="6" result="blur" />
+                  <filter id="crimson-glow" x="-40%" y="-40%" width="180%" height="180%">
+                    <feGaussianBlur stdDeviation="7" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
-                  <filter id="lock-pulse" x="-30%" y="-30%" width="160%" height="160%">
+                  <filter id="cyan-glow" x="-30%" y="-30%" width="160%" height="160%">
                     <feGaussianBlur stdDeviation="5" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                   </filter>
 
+                  {/* Node Gradients for High Definition Luminescence */}
+                  <radialGradient id="grad-cs" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#1e3a5f" />
+                    <stop offset="65%" stopColor="#0b1b2d" />
+                    <stop offset="100%" stopColor="#060e18" />
+                  </radialGradient>
+                  <radialGradient id="grad-sa" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#115e59" />
+                    <stop offset="65%" stopColor="#042f2e" />
+                    <stop offset="100%" stopColor="#021c1b" />
+                  </radialGradient>
+                  <radialGradient id="grad-warishan" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#1e3a8a" />
+                    <stop offset="65%" stopColor="#172554" />
+                    <stop offset="100%" stopColor="#0b1329" />
+                  </radialGradient>
+                  <radialGradient id="grad-rs" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#065f46" />
+                    <stop offset="65%" stopColor="#064e3b" />
+                    <stop offset="100%" stopColor="#022c22" />
+                  </radialGradient>
+                  <radialGradient id="grad-deed" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#6b21a8" />
+                    <stop offset="65%" stopColor="#4c1d95" />
+                    <stop offset="100%" stopColor="#1e0c3b" />
+                  </radialGradient>
+                  <radialGradient id="grad-mutation" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#15803d" />
+                    <stop offset="65%" stopColor="#14532d" />
+                    <stop offset="100%" stopColor="#052e16" />
+                  </radialGradient>
+                  <radialGradient id="grad-bs" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#1d4ed8" />
+                    <stop offset="65%" stopColor="#1e3a8a" />
+                    <stop offset="100%" stopColor="#0f172a" />
+                  </radialGradient>
+                  <radialGradient id="grad-fraud" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#991b1b" />
+                    <stop offset="60%" stopColor="#7f1d1d" />
+                    <stop offset="100%" stopColor="#250404" />
+                  </radialGradient>
+                  <radialGradient id="grad-lock" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stopColor="#be123c" />
+                    <stop offset="60%" stopColor="#881337" />
+                    <stop offset="100%" stopColor="#29030c" />
+                  </radialGradient>
+
                   {/* Gradient Edges */}
                   <linearGradient id="legal-edge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.7" />
+                    <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.85" />
                     <stop offset="100%" stopColor="#22c55e" stopOpacity="0.95" />
                   </linearGradient>
 
                   <linearGradient id="fraud-edge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#22c55e" stopOpacity="0.8" />
-                    <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.9" />
+                    <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.9" />
                     <stop offset="100%" stopColor="#ef4444" stopOpacity="1" />
                   </linearGradient>
 
@@ -525,7 +625,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                 {/* 
                   1. VERTICAL EPOCH SWIMLANES & REFERENCE GUIDES
                 */}
-                <g className="epoch-swimlanes opacity-35 pointer-events-none">
+                <g className="epoch-swimlanes pointer-events-none">
                   {[
                     { x: 60, title: 'CS 1940', titleBn: 'সিএস ১৯৪০' },
                     { x: 210, title: 'SA 1962', titleBn: 'এসএ ১৯৬২' },
@@ -540,21 +640,31 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                     <g key={idx}>
                       <line
                         x1={epoch.x}
-                        y1={20}
+                        y1={32}
                         x2={epoch.x}
-                        y2={350}
-                        stroke="rgba(255, 255, 255, 0.12)"
-                        strokeDasharray="4 6"
-                        strokeWidth="1"
+                        y2={310}
+                        stroke="rgba(255, 255, 255, 0.08)"
+                        strokeDasharray="4 5"
+                        strokeWidth="1.2"
+                      />
+                      <rect
+                        x={epoch.x - 50}
+                        y={6}
+                        width="100"
+                        height="20"
+                        rx="4"
+                        fill="rgba(15, 23, 42, 0.85)"
+                        stroke="rgba(255, 255, 255, 0.16)"
+                        strokeWidth="0.8"
                       />
                       <text
                         x={epoch.x}
-                        y={28}
+                        y={20}
                         textAnchor="middle"
-                        fontSize="9"
+                        fontSize="9.5"
                         fontFamily="monospace"
                         fontWeight="bold"
-                        fill="rgba(255, 255, 255, 0.5)"
+                        fill="#cbd5e1"
                       >
                         {isBangla ? epoch.titleBn : epoch.title}
                       </text>
@@ -584,25 +694,25 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                     const pathD = `M ${sourceNode.x} ${sourceNode.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${targetNode.x} ${targetNode.y}`;
 
                     let strokeColor = 'url(#legal-edge-grad)';
-                    let strokeWidth = 2.4;
+                    let strokeWidth = 3.6;
                     let dashArray = undefined;
 
                     if (isLock) {
                       strokeColor = 'url(#lock-edge-grad)';
-                      strokeWidth = 3.2;
-                      dashArray = '5 5';
+                      strokeWidth = 4.2;
+                      dashArray = '6 4';
                     } else if (isDisputed) {
                       strokeColor = 'url(#fraud-edge-grad)';
-                      strokeWidth = 2.8;
-                      dashArray = '4 4';
+                      strokeWidth = 3.8;
+                      dashArray = '5 4';
                     } else if (edge.type === 'INHERITANCE_BRANCH') {
                       strokeColor = '#38bdf8';
-                      strokeWidth = 2.0;
-                      dashArray = '3 3';
+                      strokeWidth = 3.0;
+                      dashArray = '4 4';
                     }
 
                     return (
-                      <g key={edge.id} opacity={isVisibleInScrubber ? 1 : 0.18}>
+                      <g key={edge.id} opacity={isVisibleInScrubber ? 1 : 0.35}>
                         {/* Edge Path */}
                         <path
                           d={pathD}
@@ -615,33 +725,38 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                         />
 
                         {/* Edge Label on Midpoint */}
-                        <g transform={`translate(${(sourceNode.x + targetNode.x) / 2}, ${(sourceNode.y + targetNode.y) / 2 - 8})`}>
+                        <g transform={`translate(${(sourceNode.x + targetNode.x) / 2}, ${(sourceNode.y + targetNode.y) / 2 - 11})`}>
                           <rect
-                            x="-50"
-                            y="-9"
-                            width="100"
-                            height="16"
-                            rx="3"
-                            fill="#0d141e"
-                            stroke={isDisputed ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.15)'}
-                            strokeWidth="0.8"
+                            x="-64"
+                            y="-11"
+                            width="128"
+                            height="20"
+                            rx="4"
+                            fill="#070e1a"
+                            stroke={isDisputed || isLock ? 'rgba(239, 68, 68, 0.6)' : 'rgba(56, 189, 248, 0.35)'}
+                            strokeWidth="1"
+                            filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.8))"
                           />
                           <text
                             x="0"
-                            y="3"
+                            y="3.5"
                             textAnchor="middle"
-                            fontSize="7.5"
+                            fontSize="9"
                             fontFamily="monospace"
                             fontWeight="bold"
-                            fill={isDisputed ? '#ef4444' : '#ffffff'}
+                            fill={isDisputed || isLock ? '#fca5a5' : '#f1f5f9'}
                           >
-                            {isBangla ? edge.labelBn.slice(0, 18) : edge.label.slice(0, 20)}
+                            {isBangla ? edge.labelBn.slice(0, 20) : edge.label.slice(0, 22)}
                           </text>
                         </g>
 
                         {/* Traveling Energy Stream Pulse */}
                         {isAnimationFlowActive && isVisibleInScrubber && !isLock && (
-                          <circle r={isDisputed ? 3.6 : 3.0} fill={isDisputed ? '#ef4444' : '#4ade80'}>
+                          <circle
+                            r={isDisputed ? 5.0 : 4.2}
+                            fill={isDisputed ? '#ef4444' : '#4ade80'}
+                            filter={isDisputed ? 'url(#crimson-glow)' : 'url(#emerald-glow)'}
+                          >
                             <animateMotion
                               path={pathD}
                               dur={isDisputed ? '1.8s' : '2.4s'}
@@ -662,32 +777,48 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                 <g className="graph-nodes-layer">
                   {visibleNodes.map((node) => {
                     const isSelected = selectedNodeId === node.id;
+                    const isHovered = hoveredNodeId === node.id;
                     const isFlagged = node.isFlagged;
                     const isLock = node.type === 'CONCURRENCY_LOCK';
                     const isTarget = node.isTargetPlot;
                     const isActiveInScrubber = node.isActiveInTimeline;
 
                     let nodeBorderColor = '#38bdf8';
-                    let nodeFill = '#0a1320';
-                    let radius = 24;
+                    let nodeFill = 'url(#grad-cs)';
+                    let radius = 34;
 
                     if (isLock) {
-                      nodeBorderColor = '#ef4444';
-                      nodeFill = '#22080a';
-                      radius = 28;
+                      nodeBorderColor = '#f43f5e';
+                      nodeFill = 'url(#grad-lock)';
+                      radius = 40;
                     } else if (isFlagged) {
                       nodeBorderColor = '#ef4444';
-                      nodeFill = '#280c10';
-                      radius = 26;
+                      nodeFill = 'url(#grad-fraud)';
+                      radius = 38;
                     } else if (node.type === 'MUTATION_RECORD') {
                       nodeBorderColor = '#22c55e';
-                      nodeFill = '#081a10';
+                      nodeFill = 'url(#grad-mutation)';
+                      radius = 34;
                     } else if (node.type === 'SUB_KABALA_DEED') {
-                      nodeBorderColor = '#a855f7';
-                      nodeFill = '#170c24';
+                      nodeBorderColor = '#c084fc';
+                      nodeFill = 'url(#grad-deed)';
+                      radius = 34;
                     } else if (node.type === 'WARISHAN_PARTITION') {
-                      nodeBorderColor = '#0284c7';
-                      nodeFill = '#091c2c';
+                      nodeBorderColor = '#38bdf8';
+                      nodeFill = 'url(#grad-warishan)';
+                      radius = 34;
+                    } else if (node.epoch === 'SA_1962') {
+                      nodeBorderColor = '#2dd4bf';
+                      nodeFill = 'url(#grad-sa)';
+                      radius = 34;
+                    } else if (node.epoch === 'RS_1988') {
+                      nodeBorderColor = '#34d399';
+                      nodeFill = 'url(#grad-rs)';
+                      radius = 34;
+                    } else if (node.epoch === 'BS_2021') {
+                      nodeBorderColor = '#60a5fa';
+                      nodeFill = 'url(#grad-bs)';
+                      radius = 36;
                     }
 
                     return (
@@ -698,22 +829,63 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                           setSelectedNodeId(node.id);
                           setIsFolioDrawerOpen(true);
                         }}
-                        className="cursor-pointer transition-transform duration-200 hover:scale-108"
-                        opacity={isActiveInScrubber ? 1 : 0.22}
+                        onMouseEnter={() => setHoveredNodeId(node.id)}
+                        onMouseLeave={() => setHoveredNodeId(null)}
+                        className="cursor-pointer select-none"
+                        opacity={isActiveInScrubber ? 1 : 0.42}
                       >
+                        {/* Invisible Extended Hitbox to Guarantee 100% Stable Mouse Tracking Without Vibration */}
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r={radius + 18}
+                          fill="transparent"
+                          className="cursor-pointer"
+                        />
+
+                        {/* Selection Halo Ring */}
+                        {isSelected && (
+                          <circle
+                            cx="0"
+                            cy="0"
+                            r={radius + 8}
+                            fill="none"
+                            stroke="#ffffff"
+                            strokeWidth="2.2"
+                            opacity="0.9"
+                            filter="url(#cyan-glow)"
+                            className="pointer-events-none"
+                          />
+                        )}
+
+                        {/* Stable Hover Accent Ring (Smooth, No Jitter or Vibration) */}
+                        {isHovered && !isSelected && (
+                          <circle
+                            cx="0"
+                            cy="0"
+                            r={radius + 6}
+                            fill="none"
+                            stroke={isDay ? '#16a34a' : '#38bdf8'}
+                            strokeWidth="1.8"
+                            strokeDasharray="4 3"
+                            opacity="0.85"
+                            className="pointer-events-none"
+                          />
+                        )}
+
                         {/* Target Halo Animation */}
                         {(isTarget || isFlagged) && (
                           <circle
                             cx="0"
                             cy="0"
-                            r={radius + 10}
+                            r={radius + 12}
                             fill="none"
                             stroke={isFlagged ? '#ef4444' : '#22c55e'}
-                            strokeWidth="1.6"
-                            opacity="0.6"
+                            strokeWidth="2.2"
+                            opacity="0.75"
                           >
-                            <animate attributeName="r" values={`${radius + 6};${radius + 20};${radius + 6}`} dur="2.4s" repeatCount="indefinite" />
-                            <animate attributeName="opacity" values="0.8;0;0.8" dur="2.4s" repeatCount="indefinite" />
+                            <animate attributeName="r" values={`${radius + 8};${radius + 24};${radius + 8}`} dur="2.4s" repeatCount="indefinite" />
+                            <animate attributeName="opacity" values="0.9;0.1;0.9" dur="2.4s" repeatCount="indefinite" />
                           </circle>
                         )}
 
@@ -721,25 +893,27 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                         <circle
                           cx="0"
                           cy="0"
-                          r={radius}
+                          r={isSelected ? radius + 2.5 : isHovered ? radius + 1.5 : radius}
                           fill={nodeFill}
-                          stroke={isSelected ? '#ffffff' : nodeBorderColor}
-                          strokeWidth={isSelected ? 3.0 : 2.0}
-                          filter={isSelected ? 'url(#emerald-glow)' : isFlagged ? 'url(#crimson-glow)' : undefined}
+                          stroke={isSelected ? '#ffffff' : isHovered ? (isDay ? '#16a34a' : '#38bdf8') : nodeBorderColor}
+                          strokeWidth={isSelected ? 3.6 : isHovered ? 3.2 : 2.4}
+                          filter={isSelected ? 'url(#emerald-glow)' : isHovered ? 'url(#cyan-glow)' : isFlagged ? 'url(#crimson-glow)' : undefined}
+                          className="transition-all duration-150"
                         />
 
-                        {/* Central Type Indicator Icon/Badge */}
-                        <circle cx="0" cy="-6" r="4.5" fill={nodeBorderColor} />
+                        {/* Central Type Indicator Dot */}
+                        <circle cx="0" cy="-10" r="5" fill={nodeBorderColor} />
 
                         {/* Node Primary Tag */}
                         <text
                           x="0"
-                          y="6"
+                          y="4"
                           textAnchor="middle"
-                          fontSize="8.5"
+                          fontSize="11.5"
                           fontFamily="monospace"
                           fontWeight="bold"
                           fill="#ffffff"
+                          filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.9))"
                           className="select-none pointer-events-none"
                         >
                           {isBangla ? node.labelBn.split(' ')[0] : node.label.split(' ')[0]}
@@ -748,46 +922,49 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                         {/* Year & Area Decimals */}
                         <text
                           x="0"
-                          y="15"
+                          y="17"
                           textAnchor="middle"
-                          fontSize="7"
+                          fontSize="9.5"
                           fontFamily="monospace"
                           fill={nodeBorderColor}
-                          className="select-none pointer-events-none font-semibold"
+                          className="select-none pointer-events-none font-bold"
+                          filter="drop-shadow(0px 1px 2px rgba(0,0,0,0.9))"
                         >
                           {node.year} · {node.areaDecimals}d
                         </text>
 
                         {/* Bottom Banner Tag */}
-                        <g transform={`translate(0, ${radius + 14})`}>
+                        <g transform={`translate(0, ${radius + 18})`}>
                           <rect
-                            x="-48"
-                            y="-7"
-                            width="96"
-                            height="14"
-                            rx="3"
-                            fill="#0d1420"
-                            stroke={isSelected ? '#ffffff' : 'rgba(255,255,255,0.2)'}
-                            strokeWidth="0.8"
+                            x="-64"
+                            y="-10"
+                            width="128"
+                            height="20"
+                            rx="4"
+                            fill="#0b1320"
+                            stroke={isSelected ? '#ffffff' : isHovered ? (isDay ? '#16a34a' : '#38bdf8') : isFlagged ? 'rgba(239, 68, 68, 0.65)' : 'rgba(255,255,255,0.25)'}
+                            strokeWidth={isSelected ? 1.5 : isHovered ? 1.2 : 0.9}
+                            filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.8))"
+                            className="transition-all duration-150"
                           />
                           <text
                             x="0"
-                            y="3"
+                            y="4"
                             textAnchor="middle"
-                            fontSize="7.5"
+                            fontSize="9"
                             fontFamily="monospace"
-                            fill={isFlagged ? '#ef4444' : '#94a3b8'}
+                            fill={isFlagged ? '#fca5a5' : isSelected ? '#ffffff' : isHovered ? '#7dd3fc' : '#cbd5e1'}
                             fontWeight="bold"
                           >
-                            {isBangla ? node.subLabelBn.slice(0, 16) : node.subLabel.slice(0, 18)}
+                            {isBangla ? node.subLabelBn.slice(0, 18) : node.subLabel.slice(0, 20)}
                           </text>
                         </g>
 
                         {/* Special Hazard Icon on Fraud Nodes */}
                         {isFlagged && (
-                          <g transform="translate(18, -18)">
-                            <circle cx="0" cy="0" r="7" fill="#ef4444" />
-                            <text x="0" y="3" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#ffffff">
+                          <g transform="translate(26, -26)">
+                            <circle cx="0" cy="0" r="10" fill="#ef4444" stroke="#ffffff" strokeWidth="1.5" filter="url(#crimson-glow)" />
+                            <text x="0" y="4" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#ffffff">
                               !
                             </text>
                           </g>
@@ -795,9 +972,9 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
 
                         {/* Special Padlock Icon on Concurrency Lock */}
                         {isLock && (
-                          <g transform="translate(20, -20)">
-                            <circle cx="0" cy="0" r="8" fill="#dc2626" />
-                            <text x="0" y="3" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#ffffff">
+                          <g transform="translate(28, -28)">
+                            <circle cx="0" cy="0" r="11" fill="#dc2626" stroke="#fbbf24" strokeWidth="1.5" />
+                            <text x="0" y="4" textAnchor="middle" fontSize="11">
                               🔒
                             </text>
                           </g>

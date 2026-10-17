@@ -42,9 +42,9 @@ import {
   DhakaCadastralPlotFeature,
 } from '../data/dhakaGeoData';
 
-// Master vector poster imagery
-import dhakaMapNight from '../assets/images/dhaka_vector_map_night.jpg';
-import dhakaMapDay from '../assets/images/dhaka_vector_map_day.jpg';
+// Master vector poster imagery (Dreamstime 237064272 - Clean & Watermark-Free)
+import dhakaMapDark from '../assets/images/dhaka_vector_map_dark_2x.png';
+import dhakaMapClean from '../assets/images/dhaka_vector_map_clean_2x.webp';
 
 export interface DhakaDistrictLabel {
   id: string;
@@ -471,12 +471,12 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
     };
 
     const imgN = new Image();
-    imgN.src = dhakaMapNight;
+    imgN.src = dhakaMapDark;
     imgN.onload = checkLoaded;
     imgNightRef.current = imgN;
 
     const imgD = new Image();
-    imgD.src = dhakaMapDay;
+    imgD.src = dhakaMapClean;
     imgD.onload = checkLoaded;
     imgDayRef.current = imgD;
   }, []);
@@ -581,25 +581,12 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
         ctx.filter = 'contrast(1.25) hue-rotate(185deg) brightness(0.9)';
       }
 
-      // Draw cropped image (excluding bottom 75px watermark)
+      // Draw clean full-bleed image (no watermark crop or fake patch needed)
       const sW = activeImg.naturalWidth;
-      const sH = Math.min(activeImg.naturalHeight, activeImg.naturalHeight - 75);
+      const sH = activeImg.naturalHeight;
       ctx.drawImage(activeImg, 0, 0, sW, sH, 0, 0, BASE_WIDTH, BASE_HEIGHT);
 
       ctx.filter = 'none';
-
-      // Cleanly mask faint center/bottom watermark artifacts
-      if (posterStyle === 'poster-dark') {
-        ctx.fillStyle = palette.landPatchColor;
-        // Center subtle patch
-        ctx.beginPath();
-        ctx.ellipse(484, 622, 42, 14, 0, 0, Math.PI * 2);
-        ctx.fill();
-        // Lower subtle patch
-        ctx.beginPath();
-        ctx.ellipse(484, 915, 40, 14, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
     }
 
     ctx.restore();

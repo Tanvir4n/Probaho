@@ -533,10 +533,19 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>{t.suite.tool1.f1}</div>
-                  <div>{t.suite.tool1.f2}</div>
-                  <div>{t.suite.tool1.f3}</div>
+                <div className="p-3.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>{t.suite.tool1.f1}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>{t.suite.tool1.f2}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>{t.suite.tool1.f3}</span>
+                  </div>
                 </div>
               </div>
               <button
@@ -546,7 +555,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setActiveToolId('archimap');
                   setIsSiteAnalysisStudioOpen(true);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2"
               >
                 <span>{t.suite.tool1.cta}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -654,15 +663,24 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 {/* Micro-Animated Stress-Test Oscilloscope Widget */}
                 <AdversarialSimulatorWidget />
 
-                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>{t.suite.tool4.f1}</div>
-                  <div>{t.suite.tool4.f2}</div>
-                  <div>{t.suite.tool4.f3}</div>
+                <div className="p-3.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>{t.suite.tool4.f1}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>{t.suite.tool4.f2}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span>{t.suite.tool4.f3}</span>
+                  </div>
                 </div>
               </div>
               <button
                 onClick={() => setIsNoticeOpen(true)}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 rounded-[3px] font-mono transition-all cursor-pointer shadow-[0_4px_16px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2"
               >
                 <span>{t.suite.tool4.cta}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

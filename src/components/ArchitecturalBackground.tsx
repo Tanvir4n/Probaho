@@ -16,6 +16,11 @@ interface ArchitecturalBackgroundProps {
   themeMode?: 'day' | 'night';
   zoomLevel?: number; // 0.60 to 1.40
   onZoomChange?: (zoom: number) => void;
+  layersVisibility?: {
+    cartography: boolean;
+    cadGrid: boolean;
+    topographyContours: boolean;
+  };
 }
 
 export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = ({
@@ -32,6 +37,7 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
   themeMode = 'night',
   zoomLevel: controlledZoomLevel,
   onZoomChange,
+  layersVisibility: controlledLayersVisibility,
 }) => {
   const isDay = themeMode === 'day';
   const [internalMapIndex, setInternalMapIndex] = useState(0);
@@ -40,11 +46,13 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
   const [internalZoomLevel, setInternalZoomLevel] = useState(0.40); // 40% Compact Zoomed-out Start ("size ektu komay dew")
 
   // Stack visibility state
-  const [layersVisibility, setLayersVisibility] = useState({
+  const [internalLayersVisibility] = useState({
     cartography: true,
     cadGrid: true,
     topographyContours: true,
   });
+
+  const layersVisibility = controlledLayersVisibility || internalLayersVisibility;
 
   const activeIndex = controlledMapIndex !== undefined ? controlledMapIndex : internalMapIndex;
   const paused = isPaused !== undefined ? isPaused : internalPaused;
@@ -339,17 +347,6 @@ export const ArchitecturalBackground: React.FC<ArchitecturalBackgroundProps> = (
       )}
 
 
-
-      {/* 
-        ========================================================================
-        LAYER 4: ARCHITECTURAL LASER SCAN BEAM
-        Sweeps down continuously with a green focal beam and laser shadow
-        ========================================================================
-      */}
-      <div className="absolute inset-x-0 h-44 z-4 pointer-events-none animate-mass-scan">
-        <div className={`w-full h-full bg-gradient-to-b from-transparent ${isDay ? 'via-[#16a34a]/12' : 'via-[#22c55e]/15'} to-transparent`} />
-        <div className={`absolute bottom-1/2 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent ${isDay ? 'via-[#16a34a]' : 'via-[#22c55e]'} to-transparent shadow-[0_0_18px_rgba(34,197,94,0.7)]`} />
-      </div>
 
       {/* 
         ========================================================================
