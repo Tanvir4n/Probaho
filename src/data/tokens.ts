@@ -3,6 +3,11 @@
  * Standardized for Probaho — Intelligent Land Fraud Detection
  */
 
+import mapManhattan from '../assets/images/map_manhattan_carto_1791915045536.jpg';
+import mapTokyo from '../assets/images/map_tokyo_carto_1791915087818.jpg';
+import mapLondon from '../assets/images/map_london_carto_1791915087785.jpg';
+import mapCologne from '../assets/images/map_cologne_carto_1791915088536.jpg';
+
 export interface TokenGroup {
   name: string;
   key: string;
@@ -154,7 +159,7 @@ export const ARCHITECTURAL_PROJECTS: ArchitecturalProject[] = [
     metric: '100%',
     metricLabel: 'Ownership Chain Verified',
     metricLabelBn: 'মালিকানা ধারা সম্পূর্ণ যাচাইকৃত',
-    image: '/src/assets/images/map_manhattan_carto_1791915045536.jpg',
+    image: mapManhattan,
     summary: "All deeds, mutations, and khatian records are consistent. The seller's recorded share fully covers the transfer and no conflicting transactions were detected across the parcel timeline.",
     summaryBn: 'সকল দলিল, নামজারি ও খতিয়ান রেকর্ড সম্পূর্ণ সামঞ্জস্যপূর্ণ। বিক্রেতার সংরক্ষিত হিস্যা হস্তান্তরের সাথে সম্পূর্ণ মেলে এবং প্লট টাইমলাইনে কোনো বিতর্কিত লেনদেন পাওয়া যায়নি।',
     dimensions: 'Dag 1452 · Mouza Kantanagar',
@@ -174,7 +179,7 @@ export const ARCHITECTURAL_PROJECTS: ArchitecturalProject[] = [
     metric: '94.6%',
     metricLabel: 'Fraud Confidence Score',
     metricLabelBn: 'জালিয়াতি নিশ্চিতকরণ সূচক',
-    image: '/src/assets/images/map_tokyo_carto_1791915087818.jpg',
+    image: mapTokyo,
     summary: "Two conflicting sale deeds dated 12 days apart transfer the same parcel (Dag 3078) to different buyers. The seller's recorded ownership share does not support the second transfer.",
     summaryBn: '১২ দিনের ব্যবধানে সম্পাদিত দুটি পরস্পরবিরোধী বিক্রয় দলিলে একই প্লট (দাগ ৩০৭৮) ভিন্ন ভিন্ন ক্রেতার কাছে হস্তান্তর করা হয়েছে। বিক্রেতার বৈধ হিস্যায় দ্বিতীয় বিক্রয় আইনত অসম্ভব।',
     dimensions: 'Dag 3078 · Mouza Mirpur',
@@ -194,7 +199,7 @@ export const ARCHITECTURAL_PROJECTS: ArchitecturalProject[] = [
     metric: '3 Alerts',
     metricLabel: 'Cross-Signal Fraud Triggers',
     metricLabelBn: 'মাল্টি-সিগন্যাল ফ্রড অ্যালার্ট',
-    image: '/src/assets/images/map_london_carto_1791915087785.jpg',
+    image: mapLondon,
     summary: 'An ownership-share mismatch combined with an inconsistent mutation record and a suspicious document version. The claimed transfer exceeds available shares by 22% and the mutation date predates the original deed.',
     summaryBn: 'মালিকানা হিস্যার গরমিল, নামজারি রেকর্ডের বৈপরীত্য ও সন্দেহজনক নথি সংস্করণ। দাবিকৃত হস্তান্তর বিক্রেতার হিস্যার চেয়ে ২২% বেশি এবং নামজারির তারিখ মূল দলিলের পূর্ববর্তী।',
     dimensions: 'Dag 7291 · Mouza Patenga',
@@ -225,7 +230,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     cityName: 'Dhaka',
     country: 'Bangladesh',
     coordinates: '23.8103° N, 90.4125° E',
-    image: '/src/assets/images/map_manhattan_carto_1791915045536.jpg',
+    image: mapManhattan,
     parcelCount: '42,800 Parcels',
     layers: 'D3 Vector Cadastre · 11 Thanas · River Corridors · Dag Plots',
     accent: '#22c55e',
@@ -235,7 +240,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     cityName: 'Chittagong',
     country: 'Bangladesh',
     coordinates: '22.3569° N, 91.7832° E',
-    image: '/src/assets/images/map_tokyo_carto_1791915087818.jpg',
+    image: mapTokyo,
     parcelCount: '28,500 Parcels',
     layers: 'Dag Plot Registry · RS/SA Survey Overlay · Transfer Timeline',
     accent: '#10b981',
@@ -245,7 +250,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     cityName: 'Rajshahi',
     country: 'Bangladesh',
     coordinates: '24.3745° N, 88.6042° E',
-    image: '/src/assets/images/map_london_carto_1791915087785.jpg',
+    image: mapLondon,
     parcelCount: '19,200 Parcels',
     layers: 'BS/RS Khatian Index · Mutation Records · Area Registry',
     accent: '#16a34a',
@@ -255,7 +260,7 @@ export const URBAN_MAP_DATASETS: UrbanMapDataset[] = [
     cityName: 'Sylhet',
     country: 'Bangladesh',
     coordinates: '24.8949° N, 91.8687° E',
-    image: '/src/assets/images/map_cologne_carto_1791915088536.jpg',
+    image: mapCologne,
     parcelCount: '15,600 Parcels',
     layers: 'Porcha Registry · Deed Ledger · Boundary Vectors',
     accent: '#15803d',

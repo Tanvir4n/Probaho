@@ -8,6 +8,7 @@ import {
   PricingPlan,
 } from '../data/tokens';
 import { ArchitecturalBackground } from './ArchitecturalBackground';
+import mapTokyo from '../assets/images/map_tokyo_carto_1791915087818.jpg';
 import { ArchitecturalMapController } from './ArchitecturalMapController';
 import { MassPricingSection } from './MassPricingSection';
 import { MassAuthModal } from './MassAuthModal';
@@ -1113,7 +1114,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               {/* Notice Image / Graphic */}
               <div className="relative aspect-[16/9] rounded-[2px] overflow-hidden border border-[var(--color-border-subtle)] bg-black">
                 <img
-                  src="/src/assets/images/map_tokyo_carto_1791915087818.jpg"
+                  src={mapTokyo}
                   alt="Adversarial Fraud Simulation Grid"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
