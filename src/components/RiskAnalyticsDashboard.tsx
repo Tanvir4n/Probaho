@@ -42,6 +42,8 @@ import {
   TrendDataPoint,
   toBnDigit,
 } from '../data/riskAnalyticsData';
+import { BangladeshNationalRiskRadarMap } from './BangladeshNationalRiskRadarMap';
+import { NATIONAL_HUBS, NationalHub } from '../data/bangladeshNationalGeoData';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import {
@@ -66,6 +68,10 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   SlidersHorizontal,
+  Radio,
+  BarChart3,
+  Layers,
+  Globe,
 } from 'lucide-react';
 
 interface RiskAnalyticsDashboardProps {
@@ -83,6 +89,8 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
   const { isDay } = useTheme();
 
   // State management
+  const [analyticsViewMode, setAnalyticsViewMode] = useState<'radar' | 'charts' | 'split'>('radar');
+  const [selectedNationalHub, setSelectedNationalHub] = useState<NationalHub | null>(null);
   const [selectedZoneId, setSelectedZoneId] = useState<string>(defaultZoneId);
   const [timeframe, setTimeframe] = useState<DateRangePreset>('30d');
   const [customStartDate, setCustomStartDate] = useState<string>('2026-09-17');
@@ -103,6 +111,15 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
       DHAKA_RISK_ZONES[0]
     );
   }, [selectedZoneId]);
+
+  // Active National Hub for 360° Regional Radar Map
+  const activeNationalHub = useMemo(() => {
+    return (
+      selectedNationalHub ||
+      NATIONAL_HUBS.find((h) => h.id === 'patuakhali') ||
+      NATIONAL_HUBS[0]
+    );
+  }, [selectedNationalHub]);
 
   // Dynamic Trend Data Generation (Reacts to Date Range & Selected Zone)
   const dynamicTrendResult = useMemo(() => {
@@ -292,8 +309,48 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
             </p>
           </div>
 
-          {/* Action Toolbar with Date-Range Selector */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 shrink-0">
+          {/* Action Toolbar with View Mode & Date-Range Selector */}
+          <div className="flex flex-col xl:flex-row xl:items-center gap-3 shrink-0">
+            {/* View Mode Switcher: Radar vs Charts vs Split */}
+            <div className="flex items-center p-1 bg-[var(--color-surface-muted)] rounded border border-[var(--color-border-subtle)] text-xs font-mono">
+              <button
+                onClick={() => setAnalyticsViewMode('radar')}
+                className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  analyticsViewMode === 'radar'
+                    ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                }`}
+                title="360° Bangladesh Regional Radar Map (D3.js)"
+              >
+                <Radio className="w-3.5 h-3.5" />
+                <span>{isBangla ? '৩৬০° রাডার ম্যাপ' : '360° Radar Map'}</span>
+              </button>
+              <button
+                onClick={() => setAnalyticsViewMode('charts')}
+                className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  analyticsViewMode === 'charts'
+                    ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                }`}
+                title="Dhaka Metro Zone Rankings & Vectors (Recharts)"
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                <span>{isBangla ? 'মেট্রো চার্ট' : 'Metro Charts'}</span>
+              </button>
+              <button
+                onClick={() => setAnalyticsViewMode('split')}
+                className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  analyticsViewMode === 'split'
+                    ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                }`}
+                title="Split View: National Radar + Metro Analytics"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>{isBangla ? 'স্প্লিট ভিউ' : 'Split View'}</span>
+              </button>
+            </div>
+
             {/* Date-Range Selector Controls */}
             <div className="flex items-center p-1 bg-[var(--color-surface-muted)] rounded border border-[var(--color-border-subtle)] text-xs font-mono">
               <button
@@ -542,24 +599,238 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
         </div>
 
         {/* ====================================================================
+            2.5 BANGLADESH 360° NATIONAL RISK RADAR SECTION (D3.js GIS Engine)
+            Rendered when analyticsViewMode is 'radar' or 'split'
+           ==================================================================== */}
+        {(analyticsViewMode === 'radar' || analyticsViewMode === 'split') && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-border-subtle)] pb-4">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 text-xs font-mono tracking-wider text-[var(--color-surface-raised)] uppercase">
+                  <Radio className="w-3.5 h-3.5 text-red-500 animate-pulse" />
+                  <span>{isBangla ? 'জাতীয় ভূ-স্থানিক হুমকি পর্যবেক্ষণ' : 'National Geospatial Threat Radar'}</span>
+                  <span className="text-[var(--color-text-tertiary)]">·</span>
+                  <span className="text-[var(--color-text-secondary)]">WGS84 D3.js GeoProjection</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
+                  {isBangla
+                    ? 'বাংলাদেশ ৩৬০° আঞ্চলিক ঝুঁকি ও উপকূলীয় জালিয়াতি পর্যবেক্ষণ রাডার'
+                    : 'Bangladesh 360° Regional Threat Radar & Coastal Alluvion Telemetry'}
+                </h3>
+                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">
+                  {isBangla
+                    ? 'পটুয়াখালী-বরিশাল উপকূলীয় বেল্ট, সোয়াচ অব নো গ্রাউন্ড ও ৮টি প্রশাসনিক বিভাগের রিয়েল-টাইম ক্যাডাস্ট্রাল পর্যবেক্ষণ ও বেনামি সিন্ডিকেট সনাক্তকরণ।'
+                    : 'Continuous 10 RPM 360° spatial sweep centered on focal target hubs with bathymetric shelf contours, oceanic isobaths, and cross-division deed dispute telemetry.'}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-mono shrink-0">
+                <span className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/30 text-red-400 font-semibold flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
+                  <span>{isBangla ? 'লাইভ রাডার সক্রিয়' : 'Live Sweep Active'}</span>
+                </span>
+                <span className="px-2.5 py-1 rounded bg-sky-500/10 border border-sky-500/30 text-sky-400 font-semibold">
+                  10 RPM · 155 km
+                </span>
+              </div>
+            </div>
+
+            {/* D3 Map Canvas Component */}
+            <BangladeshNationalRiskRadarMap
+              height={analyticsViewMode === 'split' ? '600px' : '760px'}
+              initialLockedHubId={activeNationalHub.id}
+              onSelectHub={(hub) => setSelectedNationalHub(hub)}
+            />
+
+            {/* Focal Target Hub Telemetry Dossier Panel */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/50 backdrop-blur-sm">
+              {/* Left Column: Focal Target Status (5 Cols) */}
+              <div className="lg:col-span-5 space-y-4 border-b lg:border-b-0 lg:border-r border-[var(--color-border-subtle)] pb-5 lg:pb-0 lg:pr-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+                    </span>
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-red-500">
+                      {isBangla ? 'সক্রিয় টার্গেট লক' : 'Target Lock Dossier'}
+                    </span>
+                  </div>
+
+                  <span
+                    className={`px-2.5 py-0.5 text-[10px] font-mono font-bold rounded ${
+                      activeNationalHub.riskScore >= 80
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/40'
+                        : activeNationalHub.riskScore >= 65
+                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
+                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                    }`}
+                  >
+                    {activeNationalHub.riskLevel} · {activeNationalHub.riskScore}/100
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className="text-2xl font-bold font-mono text-[var(--color-text-primary)] flex items-baseline gap-2">
+                    <span>{isBangla ? activeNationalHub.nameBn : activeNationalHub.name}</span>
+                    <span className="text-xs font-normal text-[var(--color-text-secondary)] font-mono">
+                      ({activeNationalHub.divisionId.toUpperCase()})
+                    </span>
+                  </h4>
+                  <p className="text-xs text-[var(--color-text-secondary)] font-mono mt-1">
+                    WGS84: {activeNationalHub.coordinates[1].toFixed(4)}° N, {activeNationalHub.coordinates[0].toFixed(4)}° E
+                  </p>
+                </div>
+
+                {/* Primary Threat Vector Badge */}
+                <div className="p-3 rounded bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] space-y-1">
+                  <div className="text-[10px] font-mono text-[var(--color-text-secondary)] uppercase">
+                    {isBangla ? 'প্রধান ঝুঁকি ভেক্টর / জালিয়াতি ধরন' : 'Primary Threat Vector / Syndicate Modus'}
+                  </div>
+                  <div className="text-sm font-bold font-mono text-amber-500">
+                    {activeNationalHub.threatVector}
+                  </div>
+                  <div className="text-[11px] text-[var(--color-text-secondary)]">
+                    {isBangla ? activeNationalHub.threatVectorBn : 'Monitored via CS/BS satellite overlay and deed timeline.'}
+                  </div>
+                </div>
+
+                {/* Quick Target Switcher Buttons */}
+                <div className="space-y-1.5">
+                  <div className="text-[10px] font-mono text-[var(--color-text-secondary)] uppercase">
+                    {isBangla ? 'দ্রুত অঞ্চল নির্বাচন করুন:' : 'Switch Focal Hub:'}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
+                    {NATIONAL_HUBS.slice(0, 8).map((hub) => (
+                      <button
+                        key={hub.id}
+                        onClick={() => setSelectedNationalHub(hub)}
+                        className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                          activeNationalHub.id === hub.id
+                            ? 'bg-[var(--color-surface-raised)] text-white font-semibold'
+                            : 'bg-[var(--color-surface-muted)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] border border-[var(--color-border-subtle)]'
+                        }`}
+                      >
+                        {isBangla ? hub.nameBn : hub.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Live Telemetry Metrics & Incident Stream (7 Cols) */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="p-3 rounded bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] space-y-1 font-mono">
+                    <div className="text-[10px] text-[var(--color-text-secondary)] uppercase">
+                      {isBangla ? 'বিবাদযুক্ত দাগ সংখ্যা' : 'Active Disputed Dags'}
+                    </div>
+                    <div className="text-xl font-bold tabular-nums text-red-500">
+                      {activeNationalHub.activeDisputes}
+                    </div>
+                    <div className="text-[9.5px] text-[var(--color-text-tertiary)]">
+                      {isBangla ? 'ক্যাডাস্ট্রাল সফট-লক কার্যকর' : 'Cadastral locks active'}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] space-y-1 font-mono">
+                    <div className="text-[10px] text-[var(--color-text-secondary)] uppercase">
+                      {isBangla ? 'সুরক্ষিত মূলধন' : 'Prevented Fraud Exposure'}
+                    </div>
+                    <div className="text-xl font-bold tabular-nums text-emerald-500">
+                      ৳ {activeNationalHub.preventedCr} <span className="text-xs font-normal font-sans">Cr</span>
+                    </div>
+                    <div className="text-[9.5px] text-[var(--color-text-tertiary)]">
+                      {isBangla ? 'দ্বৈত দলিল স্থগিত' : 'Double deeds halted'}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] space-y-1 font-mono col-span-2 sm:col-span-1">
+                    <div className="text-[10px] text-[var(--color-text-secondary)] uppercase">
+                      {isBangla ? 'সাব-রেজিস্ট্রি অফিস' : 'Linked Sub-Registries'}
+                    </div>
+                    <div className="text-xl font-bold tabular-nums text-[var(--color-text-primary)]">
+                      {activeNationalHub.subRegistryCount}
+                    </div>
+                    <div className="text-[9.5px] text-[var(--color-text-tertiary)]">
+                      {isBangla ? 'ডিজিটাল খতিয়ান সিঙ্ক' : 'Direct e-Khaitan API'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Incident Feed for Active Hub */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="font-semibold text-[var(--color-text-primary)] flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                      <span>{isBangla ? 'সম্প্রতি সনাক্তকৃত ভূ-স্থানিক অসংগতি' : 'Recent Cadastral Anomaly Telemetry'}</span>
+                    </span>
+                    <span className="text-[10px] text-[var(--color-text-secondary)]">Live Feed</span>
+                  </div>
+
+                  <div className="space-y-1.5 font-mono text-[11px]">
+                    <div className="p-2.5 rounded bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                        <span className="text-[var(--color-text-primary)] font-semibold truncate">
+                          {isBangla ? 'মৌজা দাগ নং ৪৭২: চর পয়স্তি খতিয়ান ওভারল্যাপ' : 'Mouza Dag #472: Alluvion Char Boundary Variance'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-bold shrink-0">
+                        {isBangla ? 'লক কার্যকর' : 'LOCKED'}
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 rounded bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                        <span className="text-[var(--color-text-primary)] font-semibold truncate">
+                          {isBangla ? 'মৌজা দাগ নং ১০৮: সমসাময়িক দ্বৈত রেজিস্ট্রি প্রচেষ্টা' : 'Mouza Dag #108: Multi-Registry Concurrent Sale Attempt'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold shrink-0">
+                        {isBangla ? 'নিরীক্ষা চলমান' : 'AUDIT'}
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 rounded bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" />
+                        <span className="text-[var(--color-text-primary)] font-semibold truncate">
+                          {isBangla ? 'মৌজা দাগ নং ৯২১: ওয়ারিশ গোপনপূর্বক আমমোক্তারনামা' : 'Mouza Dag #921: Power of Attorney Heir Omission'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 font-bold shrink-0">
+                        {isBangla ? 'স্থগিত' : 'HALTED'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================================
             3. MAIN VISUALIZATION GRID:
                Left: Dhaka High-Risk Zones Ranking (BarChart)
                Right: Multi-Quarter Fraud Trends (AreaChart)
            ==================================================================== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Chart A: Dhaka High-Risk Zones Bar Chart (7 Cols) */}
-          <div className="lg:col-span-7 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/40 backdrop-blur-sm space-y-4 flex flex-col justify-between">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
-                  {isBangla ? 'ঢাকা মেট্রো থানাভিত্তিক জালিয়াতি ঝুঁকি স্কোর' : 'Dhaka Zones Fraud Risk Ranking'}
-                </h3>
-                <p className="text-xs text-[var(--color-text-secondary)]">
-                  {isBangla
-                    ? 'ক্লিক করে যেকোনো অঞ্চলের বিস্তারিত ভেক্টর ও দাগ প্রোফাইল দেখুন'
-                    : 'Select a zone bar to inspect detailed vector vulnerabilities & hot dags'}
-                </p>
-              </div>
+        {(analyticsViewMode === 'charts' || analyticsViewMode === 'split') && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Chart A: Dhaka High-Risk Zones Bar Chart (7 Cols) */}
+            <div className="lg:col-span-7 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/40 backdrop-blur-sm space-y-4 flex flex-col justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
+                    {isBangla ? 'ঢাকা মেট্রো থানাভিত্তিক জালিয়াতি ঝুঁকি স্কোর' : 'Dhaka Zones Fraud Risk Ranking'}
+                  </h3>
+                  <p className="text-xs text-[var(--color-text-secondary)]">
+                    {isBangla
+                      ? 'ক্লিক করে যেকোনো অঞ্চলের বিস্তারিত ভেক্টর ও দাগ প্রোফাইল দেখুন'
+                      : 'Select a zone bar to inspect detailed vector vulnerabilities & hot dags'}
+                  </p>
+                </div>
 
               {/* Legend indicator */}
               <div className="flex items-center gap-3 text-[10px] font-mono">
@@ -966,6 +1237,7 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
             </div>
           </div>
         </div>
+      )}
 
         {/* ====================================================================
             4. SECOND VISUALIZATION ROW:
