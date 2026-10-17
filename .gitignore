@@ -9,4 +9,8 @@ coverage/
 .aistudio/
 .kilo/
 .agents/
+.agent/
+.codex/
+.impeccable/
 hero (*).svg
+
