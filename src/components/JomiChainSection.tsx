@@ -49,6 +49,7 @@ import {
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
+import { ShapXaiExplainer } from './ShapXaiExplainer';
 
 // ============================================================================
 // DATA MODELS & SYNTHETIC DATA (Complies with Rulebook Synthetic Data Rule)
@@ -464,7 +465,7 @@ export const JomiChainSection: React.FC = () => {
             { id: 'ledger', label: isBangla ? '২. হ্যাশ-চেইন্ড লেজার' : '2. Hash-Chained Ledger', badge: 'Ed25519' },
             { id: 'lock', label: isBangla ? '৩. দ্বৈত-বিক্রয় সফট লক' : '3. Double-Sale Lock', badge: 'Real-Time' },
             { id: 'fuzzy', label: isBangla ? '৪. বাংলা ফাজি ম্যাচ' : '4. Bangla Fuzzy Match', badge: 'OCR/NLP' },
-            { id: 'report', label: isBangla ? '৫. ট্রাস্ট রিপোর্ট ও কিউআর' : '5. Trust Report & QR', badge: 'Citizen' },
+            { id: 'report', label: isBangla ? '৫. শ্যাপ এক্সএআই ও ট্রাস্ট রিপোর্ট' : '5. SHAP XAI & Trust Report', badge: 'SHAP XAI' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -1276,60 +1277,10 @@ export const JomiChainSection: React.FC = () => {
         {/* ==================================================================== */}
         {activeTab === 'report' && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="glass-card p-6 rounded-[8px] border border-[var(--color-border-subtle)] space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <div className="text-[10px] font-mono text-[var(--color-surface-raised)] uppercase tracking-wider font-bold">
-                    Novelty #5: Explainable AI & Citizen Portal
-                  </div>
-                  <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
-                    Explainable Risk Score (0-100) & Citizen Trust Report
-                  </h3>
-                  <p className="text-xs text-[var(--color-text-secondary)]">
-                    Each plot gets a deterministic 0-100 risk score accompanied by plain-language auditable reasons. 
-                    Every deed carries a QR code that any citizen can scan to verify authenticity without black-box confusion.
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => setIsTrustReportModalOpen(true)}
-                  className="px-4 py-2 rounded-[3px] text-xs font-mono font-bold bg-[var(--color-surface-raised)] text-white flex items-center gap-2 cursor-pointer shadow-md"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Open Full Citizen Trust Report Modal</span>
-                </button>
-              </div>
-
-              {/* Risk Reasons Breakdown */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 font-mono text-xs">
-                {activePlot.trustReasons.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-4 rounded-[4px] border ${
-                      item.status === 'PASS'
-                        ? 'glass-tile border-emerald-500/20'
-                        : item.status === 'WARNING'
-                          ? 'glass-tile border-amber-500/30 bg-amber-500/5'
-                          : 'glass-tile border-rose-500/40 bg-rose-500/10'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="font-bold text-[var(--color-text-primary)]">{item.rule}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
-                        item.status === 'PASS'
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : item.status === 'WARNING'
-                            ? 'bg-amber-500/20 text-amber-400'
-                            : 'bg-rose-500/20 text-rose-400'
-                      }`}>
-                        {item.status}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-[var(--color-text-secondary)] leading-relaxed">{item.explanation}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ShapXaiExplainer
+              currentPlotId={selectedPlotId}
+              onOpenTrustReport={() => setIsTrustReportModalOpen(true)}
+            />
           </div>
         )}
 

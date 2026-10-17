@@ -20,6 +20,8 @@ import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
 import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
 import { TemporalOwnershipGraphStudio } from './TemporalOwnershipGraphStudio';
 import { ArchitecturalFooter } from './ArchitecturalFooter';
+import { DocCompareStudioModal } from './DocCompareStudioModal';
+import { AdversarialSimulatorStudioModal } from './AdversarialSimulatorStudioModal';
 import {
   OwnershipGraphWidget,
   FraudEngineGaugeWidget,
@@ -59,6 +61,12 @@ import {
   FileCheck2,
   SlidersHorizontal,
   RotateCcw,
+  Zap,
+  ShieldAlert,
+  Terminal,
+  Activity,
+  Scan,
+  Copy,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -81,8 +89,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
   const [isSiteAnalysisStudioOpen, setIsSiteAnalysisStudioOpen] = useState(false);
   const [isFraudStudioOpen, setIsFraudStudioOpen] = useState(false);
+  const [isDocCompareStudioOpen, setIsDocCompareStudioOpen] = useState(false);
+  const [isAdversarialStudioOpen, setIsAdversarialStudioOpen] = useState(false);
   const [isWhatIfSimulated, setIsWhatIfSimulated] = useState(false);
   const [isHashVerified, setIsHashVerified] = useState(false);
+  const [isViTVerified, setIsViTVerified] = useState(false);
+  const [isWafVerified, setIsWafVerified] = useState(false);
+  const [isMonteCarloRunning, setIsMonteCarloRunning] = useState(false);
   const [studioCityIndex, setStudioCityIndex] = useState(0); // Anchored to 0 (Dhaka) for Cadastral Studio
 
   // Authentication State
@@ -517,8 +530,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Tool 1: archiMap / Ownership Graph */}
             <motion.div
+              layoutId="temporal-ownership-graph-modal"
               whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+              onClick={() => {
+                setCurrentMapIndex(0);
+                setStudioCityIndex(0);
+                setActiveToolId('archimap');
+                setIsSiteAnalysisStudioOpen(true);
+              }}
+              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)] cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -706,8 +726,13 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
             {/* Tool 3: Cologram / DocCompare */}
             <motion.div
+              layoutId="doc-compare-studio-modal"
               whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+              onClick={() => {
+                setActiveToolId('cologram');
+                setIsDocCompareStudioOpen(true);
+              }}
+              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(6,182,212,0.18)] cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -723,39 +748,125 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 </p>
 
                 {/* Micro-Animated Dual-Document Scanner Widget */}
-                <DocCompareScannerWidget />
+                <DocCompareScannerWidget
+                  onOpenStudio={() => {
+                    setActiveToolId('cologram');
+                    setIsDocCompareStudioOpen(true);
+                  }}
+                />
 
-                <div className="p-3 glass-tile rounded-[4px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1">
-                  <div>{t.suite.tool3.f1}</div>
-                  <div>{t.suite.tool3.f2}</div>
-                  <div>{t.suite.tool3.f3}</div>
+                {/* Practical Interactive Cross-Verification & ViT Intelligence Deck */}
+                <div className="space-y-2 text-[11px] font-mono">
+                  {/* Feature 1: Multi-Document Cross-Verification */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-cyan-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <FileText className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span>{isBangla ? 'বহু-নথি ক্রস-যাচাই (দলিল বনাম খতিয়ান)' : 'Multi-Document Cross-Verification'}</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">
+                        {isBangla ? 'আইন ↔ ভূমি' : 'Law ↔ Land'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                        Deed #912 (Sub-Reg)
+                      </span>
+                      <span className="text-cyan-400 font-bold">≠</span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                        Khatian #1042 (AC Land)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Feature 2: Bangla OCR Vision Transformer & Bounding-Box Tagger */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <Scan className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>{isBangla ? 'বাংলা ওসিআর ভিশন ট্রান্সফরমার (ViT)' : 'Bangla OCR ViT Entity Tagger'}</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsViTVerified(!isViTVerified);
+                          setToastMessage(isBangla ? '✓ ভিশন ট্রান্সফরমার: ৩৮টি ফিল্ড টোকেন সমন্বিত (৯৯.৪% কনফিডেন্স)' : '✓ Vision Transformer: 38 Field Tokens Normalized (99.4% Conf)');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }}
+                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                          isViTVerified
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
+                            : 'bg-white/5 hover:bg-emerald-500/10 text-[var(--color-text-secondary)] hover:text-emerald-400 border border-white/10'
+                        }`}
+                      >
+                        <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />
+                        <span>{isViTVerified ? (isBangla ? 'টোকেন সক্রিয় ✓' : 'TOKENS ON ✓') : (isBangla ? 'টোকেন পরীক্ষা' : 'Tokens')}</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)]">
+                      <span>{isBangla ? 'সমর্থিত ফন্ট ও লিপি:' : 'Supported Models:'}</span>
+                      <span className="text-emerald-400 font-mono font-bold">SutonnyMJ · Nikosh · Handwritten</span>
+                    </div>
+                  </div>
+
+                  {/* Feature 3: Discrepancy Evidence Dossier & Conflict Resolution */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-rose-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <Scale className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                        <span>{isBangla ? 'আইনি অসঙ্গতি ও ধারা উদ্ধৃতি ডসিয়ার' : 'Legal Contradiction AST Dossier'}</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const payload = JSON.stringify({ rule: 'Registration Act §22A', dagMismatch: '1042 vs 1024', sha256: '9f8a3c42e81b' });
+                          navigator.clipboard?.writeText(payload);
+                          setToastMessage(isBangla ? '✓ অসঙ্গতি অডিট ডসিয়ার ক্লিপবোর্ডে কপি সম্পন্ন' : '✓ Contradiction Audit Dossier Copied to Clipboard');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }}
+                        className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-rose-500/10 text-[var(--color-text-secondary)] hover:text-rose-300 border border-white/10 transition-colors flex items-center gap-1 cursor-pointer"
+                        title={isBangla ? 'আইনি প্রমাণ কপি' : 'Copy Evidence JSON'}
+                      >
+                        <Copy className="w-2.5 h-2.5" />
+                        <span>{isBangla ? 'কপি' : 'Copy'}</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)]">
+                      <span className="text-rose-400 font-semibold truncate">Reg Act §22A · Dag Contradiction</span>
+                      <span className="text-white shrink-0 ml-1">EVIDENCE LOGGED</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <button
                 onClick={() => {
                   setActiveToolId('cologram');
-                  setToastMessage(isBangla ? 'দলিল তুলনাকারী অসঙ্গতি শনাক্তকরণ ইঞ্জিন প্রস্তুত।' : 'DocCompare contradiction analysis engine ready.');
-                  setTimeout(() => setToastMessage(null), 4000);
+                  setIsDocCompareStudioOpen(true);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] glass-tile rounded-[3px] font-mono transition-colors cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 via-cyan-500 to-teal-500 hover:from-cyan-500 hover:to-teal-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(6,182,212,0.35)] hover:shadow-[0_6px_24px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 group/btn"
               >
                 <span>{t.suite.tool3.cta}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </motion.div>
 
             {/* Tool 4: Globee / Adversarial Simulator */}
             <motion.div
+              layoutId="adversarial-simulator-studio-modal"
               whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+              onClick={() => {
+                setActiveToolId('globee');
+                setIsAdversarialStudioOpen(true);
+              }}
+              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)] cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-ping" />
+                  <span className="text-xs font-mono text-emerald-500 font-semibold flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                     {t.suite.tool4.type}
                   </span>
-                  <span className="text-[10px] font-mono text-[var(--color-surface-raised)] px-2 py-0.5 rounded bg-[var(--color-surface-raised)]/10 border border-[var(--color-surface-raised)]/30">{t.suite.tool4.sub}</span>
+                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">{t.suite.tool4.sub}</span>
                 </div>
                 <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool4.name}</h3>
                 <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
@@ -763,29 +874,120 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 </p>
 
                 {/* Micro-Animated Stress-Test Oscilloscope Widget */}
-                <AdversarialSimulatorWidget />
+                <AdversarialSimulatorWidget
+                  onOpenStudio={() => {
+                    setActiveToolId('globee');
+                    setIsAdversarialStudioOpen(true);
+                  }}
+                  onInjectAttack={(vectorId) => {
+                    setToastMessage(isBangla ? `আক্রমণ ভেক্টর [${vectorId}] প্রতিহত! ৭২ ঘণ্টা সফট-লক সক্রিয়` : `Attack Vector [${vectorId}] Quarantined! 72h Soft-Lock Active`);
+                    setTimeout(() => setToastMessage(null), 3000);
+                  }}
+                />
 
-                <div className="p-3.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span>{t.suite.tool4.f1}</span>
+                {/* Practical Interactive Stress-Test & Attack Intelligence Deck */}
+                <div className="space-y-2 text-[11px] font-mono">
+                  {/* Feature 1: Synthetic Attack Vector Testbench */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span>{isBangla ? 'সিন্থেটিক আক্রমণ ইনজেকশন টেস্টবেঞ্চ' : 'Synthetic Attack Vector Testbench'}</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/25">
+                        4 {isBangla ? 'ভেক্টর' : 'Vectors'}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1 text-[9px]">
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-rose-300">
+                        Double-Sale
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-amber-300">
+                        Forged Seal
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-cyan-300">
+                        Boundary Warp
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-purple-300">
+                        Ghost Warish
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span>{t.suite.tool4.f2}</span>
+
+                  {/* Feature 2: Monte Carlo Resilience & Precision Metrics */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-cyan-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span>{isBangla ? 'শনাক্তকরণ হার ও প্রেসিশন-রিকল বেঞ্চমার্ক' : 'Detection & Precision Benchmark'}</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsMonteCarloRunning(true);
+                          setToastMessage(isBangla ? '✓ ১০,০০০ সিন্থেটিক আক্রমণ সিমুলেশন চলছে... (শনাক্তকরণ ৯৯.৮৫%)' : '✓ 10,000 Monte Carlo Vectors Stress-Tested (99.85% Catch Rate)');
+                          setTimeout(() => {
+                            setIsMonteCarloRunning(false);
+                            setToastMessage(null);
+                          }, 3500);
+                        }}
+                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                          isMonteCarloRunning
+                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
+                            : 'bg-white/5 hover:bg-cyan-500/10 text-[var(--color-text-secondary)] hover:text-cyan-400 border border-white/10'
+                        }`}
+                      >
+                        <RotateCcw className={`w-2.5 h-2.5 ${isMonteCarloRunning ? 'animate-spin text-cyan-300' : ''}`} />
+                        <span>{isMonteCarloRunning ? (isBangla ? 'বেঞ্চমার্কিং...' : 'Testing...') : (isBangla ? '১০k রান' : 'Run 10k')}</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] font-mono">
+                      <span>Catch: <strong className="text-emerald-400">99.8%</strong></span>
+                      <span>Latency: <strong className="text-cyan-400">12ms</strong></span>
+                      <span>FP Rate: <strong className="text-white">&lt;0.02%</strong></span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span>{t.suite.tool4.f3}</span>
+
+                  {/* Feature 3: Automated Registry WAF & Consensus Rules */}
+                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>{isBangla ? 'ভূমি রেজিস্ট্রি নিরবচ্ছিন্ন প্রতিরক্ষা ও WAF' : 'Registry Hardening & WAF Rules'}</span>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsWafVerified(!isWafVerified);
+                          setToastMessage(isBangla ? '✓ জমিচেইন রুল §P3-04 সক্রিয়: সকল সাব-রেজিস্ট্রি নোডে এনফোর্সড' : '✓ JomiChain Rule §P3-04 Enforced Across All Sub-Registry Nodes');
+                          setTimeout(() => setToastMessage(null), 3500);
+                        }}
+                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                          isWafVerified
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
+                            : 'bg-white/5 hover:bg-emerald-500/10 text-[var(--color-text-secondary)] hover:text-emerald-400 border border-white/10'
+                        }`}
+                      >
+                        <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />
+                        <span>{isWafVerified ? (isBangla ? 'নিয়ম কার্যকর ✓' : 'ACTIVE ✓') : (isBangla ? 'নিয়ম পরীক্ষা' : 'Verify')}</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] font-mono bg-black/20 px-2 py-1 rounded">
+                      <span className="truncate">Policy: 72H_SOFT_LOCK_ON_COLLISION</span>
+                      <span className="text-emerald-400 shrink-0 ml-1">7/7 Nodes</span>
+                    </div>
                   </div>
                 </div>
               </div>
               <button
-                onClick={() => setIsNoticeOpen(true)}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2"
+                onClick={() => {
+                  setActiveToolId('globee');
+                  setIsAdversarialStudioOpen(true);
+                }}
+                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_24px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 group/btn"
               >
                 <span>{t.suite.tool4.cta}</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </motion.div>
           </div>
@@ -1253,10 +1455,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8"
           >
             <motion.div
-              initial={{ opacity: 0, y: 44, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 30, scale: 0.98 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              layoutId="temporal-ownership-graph-modal"
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
               className={`glass-panel rounded-[8px] w-full flex flex-col shadow-2xl overflow-hidden ${
                 activeStudioMap.id === 'dhaka-metro' ? 'max-w-[96vw] xl:max-w-[1540px] h-[92vh]' : 'max-w-5xl h-[85vh]'
               }`}
@@ -1453,6 +1653,26 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 
+        ====================================================================
+        DOCCOMPARE DUAL-DOCUMENT CONTRADICTION STUDIO MODAL
+        ====================================================================
+      */}
+      <DocCompareStudioModal
+        isOpen={isDocCompareStudioOpen}
+        onClose={() => setIsDocCompareStudioOpen(false)}
+      />
+
+      {/* 
+        ====================================================================
+        ADVERSARIAL SIMULATOR CYBER FRAUD DEFENSE TESTBENCH STUDIO MODAL
+        ====================================================================
+      */}
+      <AdversarialSimulatorStudioModal
+        isOpen={isAdversarialStudioOpen}
+        onClose={() => setIsAdversarialStudioOpen(false)}
+      />
 
       {/* Modal: Project Monograph Inspector */}
       <AnimatePresence>

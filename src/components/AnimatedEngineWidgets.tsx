@@ -32,6 +32,7 @@ import {
   SlidersHorizontal,
   Scale,
   ShieldCheck,
+  Zap,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -816,10 +817,128 @@ export const FraudEngineGaugeWidget: React.FC<FraudEngineGaugeWidgetProps> = ({
 // ============================================================================
 // 3. DOCCOMPARE DUAL-SCANNER WIDGET (Engine 03)
 // ============================================================================
-export const DocCompareScannerWidget: React.FC = () => {
+export interface DocCompareScannerWidgetProps {
+  onOpenStudio?: () => void;
+  selectedCaseId?: string;
+  onCaseChange?: (caseId: string) => void;
+}
+
+export const DocCompareScannerWidget: React.FC<DocCompareScannerWidgetProps> = ({
+  onOpenStudio,
+  selectedCaseId: externalCaseId,
+  onCaseChange,
+}) => {
   const { isBangla } = useLanguage();
+  const [internalCaseId, setInternalCaseId] = useState<'dag' | 'share' | 'nid'>('dag');
+  const [highlightedField, setHighlightedField] = useState<string | null>('dag');
+  const [isLaserScanning, setIsLaserScanning] = useState<boolean>(false);
+
+  const activeCase = (externalCaseId as any) || internalCaseId;
+
+  const handleCaseSelect = (caseKey: 'dag' | 'share' | 'nid') => {
+    setInternalCaseId(caseKey);
+    setHighlightedField(caseKey === 'dag' ? 'dag' : caseKey === 'share' ? 'share' : 'seller');
+    if (onCaseChange) onCaseChange(caseKey);
+    triggerScan();
+  };
+
+  const triggerScan = () => {
+    setIsLaserScanning(true);
+    setTimeout(() => setIsLaserScanning(false), 1400);
+  };
+
+  const caseData = {
+    dag: {
+      tagEn: 'Dag Mismatch',
+      tagBn: 'দাগ অসঙ্গতি',
+      deedRef: 'DEED #912',
+      deedOwner: 'Seller: Md. Rafiqul',
+      deedOwnerBn: 'বিক্রেতা: মোঃ রফিকুল',
+      deedDag: 'Dag: 1042',
+      deedDagBn: 'দাগ: ১০৪২',
+      deedArea: 'Area: 14.50 Shotok',
+      deedAreaBn: 'পরিমাণ: ১৪.৫০ শতাংশ',
+      khatianRef: 'KHATIAN #1042',
+      khatianOwner: 'Owner: Md. Rafiqul',
+      khatianOwnerBn: 'মালিক: মোঃ রফিকুল',
+      khatianDag: 'Dag: 1024',
+      khatianDagBn: 'দাগ: ১০২৪',
+      khatianArea: 'Area: 14.50 Shotok',
+      khatianAreaBn: 'পরিমাণ: ১৪.৫০ শতাংশ',
+      mismatchField: 'dag',
+      bannerEn: 'DAG NUMBER CONTRADICTION: 1042 ≠ 1024',
+      bannerBn: 'দাগ নম্বর অসঙ্গতি: ১০৪২ ≠ ১০২৪ (আইন বনাম ভূমি)',
+      confidence: '99.4%',
+    },
+    share: {
+      tagEn: 'Share Inflation',
+      tagBn: 'হিস্যা অতিরিক্ত',
+      deedRef: 'HEBA DEED #4102',
+      deedOwner: 'Seller: Tariqur Rahman',
+      deedOwnerBn: 'বিক্রেতা: তারেকুর রহমান',
+      deedDag: 'Dag: 309',
+      deedDagBn: 'দাগ: ৩০৯',
+      deedArea: 'Transfer: 8.00 Shotok',
+      deedAreaBn: 'হস্তান্তর: ৮.০০ শতাংশ',
+      khatianRef: 'BS KHATIAN #88',
+      khatianOwner: 'Co-Heirs: Fazlur Rahman',
+      khatianOwnerBn: 'ওয়ারিশ: ফজলুর রহমান',
+      khatianDag: 'Dag: 309',
+      khatianDagBn: 'দাগ: ৩০৯',
+      khatianArea: 'Entitled: 4.00 Shotok',
+      khatianAreaBn: 'বৈধ হিস্যা: ৪.০০ শতাংশ',
+      mismatchField: 'area',
+      bannerEn: 'EXCESS SHARE OVER-TRANSFER: 8.00 > 4.00 SHOTOK',
+      bannerBn: 'অতিরিক্ত জমি হস্তান্তর: ৮.০০ > ৪.০০ শতাংশ',
+      confidence: '98.7%',
+    },
+    nid: {
+      tagEn: 'NID Mismatch',
+      tagBn: 'এনআইডি অমিল',
+      deedRef: 'SALE DEED #8421',
+      deedOwner: 'Saleha Begum (..4910)',
+      deedOwnerBn: 'সালেহা বেগম (..৪৯১০)',
+      deedDag: 'Dag: 512',
+      deedDagBn: 'দাগ: ৫১২',
+      deedArea: 'Area: 6.25 Shotok',
+      deedAreaBn: 'পরিমাণ: ৬.২৫ শতাংশ',
+      khatianRef: 'MUTATION #409',
+      khatianOwner: 'Mst. Saleha Khatun (..8821)',
+      khatianOwnerBn: 'মোসাঃ সালেহা খাতুন (..৮৮২১)',
+      khatianDag: 'Dag: 512',
+      khatianDagBn: 'দাগ: ৫১২',
+      khatianArea: 'Area: 6.25 Shotok',
+      khatianAreaBn: 'পরিমাণ: ৬.২৫ শতাংশ',
+      mismatchField: 'seller',
+      bannerEn: 'PHONETIC ALIAS & NID HASH CONFLICT',
+      bannerBn: 'পরিচয়পত্র ও ফনেটিক নামের গরমিল চিহ্নিত',
+      confidence: '99.8%',
+    },
+  }[activeCase as 'dag' | 'share' | 'nid'] || {
+    tagEn: 'Dag Mismatch',
+    tagBn: 'দাগ অসঙ্গতি',
+    deedRef: 'DEED #912',
+    deedOwner: 'Seller: Md. Rafiqul',
+    deedOwnerBn: 'বিক্রেতা: মোঃ রফিকুল',
+    deedDag: 'Dag: 1042',
+    deedDagBn: 'দাগ: ১০৪২',
+    deedArea: 'Area: 14.50 Shotok',
+    deedAreaBn: 'পরিমাণ: ১৪.৫০ শতাংশ',
+    khatianRef: 'KHATIAN #1042',
+    khatianOwner: 'Owner: Md. Rafiqul',
+    khatianOwnerBn: 'মালিক: মোঃ রফিকুল',
+    khatianDag: 'Dag: 1024',
+    khatianDagBn: 'দাগ: ১০২৪',
+    khatianArea: 'Area: 14.50 Shotok',
+    khatianAreaBn: 'পরিমাণ: ১৪.৫০ শতাংশ',
+    mismatchField: 'dag',
+    bannerEn: 'DAG NUMBER CONTRADICTION: 1042 ≠ 1024',
+    bannerBn: 'দাগ নম্বর অসঙ্গতি: ১০৪২ ≠ ১০২৪',
+    confidence: '99.4%',
+  };
+
   return (
-    <div className="relative w-full h-[155px] rounded-[8px] bg-[#070b13] border border-cyan-500/30 dark:border-cyan-500/35 overflow-hidden p-3.5 flex flex-col justify-between select-none shadow-[0_8px_30px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.08)]">
+    <div className="relative w-full rounded-[8px] bg-[#070b13] border border-cyan-500/35 overflow-hidden p-3 sm:p-3.5 flex flex-col justify-between select-none shadow-[0_8px_30px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.08)] space-y-2.5">
       {/* Background Cartographic Micro-Grid with Radial Vignette */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-20"
@@ -830,68 +949,156 @@ export const DocCompareScannerWidget: React.FC = () => {
       />
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,#070b13_95%)]" />
 
-      {/* Top Header */}
-      <div className="relative z-10 flex items-center justify-between text-[10px] font-mono mb-1 pb-1 border-b border-white/5">
+      {/* Top Header with Preset Pills & Scan Action */}
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-1.5 text-[10px] font-mono pb-1 border-b border-white/10">
         <div className="flex items-center gap-1.5 text-cyan-400">
-          <Scan className="w-3 h-3 animate-spin text-cyan-400" />
+          <Scan className={`w-3.5 h-3.5 ${isLaserScanning ? 'animate-spin' : ''} text-cyan-400`} />
           <span className="font-bold tracking-wider">
             {isBangla ? 'বাংলা ওসিআর তুলনামূলক স্ক্যান' : 'BANGLA OCR COMPARISON'}
           </span>
         </div>
-        <span className="text-slate-400 text-[9px]">
-          {isBangla ? 'নির্ভুলতা: ৯৯.১%' : 'CONFIDENCE: 99.1%'}
-        </span>
+
+        {/* Case Preset Selector */}
+        <div className="flex items-center gap-1">
+          {(['dag', 'share', 'nid'] as const).map((key) => (
+            <button
+              key={key}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCaseSelect(key);
+              }}
+              className={`px-1.5 py-0.5 rounded text-[8.5px] transition-all cursor-pointer ${
+                activeCase === key
+                  ? 'bg-cyan-500 text-black font-bold shadow-sm'
+                  : 'bg-white/5 text-slate-400 hover:text-cyan-300 hover:bg-white/10'
+              }`}
+            >
+              {key === 'dag' ? (isBangla ? 'দাগ অমিল' : 'Dag') : key === 'share' ? (isBangla ? 'হিস্যা' : 'Share') : (isBangla ? 'এনআইডি' : 'NID')}
+            </button>
+          ))}
+          <span className="text-emerald-400 text-[9px] font-bold ml-1">{caseData.confidence}</span>
+        </div>
       </div>
 
       {/* Side-by-Side Dual Document Panels with Scanning Laser */}
-      <div className="relative z-10 my-auto grid grid-cols-2 gap-2 h-[82px] overflow-hidden">
+      <div className="relative z-10 grid grid-cols-2 gap-2 h-[86px] overflow-hidden">
         {/* The Sweeping Neon Laser Beam */}
         <motion.div
           className="absolute left-0 right-0 h-[1.8px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#38bdf8] z-20 pointer-events-none"
-          animate={{ y: [0, 78, 0] }}
-          transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+          animate={{ y: [0, 82, 0] }}
+          transition={{ duration: isLaserScanning ? 1.2 : 3.0, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         {/* Document A: Sub-Registry Deed */}
-        <div className="bg-[#0b1424]/90 border border-cyan-500/30 rounded-[5px] p-2 flex flex-col justify-between font-mono text-[9px] shadow-sm">
+        <div className="bg-[#0b1424]/95 border border-cyan-500/30 rounded-[5px] p-2 flex flex-col justify-between font-mono text-[9px] shadow-sm">
           <div className="flex items-center justify-between text-slate-400 border-b border-white/10 pb-1">
-            <span>{isBangla ? 'দলিল #৯১২' : 'DEED #912'}</span>
-            <span className="text-cyan-400 font-bold">{isBangla ? 'আইন বিভাগ' : 'LAW MIN'}</span>
+            <span className="font-bold text-cyan-300">{caseData.deedRef}</span>
+            <span className="text-cyan-400 text-[8px] font-bold">{isBangla ? 'আইন বিভাগ' : 'LAW MIN'}</span>
           </div>
           <div className="space-y-1 mt-1 text-slate-200">
-            <div>{isBangla ? 'বিক্রেতা: মোঃ রফিকুল' : 'Seller: Md. Rafiqul'}</div>
-            <div className="text-emerald-400 font-bold">{isBangla ? 'দাগ: ১০৪২' : 'Dag: 1042'}</div>
-            <div className="text-slate-400">{isBangla ? 'পরিমাণ: ১৪.৫০ শতাংশ' : 'Area: 14.50 Shotok'}</div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setHighlightedField('seller');
+              }}
+              className={`cursor-pointer px-1 py-0.2 rounded transition-colors ${
+                highlightedField === 'seller' ? 'bg-cyan-500/20 text-cyan-300' : 'hover:text-cyan-300'
+              }`}
+            >
+              {isBangla ? caseData.deedOwnerBn : caseData.deedOwner}
+            </div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setHighlightedField('dag');
+              }}
+              className={`cursor-pointer px-1 py-0.2 rounded transition-colors font-bold ${
+                highlightedField === 'dag'
+                  ? 'bg-rose-500/25 text-rose-300 border border-rose-500/40'
+                  : 'text-emerald-400 hover:text-emerald-300'
+              }`}
+            >
+              {isBangla ? caseData.deedDagBn : caseData.deedDag}
+            </div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setHighlightedField('area');
+              }}
+              className={`cursor-pointer px-1 py-0.2 rounded transition-colors text-slate-400 ${
+                highlightedField === 'area' ? 'bg-amber-500/20 text-amber-300' : 'hover:text-slate-200'
+              }`}
+            >
+              {isBangla ? caseData.deedAreaBn : caseData.deedArea}
+            </div>
           </div>
         </div>
 
         {/* Document B: AC Land Khatian (With Flagged Contradiction) */}
-        <div className="bg-[#1f0b12]/90 border border-rose-500/40 rounded-[5px] p-2 flex flex-col justify-between font-mono text-[9px] relative overflow-hidden shadow-sm">
+        <div className="bg-[#1f0b12]/95 border border-rose-500/40 rounded-[5px] p-2 flex flex-col justify-between font-mono text-[9px] relative overflow-hidden shadow-sm">
           <div className="flex items-center justify-between text-slate-400 border-b border-white/10 pb-1">
-            <span>{isBangla ? 'খতিয়ান #১০৪২' : 'KHATIAN #1042'}</span>
-            <span className="text-amber-400 font-bold">{isBangla ? 'ভূমি বিভাগ' : 'LAND MIN'}</span>
+            <span className="font-bold text-amber-300">{caseData.khatianRef}</span>
+            <span className="text-amber-400 text-[8px] font-bold">{isBangla ? 'ভূমি বিভাগ' : 'LAND MIN'}</span>
           </div>
           <div className="space-y-1 mt-1">
-            <div className="text-slate-200">{isBangla ? 'মালিক: মোঃ রফিকুল' : 'Owner: Md. Rafiqul'}</div>
-            <div className="text-rose-400 font-bold flex items-center justify-between">
-              <span>{isBangla ? 'দাগ: ১০২৪' : 'Dag: 1024'}</span>
-              <span className="bg-rose-500 text-black text-[7px] px-1 py-0.2 rounded font-black animate-pulse">
-                {isBangla ? 'অসঙ্গতি' : 'MISMATCH'}
-              </span>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setHighlightedField('seller');
+              }}
+              className={`cursor-pointer px-1 py-0.2 rounded transition-colors text-slate-200 ${
+                highlightedField === 'seller' ? 'bg-rose-500/20 text-rose-300' : 'hover:text-slate-100'
+              }`}
+            >
+              {isBangla ? caseData.khatianOwnerBn : caseData.khatianOwner}
             </div>
-            <div className="text-slate-400">{isBangla ? 'পরিমাণ: ১৪.৫০ শতাংশ' : 'Area: 14.50 Shotok'}</div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setHighlightedField('dag');
+              }}
+              className={`cursor-pointer px-1 py-0.2 rounded transition-colors flex items-center justify-between ${
+                highlightedField === 'dag'
+                  ? 'bg-rose-500/30 text-rose-300 font-bold border border-rose-500/50'
+                  : 'text-rose-400 font-bold'
+              }`}
+            >
+              <span>{isBangla ? caseData.khatianDagBn : caseData.khatianDag}</span>
+              {activeCase === 'dag' && (
+                <span className="bg-rose-500 text-black text-[7px] px-1 py-0.2 rounded font-black animate-pulse">
+                  {isBangla ? 'অসঙ্গতি' : 'MISMATCH'}
+                </span>
+              )}
+            </div>
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setHighlightedField('area');
+              }}
+              className={`cursor-pointer px-1 py-0.2 rounded transition-colors text-slate-400 ${
+                highlightedField === 'area' ? 'bg-amber-500/20 text-amber-300' : 'hover:text-slate-200'
+              }`}
+            >
+              {isBangla ? caseData.khatianAreaBn : caseData.khatianArea}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Contradiction Telemetry Badge */}
+      {/* Bottom Contradiction Telemetry Badge with Interactive Studio Button */}
       <div className="relative z-10 flex items-center justify-between bg-black/80 px-2.5 py-1.5 rounded-[5px] border border-white/10 text-[9.5px] font-mono shadow-inner">
         <span className="text-rose-400 font-medium truncate">
-          {isBangla ? 'দাগ নম্বর অসঙ্গতি: ১০৪২ ≠ ১০২৪' : 'DAG NUMBER CONTRADICTION: 1042 ≠ 1024'}
+          {isBangla ? caseData.bannerBn : caseData.bannerEn}
         </span>
-        <span className="text-emerald-400 font-semibold shrink-0 ml-1">
-          {isBangla ? 'প্রমাণ সংরক্ষিত' : 'EVIDENCE LOGGED'}
-        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onOpenStudio) onOpenStudio();
+          }}
+          className="text-cyan-400 hover:text-cyan-300 font-bold shrink-0 ml-1.5 flex items-center gap-1 cursor-pointer bg-cyan-500/10 hover:bg-cyan-500/20 px-1.5 py-0.5 rounded border border-cyan-500/30 transition-colors"
+        >
+          <span>{isBangla ? 'স্টুডিও ↗' : 'Inspect ↗'}</span>
+        </button>
       </div>
     </div>
   );
@@ -900,19 +1107,51 @@ export const DocCompareScannerWidget: React.FC = () => {
 // ============================================================================
 // 4. ADVERSARIAL SIMULATOR BENCHMARK WIDGET (Engine 04)
 // ============================================================================
-export const AdversarialSimulatorWidget: React.FC = () => {
+export interface AdversarialSimulatorWidgetProps {
+  onOpenStudio?: () => void;
+  onInjectAttack?: (vectorId: string) => void;
+}
+
+export const AdversarialSimulatorWidget: React.FC<AdversarialSimulatorWidgetProps> = ({
+  onOpenStudio,
+  onInjectAttack,
+}) => {
   const { isBangla } = useLanguage();
-  const [attackCount, setAttackCount] = useState(5000);
+  const [selectedVector, setSelectedVector] = useState<'double' | 'seal' | 'boundary' | 'ghost'>('double');
+  const [attackCount, setAttackCount] = useState<number>(15480);
+  const [isBlasting, setIsBlasting] = useState<boolean>(false);
+  const [lastDefenseMessage, setLastDefenseMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAttackCount((prev) => prev + Math.floor(Math.random() * 12) + 3);
-    }, 2000);
+      setAttackCount((prev) => prev + Math.floor(Math.random() * 8) + 2);
+    }, 2400);
     return () => clearInterval(interval);
   }, []);
 
+  const handleInject = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsBlasting(true);
+    setAttackCount((prev) => prev + 25);
+
+    const message = {
+      double: isBangla ? 'দ্বৈত-বিক্রয় প্রতিহত! ৭২ ঘণ্টা সফট-লক কার্যকর (৮ms)' : 'Double-Sale Blocked! 72h Soft-Lock Enforced (8ms)',
+      seal: isBangla ? 'জাল সিল বাতিল! মারকেল হ্যাশ চেইন প্রত্যাখ্যান (১২ms)' : 'Forged Seal Quarantined! Merkle Hash Rejected (12ms)',
+      boundary: isBangla ? 'ক্যাডাস্ট্রাল খাল ওভারল্যাপ গ্রাস প্রতিহত (১৪ms)' : 'Canal Overlap Warp Blocked! Topology Guard (14ms)',
+      ghost: isBangla ? 'ভুয়া ওয়ারিশ সনদ বাতিল! হিস্যা পুনর্নির্ধারিত (১০ms)' : 'Ghost Heir Fraud Intercepted! Shares Restored (10ms)',
+    }[selectedVector];
+
+    setLastDefenseMessage(message);
+
+    if (onInjectAttack) onInjectAttack(selectedVector);
+
+    setTimeout(() => {
+      setIsBlasting(false);
+    }, 1500);
+  };
+
   return (
-    <div className="relative w-full h-[155px] rounded-[8px] bg-[#070b13] border border-emerald-500/30 dark:border-emerald-500/35 overflow-hidden p-3.5 flex flex-col justify-between select-none shadow-[0_8px_30px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.08)]">
+    <div className="relative w-full rounded-[8px] bg-[#070b13] border border-emerald-500/35 overflow-hidden p-3 sm:p-3.5 flex flex-col justify-between select-none shadow-[0_8px_30px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.08)] space-y-2.5">
       {/* Background Cartographic Micro-Grid with Radial Vignette */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-20"
@@ -923,21 +1162,50 @@ export const AdversarialSimulatorWidget: React.FC = () => {
       />
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,#070b13_95%)]" />
 
-      {/* Top Header */}
-      <div className="relative z-10 flex items-center justify-between text-[10px] font-mono mb-1 pb-1 border-b border-white/5">
+      {/* Top Header with Attack Vector Selector & Inject Action */}
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-1.5 text-[10px] font-mono pb-1 border-b border-white/10">
         <div className="flex items-center gap-1.5 text-emerald-400">
-          <Activity className="w-3 h-3 text-emerald-400 animate-pulse" />
+          <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
           <span className="font-bold tracking-wider">
             {isBangla ? 'স্ট্রেস-টেস্ট বেঞ্চমার্ক' : 'STRESS-TEST BENCHMARK'}
           </span>
         </div>
-        <span className="text-slate-400 text-[9px]">
-          {isBangla ? 'সিন্থেটিক ইনজেকশন' : 'SYNTHETIC INJECTION'}
-        </span>
+
+        {/* Attack Vector Selector Pills */}
+        <div className="flex items-center gap-1">
+          {(['double', 'seal', 'boundary', 'ghost'] as const).map((v) => (
+            <button
+              key={v}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedVector(v);
+              }}
+              className={`px-1.5 py-0.5 rounded text-[8.5px] transition-all cursor-pointer ${
+                selectedVector === v
+                  ? 'bg-rose-500 text-white font-bold shadow-sm'
+                  : 'bg-white/5 text-slate-400 hover:text-rose-300 hover:bg-white/10'
+              }`}
+            >
+              {v === 'double' ? (isBangla ? 'দ্বৈত-বিক্রয়' : 'Double') : v === 'seal' ? (isBangla ? 'জাল সিল' : 'Seal') : v === 'boundary' ? (isBangla ? 'সীমানা' : 'Warp') : (isBangla ? 'ওয়ারিশ' : 'Heir')}
+            </button>
+          ))}
+          <button
+            onClick={handleInject}
+            className={`px-2 py-0.5 rounded text-[8.5px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+              isBlasting
+                ? 'bg-rose-500 text-white animate-pulse shadow-md'
+                : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-sm'
+            }`}
+            title={isBangla ? 'আক্রমণ ইনজেক্ট করুন' : 'Inject Synthetic Attack'}
+          >
+            <Zap className="w-2.5 h-2.5" />
+            <span>{isBlasting ? (isBangla ? 'আক্রমণ চলছে' : 'Injecting...') : (isBangla ? 'ইনজেক্ট ⚡' : 'Inject ⚡')}</span>
+          </button>
+        </div>
       </div>
 
       {/* Attack Injection Oscilloscope / Stream Waveform */}
-      <div className="relative z-10 my-auto w-full h-[76px] flex items-center justify-center">
+      <div className="relative z-10 my-auto w-full h-[78px] flex items-center justify-center">
         <svg viewBox="0 0 280 65" className="w-full h-full">
           <defs>
             <linearGradient id="shield-grad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -952,21 +1220,21 @@ export const AdversarialSimulatorWidget: React.FC = () => {
 
           {/* Defense Firewall Barrier at Center */}
           <line x1="140" y1="6" x2="140" y2="59" stroke="#34d399" strokeWidth="2.2" strokeDasharray="4 2"/>
-          <circle cx="140" cy="32" r="16" fill="url(#shield-grad)" stroke="#34d399" strokeWidth="1" opacity="0.8">
+          <circle cx="140" cy="32" r={isBlasting ? 22 : 16} fill="url(#shield-grad)" stroke="#34d399" strokeWidth={isBlasting ? 2.5 : 1} opacity="0.8">
             <animate attributeName="r" values="12;20;12" dur="2s" repeatCount="indefinite"/>
             <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
           </circle>
 
           {/* Incoming Rogue Attack Particles (Left to Center) */}
-          <circle r="3" fill="#f43f5e">
-            <animate attributeName="cx" values="15;140" dur="1.8s" repeatCount="indefinite"/>
-            <animate attributeName="cy" values="22;32" dur="1.8s" repeatCount="indefinite"/>
-            <animate attributeName="opacity" values="1;0" dur="1.8s" repeatCount="indefinite"/>
+          <circle r={isBlasting ? 4.5 : 3} fill="#f43f5e">
+            <animate attributeName="cx" values="15;140" dur={isBlasting ? "0.8s" : "1.8s"} repeatCount="indefinite"/>
+            <animate attributeName="cy" values="22;32" dur={isBlasting ? "0.8s" : "1.8s"} repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="1;0" dur={isBlasting ? "0.8s" : "1.8s"} repeatCount="indefinite"/>
           </circle>
-          <circle r="3" fill="#f43f5e">
-            <animate attributeName="cx" values="10;140" dur="2.3s" repeatCount="indefinite" begin="0.6s"/>
-            <animate attributeName="cy" values="42;32" dur="2.3s" repeatCount="indefinite" begin="0.6s"/>
-            <animate attributeName="opacity" values="1;0" dur="2.3s" repeatCount="indefinite" begin="0.6s"/>
+          <circle r={isBlasting ? 4.5 : 3} fill="#f43f5e">
+            <animate attributeName="cx" values="10;140" dur={isBlasting ? "1.0s" : "2.3s"} repeatCount="indefinite" begin="0.3s"/>
+            <animate attributeName="cy" values="42;32" dur={isBlasting ? "1.0s" : "2.3s"} repeatCount="indefinite" begin="0.3s"/>
+            <animate attributeName="opacity" values="1;0" dur={isBlasting ? "1.0s" : "2.3s"} repeatCount="indefinite" begin="0.3s"/>
           </circle>
 
           {/* Defense Signal Waveform */}
@@ -988,20 +1256,40 @@ export const AdversarialSimulatorWidget: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom KPI Row */}
-      <div className="relative z-10 grid grid-cols-3 gap-1.5 bg-black/80 px-2.5 py-1.5 rounded-[5px] border border-white/10 text-[9px] font-mono text-center shadow-inner">
-        <div>
-          <span className="text-slate-400">{isBangla ? 'শনাক্তকরণ: ' : 'CATCH RATE: '}</span>
-          <span className="text-emerald-400 font-bold">99.8%</span>
+      {/* Dynamic Status / Interception Banner */}
+      {lastDefenseMessage && (
+        <div className="relative z-10 bg-emerald-950/80 px-2 py-1 rounded-[4px] border border-emerald-500/30 text-[8.5px] font-mono text-emerald-300 flex items-center justify-between">
+          <span className="truncate">{lastDefenseMessage}</span>
+          <span className="text-emerald-400 font-bold shrink-0 ml-1">✓ BLOCKED</span>
         </div>
-        <div>
-          <span className="text-slate-400">{isBangla ? 'বিলম্ব: ' : 'LATENCY: '}</span>
-          <span className="text-cyan-400 font-bold">12ms</span>
+      )}
+
+      {/* Bottom KPI Row with Studio Launch Action */}
+      <div className="relative z-10 flex items-center justify-between bg-black/80 px-2.5 py-1.5 rounded-[5px] border border-white/10 text-[9px] font-mono shadow-inner">
+        <div className="flex items-center gap-3">
+          <div>
+            <span className="text-slate-400">{isBangla ? 'শনাক্ত:' : 'CATCH: '}</span>
+            <span className="text-emerald-400 font-bold">99.8%</span>
+          </div>
+          <div>
+            <span className="text-slate-400">{isBangla ? 'বিলম্ব:' : 'LATENCY: '}</span>
+            <span className="text-cyan-400 font-bold">12ms</span>
+          </div>
+          <div>
+            <span className="text-slate-400">{isBangla ? 'ভুল:' : 'FP: '}</span>
+            <span className="text-slate-200 font-bold">&lt;0.02%</span>
+          </div>
         </div>
-        <div>
-          <span className="text-slate-400">{isBangla ? 'ভুল সংকেত: ' : 'FP RATE: '}</span>
-          <span className="text-slate-200 font-bold">&lt;0.02%</span>
-        </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onOpenStudio) onOpenStudio();
+          }}
+          className="text-emerald-400 hover:text-emerald-300 font-bold shrink-0 ml-1 flex items-center gap-1 cursor-pointer bg-emerald-500/10 hover:bg-emerald-500/20 px-1.5 py-0.5 rounded border border-emerald-500/30 transition-colors"
+        >
+          <span>{isBangla ? 'ল্যাব ↗' : 'Lab ↗'}</span>
+        </button>
       </div>
     </div>
   );
