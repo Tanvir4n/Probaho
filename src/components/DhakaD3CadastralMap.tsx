@@ -57,7 +57,7 @@ export interface DhakaDistrictLabel {
   minK: number;
 }
 
-export const DHAKA_CITY_DISTRICTS: DhakaDistrictLabel[] = [
+const DHAKA_CITY_DISTRICTS: DhakaDistrictLabel[] = [
   { id: 'dist-uttara', name: 'UTTARA', nameBn: 'উত্তরা', x: 456, y: 205, lon: 90.3980, lat: 23.8720, minK: 1.0 },
   { id: 'dist-airport', name: 'HSIA AIRPORT', nameBn: 'শাহজালাল বিমানবন্দর', x: 455, y: 310, lon: 90.4000, lat: 23.8430, minK: 1.1 },
   { id: 'dist-mirpur', name: 'MIRPUR', nameBn: 'মিরপুর', x: 295, y: 535, lon: 90.3650, lat: 23.8080, minK: 1.0 },
@@ -1045,22 +1045,23 @@ export const DhakaD3CadastralMap: React.FC<DhakaD3CadastralMapProps> = ({
             </g>
           )}
 
-          {/* 3. AUTHENTIC DHAKA CITY DISTRICT LABELS */}
+          {/* 3. AUTHENTIC DHAKA CITY DISTRICT LABELS (Major Regional Hubs Only to Prevent Overlaps) */}
           {layers.districtLabels && (
             <g className="city-district-labels pointer-events-none select-none">
-              {DHAKA_CITY_DISTRICTS.map((dist) => {
-                const isDhanmondi = dist.id === 'dist-dhanmondi';
-
+              {DHAKA_CITY_DISTRICTS.filter((dist) => {
+                const majorHubs = ['dist-uttara', 'dist-mirpur', 'dist-gulshan', 'dist-motijheel', 'dist-olddhaka'];
+                return majorHubs.includes(dist.id);
+              }).map((dist) => {
                 return (
                   <g key={dist.id} transform={`translate(${dist.x}, ${dist.y})`}>
                     <text
                       textAnchor="middle"
-                      fontSize={isDhanmondi ? '10' : '8'}
+                      fontSize="8"
                       fontWeight="900"
                       letterSpacing="1.5"
                       fontFamily="sans-serif"
                       fill="#ffffff"
-                      opacity={isDhanmondi ? 0.95 : 0.75}
+                      opacity={0.8}
                       stroke="#090e17"
                       strokeWidth="2.5"
                       paintOrder="stroke fill"

@@ -200,32 +200,30 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
         UNIFIED STUDIO HEADER TOOLBAR (Single Sleek Top Bar, h-[52px])
         ======================================================================
       */}
-      <header className="relative z-30 h-[52px] px-3.5 bg-[var(--color-surface-strong)]/95 border-b border-[var(--color-border-subtle)] backdrop-blur-md flex items-center justify-between shrink-0 gap-3 font-mono">
+      <header className="relative z-30 h-[52px] px-3 bg-[var(--color-surface-strong)]/95 border-b border-[var(--color-border-subtle)] backdrop-blur-md flex items-center justify-between shrink-0 gap-2 font-mono overflow-hidden">
         {/* Left: Probaho Studio Branding + City Selector */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-[4px] bg-[var(--color-surface-raised)]/15 border border-[var(--color-surface-raised)]/30 text-[var(--color-surface-raised)]">
-              <GitBranch className="w-4 h-4" />
+        <div className="flex items-center gap-2 min-w-0 shrink">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="p-1 rounded-[4px] bg-[var(--color-surface-raised)]/15 border border-[var(--color-surface-raised)]/30 text-[var(--color-surface-raised)]">
+              <GitBranch className="w-3.5 h-3.5" />
             </span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold tracking-wider text-[var(--color-surface-raised)]">
-                Probaho STUDIO
-              </span>
-              <span className="text-[var(--color-text-tertiary)] hidden sm:inline">|</span>
-              <span className="text-xs text-[var(--color-text-primary)] font-semibold hidden md:inline">
-                {isBangla ? 'ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ' : 'Cadastral & Lineage Studio'}
-              </span>
-            </div>
+            <span className="text-xs font-bold tracking-wider text-[var(--color-surface-raised)] whitespace-nowrap">
+              Probaho STUDIO
+            </span>
+            <span className="text-[var(--color-text-tertiary)] hidden sm:inline">|</span>
+            <span className="text-xs text-[var(--color-text-primary)] font-semibold hidden xl:inline whitespace-nowrap">
+              {isBangla ? 'ক্যাডাস্ট্রাল ও মালিকানা গ্রাফ' : 'Cadastral & Lineage'}
+            </span>
           </div>
 
           {/* City Switcher Pills */}
           {cities && cities.length > 0 && onCityChange && (
-            <div className="flex items-center gap-1 glass-pill p-0.5 rounded-[4px] ml-1">
+            <div className="hidden sm:flex items-center gap-1 glass-pill p-0.5 rounded-[4px] shrink-0">
               {cities.map((m, idx) => (
                 <button
                   key={m.id}
                   onClick={() => onCityChange(idx)}
-                  className={`px-2 py-0.5 text-[10px] rounded-[3px] transition-colors cursor-pointer flex items-center gap-1 ${
+                  className={`px-2 py-0.5 text-[10px] rounded-[3px] transition-colors cursor-pointer flex items-center gap-1 whitespace-nowrap ${
                     idx === currentCityIndex
                       ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                       : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
@@ -244,16 +242,12 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
         </div>
 
         {/* Middle: Auditing Parcel & Real-time Telemetry Pill */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="relative flex items-center gap-1.5">
-            <span className="text-[10px] text-[var(--color-text-secondary)] hidden lg:inline">
-              <MapPin className="w-3.5 h-3.5 inline mr-0.5 text-[var(--color-surface-raised)]" />
-              {isBangla ? 'প্লট:' : 'Parcel:'}
-            </span>
+        <div className="flex items-center gap-2 min-w-0 shrink-0">
+          <div className="relative flex items-center gap-1">
             <select
               value={selectedParcelId}
               onChange={(e) => setSelectedParcelId(e.target.value)}
-              className="px-2.5 py-1 text-xs font-mono rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] focus:border-[var(--color-surface-raised)] focus:outline-none cursor-pointer font-semibold max-w-[210px] truncate"
+              className="px-2 py-1 text-xs font-mono rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] focus:border-[var(--color-surface-raised)] focus:outline-none cursor-pointer font-semibold max-w-[170px] sm:max-w-[210px] truncate"
             >
               {ALL_TEMPORAL_PARCELS.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -263,20 +257,20 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
             </select>
           </div>
 
-          {/* Integrated Soft-lock & Dispute Pill (Replaces redundant 40px second banner) */}
+          {/* Integrated Soft-lock & Dispute Pill */}
           {activeParcel.activeLockId ? (
             <button
               onClick={() => setIsFolioDrawerOpen(true)}
-              className="px-2 py-1 text-[10px] rounded bg-red-500/20 text-red-500 border border-red-500/40 font-bold flex items-center gap-1.5 cursor-pointer hover:bg-red-500/30 transition-colors"
+              className="px-2 py-0.5 text-[10px] rounded bg-red-500/20 text-red-500 border border-red-500/40 font-bold flex items-center gap-1 cursor-pointer hover:bg-red-500/30 transition-colors whitespace-nowrap shrink-0"
               title="Click to inspect 72h Concurrency Soft-lock & Double-Sale dossier"
             >
               <Lock className="w-3 h-3 animate-pulse" />
-              <span className="hidden sm:inline">72h Soft-Lock</span>
+              <span className="hidden md:inline">72h Soft-Lock</span>
               <span className="font-mono">#{activeParcel.activeLockId}</span>
-              <span className="text-red-400">· {activeParcel.riskScore}% Risk</span>
+              <span className="text-red-400 hidden sm:inline">· {activeParcel.riskScore}% Risk</span>
             </button>
           ) : (
-            <span className="px-2 py-1 text-[10px] rounded bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 font-bold flex items-center gap-1">
+            <span className="px-2 py-0.5 text-[10px] rounded bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 font-bold flex items-center gap-1 whitespace-nowrap shrink-0">
               <ShieldCheck className="w-3 h-3" />
               <span>Clean</span>
             </span>
@@ -289,7 +283,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
           <div className="flex items-center p-0.5 rounded-[4px] bg-[var(--color-surface-base)] border border-[var(--color-border-subtle)] text-xs">
             <button
               onClick={() => setViewMode('split')}
-              className={`px-2 py-1 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer ${
+              className={`px-2 py-0.5 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                 viewMode === 'split'
                   ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
@@ -302,7 +296,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
 
             <button
               onClick={() => setViewMode('graph')}
-              className={`px-2 py-1 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer ${
+              className={`px-2 py-0.5 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                 viewMode === 'graph'
                   ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
@@ -315,7 +309,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
 
             <button
               onClick={() => setViewMode('map')}
-              className={`px-2 py-1 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer ${
+              className={`px-2 py-0.5 rounded-[3px] transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap ${
                 viewMode === 'map'
                   ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
@@ -330,7 +324,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
           {/* Area Conservation Trigger */}
           <button
             onClick={() => setIsAreaAuditorOpen(!isAreaAuditorOpen)}
-            className={`px-2 py-1 text-xs rounded-[4px] border transition-colors flex items-center gap-1 cursor-pointer ${
+            className={`px-2 py-0.5 text-xs rounded-[4px] border transition-colors flex items-center gap-1 cursor-pointer whitespace-nowrap ${
               isAreaAuditorOpen
                 ? 'bg-amber-500/20 text-amber-500 border-amber-500/40 font-bold'
                 : 'border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-base)]'
@@ -347,7 +341,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
           {/* Folio Dossier Slide-Over Trigger */}
           <button
             onClick={() => setIsFolioDrawerOpen(!isFolioDrawerOpen)}
-            className={`px-2.5 py-1 text-xs rounded-[4px] border transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-2 py-0.5 text-xs rounded-[4px] border transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
               isFolioDrawerOpen
                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 font-bold'
                 : 'border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-base)]'
@@ -355,7 +349,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
             title="Toggle Cadastral Folio Dossier"
           >
             <FileCheck2 className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
-            <span className="hidden lg:inline">{isBangla ? 'দলিল ও পরচা' : 'Folio Dossier'}</span>
+            <span className="hidden lg:inline">{isBangla ? 'দলিল ও পরচা' : 'Dossier'}</span>
             {activeNode.isFlagged && (
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
             )}
@@ -364,7 +358,7 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
           {/* Export Title Dossier Certificate */}
           <button
             onClick={() => setIsCertificateModalOpen(true)}
-            className="px-2.5 py-1 text-xs rounded-[4px] bg-[var(--color-surface-raised)] text-white font-semibold hover:brightness-110 transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+            className="px-2 py-0.5 text-xs rounded-[4px] bg-[var(--color-surface-raised)] text-white font-semibold hover:brightness-110 transition-all flex items-center gap-1 shadow-sm cursor-pointer whitespace-nowrap"
             title="Download Verified Title Search Dossier"
           >
             <Download className="w-3.5 h-3.5" />
@@ -375,10 +369,10 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1 rounded-[4px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10 transition-colors cursor-pointer ml-1"
+              className="p-1 rounded-[4px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10 transition-colors cursor-pointer ml-0.5"
               aria-label="Close Studio"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>

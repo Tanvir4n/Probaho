@@ -100,7 +100,7 @@ export interface PlotData {
   ledger: LedgerBlock[];
 }
 
-export const SAMPLE_PLOTS: PlotData[] = [
+const SAMPLE_PLOTS: PlotData[] = [
   {
     id: 'plot-1042',
     plotNumber: 'Dag 1042',
@@ -319,7 +319,7 @@ export interface FuzzyPair {
   normalizedReason: string;
 }
 
-export const SAMPLE_BANGLA_PAIRS: FuzzyPair[] = [
+const SAMPLE_BANGLA_PAIRS: FuzzyPair[] = [
   {
     name1: 'মোহাম্মদ রফিকুল ইসলাম',
     name2: 'মুহাম্মদ রফিকুল ইসলাম',
