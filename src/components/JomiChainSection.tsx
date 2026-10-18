@@ -45,6 +45,11 @@ import {
   X,
   FileCode2,
   Compass,
+  Network,
+  Maximize2,
+  ZoomIn,
+  Download,
+  Layers,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -364,6 +369,8 @@ export const JomiChainSection: React.FC = () => {
   const [isTamperActive, setIsTamperActive] = useState<boolean>(false);
   const [selectedFuzzyIndex, setSelectedFuzzyIndex] = useState<number>(0);
   const [isTrustReportModalOpen, setIsTrustReportModalOpen] = useState<boolean>(false);
+  const [lineageViewMode, setLineageViewMode] = useState<'networkx' | 'timeline'>('networkx');
+  const [isNetworkXModalOpen, setIsNetworkXModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const activePlot = SAMPLE_PLOTS.find((p) => p.id === selectedPlotId) || SAMPLE_PLOTS[0];
@@ -860,130 +867,291 @@ export const JomiChainSection: React.FC = () => {
         )}
 
         {/* ==================================================================== */}
-        {/* TAB 2: SURVEY-LINEAGE GRAPH (CS → SA → RS → BS) */}
+        {/* TAB 2: SURVEY-LINEAGE GRAPH (CS → SA → RS → BS) WITH NETWORKX VISUALIZER */}
         {/* ==================================================================== */}
         {activeTab === 'lineage' && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="glass-card p-6 rounded-[8px] border border-[var(--color-border-subtle)] space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="glass-card p-6 rounded-[8px] border border-[var(--color-border-subtle)] space-y-5">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
-                  <div className="text-[10px] font-mono text-[var(--color-surface-raised)] uppercase tracking-wider font-bold">
-                    Novelty #1: Multi-Generation Lineage Model
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-[var(--color-surface-raised)] uppercase tracking-wider font-bold">
+                      Novelty #1: Multi-Generation Lineage Model
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold">
+                      NetworkX 3.7 DiGraph
+                    </span>
                   </div>
-                  <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
-                    Cadastral Survey-Lineage Graph (CS → SA → RS → BS)
+                  <h3 className="text-xl font-bold text-[var(--color-text-primary)] mt-1">
+                    Cadastral Survey-Lineage Graph (CS 1940 → SA 1962 → RS 1988 → BS 2021)
                   </h3>
-                  <p className="text-xs text-[var(--color-text-secondary)]">
-                    Unlike naive databases that treat khatians in isolation, JomiChain builds a directed lineage graph 
-                    enforcing area conservation and parent-child dag integrity across all 4 historical Bengal/Bangladesh survey generations.
+                  <p className="text-xs text-[var(--color-text-secondary)] max-w-3xl">
+                    Unlike naive databases that treat khatians in isolation, Probaho builds a directed acyclic lineage graph 
+                    spanning 30,000 parcels and 29,065 edges, enforcing mathematical area conservation (Σ Child Areas ≤ Parent Area) 
+                    and catching boundary inflation, missing ancestors, and disjoint dag collisions.
                   </p>
                 </div>
 
-                {/* Plot Selector */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-[var(--color-text-secondary)]">Select Plot:</span>
-                  <select
-                    value={selectedPlotId}
-                    onChange={(e) => setSelectedPlotId(e.target.value)}
-                    className="glass-tile px-2.5 py-1.5 rounded-[3px] font-mono text-xs text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)] cursor-pointer"
-                  >
-                    <option value="plot-1042">Dag 1042 (Dhanmondi - Clean Verified)</option>
-                    <option value="plot-3078">Dag 3078 (Mirpur - Area Inflation Anomaly)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Lineage Tree Visualization */}
-              <div className="p-6 rounded-[6px] bg-black/40 border border-white/10 space-y-6 font-mono text-xs">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
-                  {/* Step 1: CS */}
-                  <div className="p-4 rounded-[4px] glass-tile border border-white/15 space-y-2 relative">
-                    <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold">
-                      <span>1940 · CS CADASTRAL</span>
-                      <span>GENESIS</span>
-                    </div>
-                    <div className="text-sm font-bold text-[var(--color-text-primary)]">CS Dag 102</div>
-                    <div className="text-[11px] text-[var(--color-text-secondary)]">Area: 29.0 shotok</div>
-                    <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">Owner: মৌলভি খোরশেদ আলম</div>
-                    <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-emerald-500/15 text-emerald-400 text-[9px] border border-emerald-500/30">
-                      Root Ancestor
-                    </span>
-                  </div>
-
-                  {/* Step 2: SA */}
-                  <div className="p-4 rounded-[4px] glass-tile border border-white/15 space-y-2 relative">
-                    <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold">
-                      <span>1962 · SA ACQUISITION</span>
-                      <span>PARTITION (50%)</span>
-                    </div>
-                    <div className="text-sm font-bold text-[var(--color-text-primary)]">SA Dag 481</div>
-                    <div className="text-[11px] text-[var(--color-text-secondary)]">Area: 14.5 shotok</div>
-                    <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">Owner: আব্দুস সোবহান আলম</div>
-                    <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-blue-500/15 text-blue-400 text-[9px] border border-blue-500/30">
-                      Area Conserved (14.5 + 14.5 = 29.0)
-                    </span>
-                  </div>
-
-                  {/* Step 3: RS */}
-                  <div className="p-4 rounded-[4px] glass-tile border border-white/15 space-y-2 relative">
-                    <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold">
-                      <span>1988 · RS REVISIONAL</span>
-                      <span>SURVEY</span>
-                    </div>
-                    <div className="text-sm font-bold text-[var(--color-text-primary)]">RS Dag 912</div>
-                    <div className="text-[11px] text-[var(--color-text-secondary)]">Area: 14.5 shotok</div>
-                    <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">Owner: আব্দুস সোবহান আলম</div>
-                    <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-emerald-500/15 text-emerald-400 text-[9px] border border-emerald-500/30">
-                      Deed #4821 Linked
-                    </span>
-                  </div>
-
-                  {/* Step 4: BS */}
-                  <div className={`p-4 rounded-[4px] glass-tile border space-y-2 relative ${
-                    selectedPlotId === 'plot-3078' ? 'border-rose-500/80 bg-rose-950/20' : 'border-white/15'
-                  }`}>
-                    <div className="flex items-center justify-between text-[10px] font-bold">
-                      <span className={selectedPlotId === 'plot-3078' ? 'text-rose-400' : 'text-emerald-400'}>
-                        2021 · BS CITY SURVEY
-                      </span>
-                      <span>CURRENT</span>
-                    </div>
-                    <div className="text-sm font-bold text-[var(--color-text-primary)]">
-                      {selectedPlotId === 'plot-3078' ? 'BS Dag 3078' : 'BS Dag 1042'}
-                    </div>
-                    <div className={`text-[11px] font-bold ${selectedPlotId === 'plot-3078' ? 'text-rose-400' : 'text-[var(--color-text-secondary)]'}`}>
-                      Area: {selectedPlotId === 'plot-3078' ? '18.2 shotok (!)' : '14.5 shotok'}
-                    </div>
-                    <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">
-                      Owner: {activePlot.currentOwnerBangla}
-                    </div>
-                    {selectedPlotId === 'plot-3078' ? (
-                      <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-rose-500/20 text-rose-300 text-[9px] border border-rose-500/40">
-                        🚨 ANOMALY: Child (+6.2) exceeds RS parent
-                      </span>
-                    ) : (
-                      <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-emerald-500/15 text-emerald-400 text-[9px] border border-emerald-500/30">
-                        0.0% Variance · Perfect Lineage
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Algorithmic Checks Explanation */}
-                <div className="p-4 rounded-[4px] bg-white/[0.04] border border-white/10 space-y-2">
-                  <div className="text-[11px] font-bold text-[var(--color-surface-raised)] uppercase">
-                    Graph Validation Rules In Action:
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-[var(--color-text-secondary)]">
-                    <div>
-                      • <strong>Area Conservation Constraint:</strong> &Sigma; Area(Children) &le; Area(Parent). Flags land grabbing where child parcels mysteriously expand.
-                    </div>
-                    <div>
-                      • <strong>Dag Collision Disjointness:</strong> Ensures a dag number cannot simultaneously exist in two disjoint family trees in the same Mouza.
-                    </div>
+                {/* View Mode Switcher */}
+                <div className="flex items-center gap-2 self-start lg:self-auto">
+                  <div className="flex items-center p-1 rounded-[4px] bg-black/40 border border-white/10 font-mono text-xs">
+                    <button
+                      onClick={() => setLineageViewMode('networkx')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] text-xs font-bold transition-all cursor-pointer ${
+                        lineageViewMode === 'networkx'
+                          ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                          : 'text-[var(--color-text-secondary)] hover:text-white'
+                      }`}
+                    >
+                      <Network className="w-3.5 h-3.5" />
+                      <span>{isBangla ? 'NetworkX DAG ভিজ্যুয়ালাইজার' : 'NetworkX DAG Visualizer'}</span>
+                    </button>
+                    <button
+                      onClick={() => setLineageViewMode('timeline')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] text-xs font-bold transition-all cursor-pointer ${
+                        lineageViewMode === 'timeline'
+                          ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                          : 'text-[var(--color-text-secondary)] hover:text-white'
+                      }`}
+                    >
+                      <GitBranch className="w-3.5 h-3.5" />
+                      <span>{isBangla ? '৪-জেনারেশন স্টেজ ভিউ' : '4-Generation Stage View'}</span>
+                    </button>
                   </div>
                 </div>
               </div>
+
+              {/* VIEW MODE 1: NETWORKX HIGH-RESOLUTION DAG VISUALIZER */}
+              {lineageViewMode === 'networkx' && (
+                <div className="space-y-5 animate-in fade-in duration-200">
+                  {/* High-Resolution Graph Canvas Card */}
+                  <div className="relative rounded-[8px] overflow-hidden border border-emerald-500/30 bg-[#0b1120] shadow-2xl group">
+                    <div className="absolute top-3 left-4 z-10 flex items-center gap-2">
+                      <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0f172a]/90 backdrop-blur border border-white/10 text-emerald-400 font-mono text-xs font-bold shadow-md">
+                        <Network className="w-3.5 h-3.5" />
+                        NetworkX High-Res Generated Graph (300 DPI)
+                      </span>
+                      <span className="hidden sm:inline-flex px-2 py-1 rounded bg-black/70 backdrop-blur border border-white/10 text-slate-300 font-mono text-[11px]">
+                        Clean Subgraph (LIN-000001) vs Fraud Subgraph (LIN-000053)
+                      </span>
+                    </div>
+
+                    <div className="absolute top-3 right-4 z-10 flex items-center gap-2">
+                      <button
+                        onClick={() => setIsNetworkXModalOpen(true)}
+                        className="flex items-center gap-1.5 px-3 py-1 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-mono text-xs font-bold shadow-md transition-all cursor-pointer"
+                        title="Click to view full 300 DPI image"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                        <span>{isBangla ? 'ফুলস্ক্রিন জুম' : 'Fullscreen HD'}</span>
+                      </button>
+                      <a
+                        href="/ml/plots/networkx_lineage_graph.png"
+                        download="probaho_networkx_cadastral_lineage_graph.png"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded bg-black/60 hover:bg-black/90 border border-white/20 text-slate-200 font-mono text-xs transition-all cursor-pointer"
+                        title="Download publication-quality image"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+
+                    {/* Image Viewer */}
+                    <div
+                      onClick={() => setIsNetworkXModalOpen(true)}
+                      className="cursor-zoom-in overflow-hidden max-h-[620px] flex items-center justify-center p-2 pt-12 bg-[#0b1120]"
+                    >
+                      <img
+                        src="/ml/plots/networkx_lineage_graph.png"
+                        alt="Probaho NetworkX Cadastral Lineage Graph (CS -> SA -> RS -> BS)"
+                        className="w-full h-auto object-contain rounded transition-transform duration-300 group-hover:scale-[1.01]"
+                      />
+                    </div>
+
+                    <div className="px-4 py-2.5 bg-[#0f172a] border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-400">
+                      <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1.5 text-emerald-400">
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                          Clean Verified Ancestral Lineage (Area Conserved)
+                        </span>
+                        <span className="flex items-center gap-1.5 text-rose-400">
+                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                          Area Inflation Violation (Child &gt; Parent)
+                        </span>
+                        <span className="flex items-center gap-1.5 text-amber-400">
+                          <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                          Missing Ancestor (Orphan Node)
+                        </span>
+                      </div>
+                      <span className="text-slate-500 text-[11px]">
+                        Generated via Python NetworkX 3.7 &middot; File: <code className="text-slate-300">ml/plots/networkx_lineage_graph.png</code>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 4 Quantitative Graph Topology Metric Badges */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 font-mono">
+                    <div className="p-3.5 rounded-[6px] bg-black/40 border border-white/10 space-y-1">
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">Total Cadastral Nodes</div>
+                      <div className="text-lg font-bold text-emerald-400">30,000</div>
+                      <div className="text-[10px] text-slate-500">CS 3k &middot; SA 6k &middot; RS 9k &middot; BS 12k</div>
+                    </div>
+                    <div className="p-3.5 rounded-[6px] bg-black/40 border border-white/10 space-y-1">
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">Directed Lineage Edges</div>
+                      <div className="text-lg font-bold text-sky-400">29,065</div>
+                      <div className="text-[10px] text-slate-500">Splits, Merges &amp; Continuations</div>
+                    </div>
+                    <div className="p-3.5 rounded-[6px] bg-black/40 border border-white/10 space-y-1">
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">Lineage Trees / Genealogies</div>
+                      <div className="text-lg font-bold text-purple-400">1,129</div>
+                      <div className="text-[10px] text-slate-500">DAG Acyclicity: Verified ✓</div>
+                    </div>
+                    <div className="p-3.5 rounded-[6px] bg-black/40 border border-white/10 space-y-1">
+                      <div className="text-[10px] text-slate-400 uppercase font-bold">Area Conservation Math</div>
+                      <div className="text-lg font-bold text-amber-400">Σ Child ≤ Parent</div>
+                      <div className="text-[10px] text-slate-500">Tolerance: ε = 0.01 shotok</div>
+                    </div>
+                  </div>
+
+                  {/* Deep-Dive Subgraph Comparison Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+                    <div className="p-4 rounded-[6px] bg-emerald-950/20 border border-emerald-500/30 space-y-2">
+                      <div className="flex items-center justify-between text-emerald-400 font-bold">
+                        <span>Verified Clean Subgraph (LIN-000001)</span>
+                        <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-[10px]">PASSED ✓</span>
+                      </div>
+                      <p className="text-slate-300 text-[11px] leading-relaxed">
+                        Starts from CS 1940 root (<code className="text-emerald-300">CS-08359</code>, 69.11 shotok) and partitions across 4 survey generations into 3 SA plots &rarr; 5 RS subdivisions &rarr; 8 BS leaf plots. At every partition branch, <code className="text-emerald-300">Σ Child Areas == Parent Area</code> with 0.00% variance.
+                      </p>
+                      <div className="text-[10px] text-emerald-400/80">
+                        Topological Status: 17 Nodes &middot; 16 Edges &middot; Zero Cyclic Loops &middot; Unbroken Title Chain
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-[6px] bg-rose-950/20 border border-rose-500/30 space-y-2">
+                      <div className="flex items-center justify-between text-rose-400 font-bold">
+                        <span>Fraud Subgraph with Injected Anomalies (LIN-000053)</span>
+                        <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-[10px]">FLAGGED 🚨</span>
+                      </div>
+                      <p className="text-slate-300 text-[11px] leading-relaxed">
+                        • <strong>Node PL-1962-000081 (SA):</strong> <code className="text-rose-300">AREA_INFLATION</code> detected! Sum of outgoing partition parcels exceeds registered parental area of CS root.<br />
+                        • <strong>Node PL-1988-007300 (RS):</strong> <code className="text-amber-300">MISSING_ANCESTOR</code> orphan node lacking valid parental survey transition edge.
+                      </p>
+                      <div className="text-[10px] text-rose-400/80">
+                        Detection Status: Flagged automatically by NetworkX topological validation and XGBoost classifier.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW MODE 2: HISTORICAL SURVEY STAGES TIMELINE */}
+              {lineageViewMode === 'timeline' && (
+                <div className="space-y-6 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-[var(--color-text-secondary)]">Inspect Specific Plot Timeline:</span>
+                    <select
+                      value={selectedPlotId}
+                      onChange={(e) => setSelectedPlotId(e.target.value)}
+                      className="glass-tile px-2.5 py-1.5 rounded-[3px] font-mono text-xs text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)] cursor-pointer"
+                    >
+                      <option value="plot-1042">Dag 1042 (Dhanmondi - Clean Verified)</option>
+                      <option value="plot-3078">Dag 3078 (Mirpur - Area Inflation Anomaly)</option>
+                    </select>
+                  </div>
+
+                  {/* Lineage Tree Visualization */}
+                  <div className="p-6 rounded-[6px] bg-black/40 border border-white/10 space-y-6 font-mono text-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+                      {/* Step 1: CS */}
+                      <div className="p-4 rounded-[4px] glass-tile border border-white/15 space-y-2 relative">
+                        <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold">
+                          <span>1940 · CS CADASTRAL</span>
+                          <span>GENESIS</span>
+                        </div>
+                        <div className="text-sm font-bold text-[var(--color-text-primary)]">CS Dag 102</div>
+                        <div className="text-[11px] text-[var(--color-text-secondary)]">Area: 29.0 shotok</div>
+                        <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">Owner: মৌলভি খোরশেদ আলম</div>
+                        <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-emerald-500/15 text-emerald-400 text-[9px] border border-emerald-500/30">
+                          Root Ancestor
+                        </span>
+                      </div>
+
+                      {/* Step 2: SA */}
+                      <div className="p-4 rounded-[4px] glass-tile border border-white/15 space-y-2 relative">
+                        <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold">
+                          <span>1962 · SA ACQUISITION</span>
+                          <span>PARTITION (50%)</span>
+                        </div>
+                        <div className="text-sm font-bold text-[var(--color-text-primary)]">SA Dag 481</div>
+                        <div className="text-[11px] text-[var(--color-text-secondary)]">Area: 14.5 shotok</div>
+                        <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">Owner: আব্দুস সোবহান আলম</div>
+                        <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-blue-500/15 text-blue-400 text-[9px] border border-blue-500/30">
+                          Area Conserved (14.5 + 14.5 = 29.0)
+                        </span>
+                      </div>
+
+                      {/* Step 3: RS */}
+                      <div className="p-4 rounded-[4px] glass-tile border border-white/15 space-y-2 relative">
+                        <div className="flex items-center justify-between text-[10px] text-emerald-400 font-bold">
+                          <span>1988 · RS REVISIONAL</span>
+                          <span>SURVEY</span>
+                        </div>
+                        <div className="text-sm font-bold text-[var(--color-text-primary)]">RS Dag 912</div>
+                        <div className="text-[11px] text-[var(--color-text-secondary)]">Area: 14.5 shotok</div>
+                        <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">Owner: আব্দুস সোবহান আলম</div>
+                        <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-emerald-500/15 text-emerald-400 text-[9px] border border-emerald-500/30">
+                          Deed #4821 Linked
+                        </span>
+                      </div>
+
+                      {/* Step 4: BS */}
+                      <div className={`p-4 rounded-[4px] glass-tile border space-y-2 relative ${
+                        selectedPlotId === 'plot-3078' ? 'border-rose-500/80 bg-rose-950/20' : 'border-white/15'
+                      }`}>
+                        <div className="flex items-center justify-between text-[10px] font-bold">
+                          <span className={selectedPlotId === 'plot-3078' ? 'text-rose-400' : 'text-emerald-400'}>
+                            2021 · BS CITY SURVEY
+                          </span>
+                          <span>CURRENT</span>
+                        </div>
+                        <div className="text-sm font-bold text-[var(--color-text-primary)]">
+                          {selectedPlotId === 'plot-3078' ? 'BS Dag 3078' : 'BS Dag 1042'}
+                        </div>
+                        <div className={`text-[11px] font-bold ${selectedPlotId === 'plot-3078' ? 'text-rose-400' : 'text-[var(--color-text-secondary)]'}`}>
+                          Area: {selectedPlotId === 'plot-3078' ? '18.2 shotok (!)' : '14.5 shotok'}
+                        </div>
+                        <div className="text-[10px] text-[var(--color-text-tertiary)] truncate">
+                          Owner: {activePlot.currentOwnerBangla}
+                        </div>
+                        {selectedPlotId === 'plot-3078' ? (
+                          <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-rose-500/20 text-rose-300 text-[9px] border border-rose-500/40">
+                            🚨 ANOMALY: Child (+6.2) exceeds RS parent
+                          </span>
+                        ) : (
+                          <span className="inline-block px-1.5 py-0.5 rounded-[2px] bg-emerald-500/15 text-emerald-400 text-[9px] border border-emerald-500/30">
+                            0.0% Variance · Perfect Lineage
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Algorithmic Checks Explanation */}
+                    <div className="p-4 rounded-[4px] bg-white/[0.04] border border-white/10 space-y-2">
+                      <div className="text-[11px] font-bold text-[var(--color-surface-raised)] uppercase">
+                        Graph Validation Rules In Action:
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px] text-[var(--color-text-secondary)]">
+                        <div>
+                          • <strong>Area Conservation Constraint:</strong> &Sigma; Area(Children) &le; Area(Parent). Flags land grabbing where child parcels mysteriously expand.
+                        </div>
+                        <div>
+                          • <strong>Dag Collision Disjointness:</strong> Ensures a dag number cannot simultaneously exist in two disjoint family trees in the same Mouza.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1365,6 +1533,86 @@ export const JomiChainSection: React.FC = () => {
                 >
                   Close Verification Window
                 </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* ==================================================================== */}
+        {/* NETWORKX HIGH-RESOLUTION FULLSCREEN LIGHTBOX MODAL */}
+        {/* ==================================================================== */}
+        <AnimatePresence>
+          {isNetworkXModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                className="max-w-6xl w-full max-h-[92vh] flex flex-col rounded-[10px] bg-[#0b1120] border border-emerald-500/40 shadow-2xl overflow-hidden"
+              >
+                {/* Modal Header */}
+                <div className="p-4 px-6 border-b border-white/10 flex items-center justify-between bg-[#0f172a] shrink-0">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded bg-emerald-500/20 text-emerald-400">
+                      <Network className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-white font-mono flex items-center gap-2">
+                        <span>NetworkX Cadastral Lineage Graph (CS → SA → RS → BS)</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                          300 DPI Publication Quality
+                        </span>
+                      </h4>
+                      <p className="text-[11px] text-slate-400 font-mono">
+                        NetworkX 3.7 DiGraph &middot; 30,000 Nodes &middot; 29,065 Lineage Edges &middot; 1,129 Independent Genealogies
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <a
+                      href="/ml/plots/networkx_lineage_graph.png"
+                      download="probaho_networkx_lineage_graph.png"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition-all cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{isBangla ? 'ডাউনলোড PNG' : 'Download PNG'}</span>
+                    </a>
+                    <button
+                      onClick={() => setIsNetworkXModalOpen(false)}
+                      className="p-1.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                      aria-label="Close Modal"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Modal Body: Scrollable Image Viewport */}
+                <div className="flex-1 overflow-auto p-4 bg-[#080d1a] flex items-center justify-center">
+                  <img
+                    src="/ml/plots/networkx_lineage_graph.png"
+                    alt="NetworkX Cadastral Lineage Graph High Resolution"
+                    className="max-w-full h-auto object-contain rounded shadow-lg"
+                  />
+                </div>
+
+                {/* Modal Footer Callout */}
+                <div className="p-3.5 px-6 border-t border-white/10 bg-[#0f172a] shrink-0 font-mono text-xs text-slate-300 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-6">
+                    <span className="flex items-center gap-1.5 text-emerald-400 text-[11px]">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                      Left: Clean Verified Tree LIN-000001 (0.0% variance)
+                    </span>
+                    <span className="flex items-center gap-1.5 text-rose-400 text-[11px]">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                      Right: Injected Violations LIN-000053 (Area Inflation &amp; Orphan Ancestor)
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">
+                    Press <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">ESC</kbd> or click Close to return
+                  </span>
+                </div>
               </motion.div>
             </div>
           )}
