@@ -3,21 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { MassMarketingView } from './components/MassMarketingView';
-import { MassComponentWorkbench } from './components/MassComponentWorkbench';
-import { MassTokenInspector } from './components/MassTokenInspector';
-import { MassSpecDocument } from './components/MassSpecDocument';
 import {
   Layers,
   Sliders,
   FileCode,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ProbahoLogo, ProbahoBrand } from './components/ProbahoLogo';
 import { motion, AnimatePresence } from 'motion/react';
+
+// Lazy-loaded design system modal panels (loaded on-demand, reducing initial bundle weight)
+const MassComponentWorkbench = lazy(() =>
+  import('./components/MassComponentWorkbench').then((m) => ({ default: m.MassComponentWorkbench }))
+);
+const MassTokenInspector = lazy(() =>
+  import('./components/MassTokenInspector').then((m) => ({ default: m.MassTokenInspector }))
+);
+const MassSpecDocument = lazy(() =>
+  import('./components/MassSpecDocument').then((m) => ({ default: m.MassSpecDocument }))
+);
 
 function AppContent() {
   const [isDesignSystemOpen, setIsDesignSystemOpen] = useState(false);
@@ -127,9 +136,18 @@ function AppContent() {
                   exit={{ opacity: 0, y: -16 }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {systemTab === 'tokens' && <MassTokenInspector />}
-                  {systemTab === 'workbench' && <MassComponentWorkbench />}
-                  {systemTab === 'spec' && <MassSpecDocument />}
+                  <Suspense
+                    fallback={
+                      <div className="py-20 flex flex-col items-center justify-center gap-3 text-xs font-mono text-[var(--color-surface-raised)]">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Initializing System Architecture...</span>
+                      </div>
+                    }
+                  >
+                    {systemTab === 'tokens' && <MassTokenInspector />}
+                    {systemTab === 'workbench' && <MassComponentWorkbench />}
+                    {systemTab === 'spec' && <MassSpecDocument />}
+                  </Suspense>
                 </motion.div>
               </AnimatePresence>
             </div>

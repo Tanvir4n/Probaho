@@ -73,50 +73,50 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
             return (
               <div
                 key={plan.id}
-                className={`rounded-[8px] p-8 flex flex-col justify-between transition-all duration-300 relative glass-card ${
+                className={`rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 relative specular-card ${
                   isPro
-                    ? 'border-2 border-[var(--color-surface-raised)] shadow-[0_24px_60px_-10px_rgba(0,0,0,0.5),0_0_35px_rgba(34,197,94,0.22)] md:-translate-y-2'
-                    : 'hover:border-[var(--color-surface-raised)]'
+                    ? 'border-2 border-emerald-500 shadow-[0_24px_60px_-10px_rgba(0,0,0,0.6),0_0_40px_rgba(16,185,129,0.25)] md:-translate-y-3 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-b before:from-emerald-500/[0.08] before:to-transparent before:pointer-events-none'
+                    : 'border border-white/10 dark:border-white/10 hover:border-emerald-500/40 hover:shadow-[0_20px_45px_rgba(0,0,0,0.4)]'
                 }`}
               >
                 {plan.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--color-surface-raised)] text-white text-[10px] font-bold font-mono px-3 py-0.5 rounded-[3px] uppercase tracking-wider shadow-[0_4px_12px_rgba(34,197,94,0.4)]">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-bold font-mono px-3.5 py-1 rounded-full uppercase tracking-wider shadow-[0_4px_16px_rgba(16,185,129,0.5)] z-10">
                     {plan.badge}
                   </div>
                 )}
 
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-xl font-bold text-[var(--color-text-primary)]">{plan.name}</h3>
-                    <p className="text-xs text-[var(--color-text-secondary)] mt-1 leading-relaxed">
+                    <h3 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">{plan.name}</h3>
+                    <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] mt-1.5 leading-relaxed">
                       {plan.description}
                     </p>
                   </div>
 
                   {/* Price */}
-                  <div className="border-b border-[var(--color-border-subtle)] pb-6 font-mono">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-extrabold text-[var(--color-text-primary)] mass-num">
+                  <div className="border-b border-white/10 dark:border-white/10 pb-6 font-mono">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-[var(--color-text-primary)] mass-num">
                         ${price}
                       </span>
-                      <span className="text-xs text-[var(--color-text-secondary)]">/ month</span>
+                      <span className="text-xs text-[var(--color-text-secondary)] font-medium">/ month</span>
                     </div>
                     {isAnnual && price > 0 && (
-                      <div className="text-[10px] text-[var(--color-text-secondary)] mt-1">
-                        Billed annually (${price * 12}/year)
+                      <div className="text-[11px] text-emerald-400 font-semibold mt-1.5">
+                        Billed annually (${price * 12}/year) · 20% discount applied
                       </div>
                     )}
                   </div>
 
                   {/* Features */}
                   <div className="space-y-3">
-                    <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase tracking-wider">
+                    <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase tracking-wider font-semibold">
                       Included Capabilities:
                     </div>
-                    <ul className="space-y-2.5 text-xs text-[var(--color-text-primary)]">
+                    <ul className="space-y-2.5 text-xs sm:text-sm text-[var(--color-text-primary)]">
                       {plan.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 leading-snug">
-                          <Check className="w-4 h-4 text-[var(--color-surface-raised)] shrink-0 mt-0.5" />
+                        <li key={idx} className="flex items-start gap-3 leading-snug">
+                          <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5 shadow-sm" />
                           <span>{feature}</span>
                         </li>
                       ))}
@@ -128,10 +128,10 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
                 <div className="pt-8">
                   <button
                     onClick={() => onSelectPlan(plan)}
-                    className={`w-full py-3 text-xs font-semibold rounded-[3px] transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer ${
+                    className={`w-full py-3.5 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 font-mono uppercase tracking-wider cursor-pointer ${
                       isPro
-                        ? 'bg-[var(--color-surface-raised)] text-white hover:brightness-110 shadow-[0_8px_20px_rgba(34,197,94,0.35)]'
-                        : 'glass-tile text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)]'
+                        ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white hover:brightness-110 shadow-[0_8px_24px_rgba(16,185,129,0.4)] hover:shadow-[0_10px_30px_rgba(16,185,129,0.55)]'
+                        : 'bg-white/5 hover:bg-white/10 text-[var(--color-text-primary)] border border-white/10 hover:border-emerald-500/40'
                     }`}
                   >
                     <span>{plan.cta}</span>
@@ -144,20 +144,25 @@ export const MassPricingSection: React.FC<MassPricingSectionProps> = ({ onSelect
         </div>
 
         {/* Enterprise Studio Callout */}
-        <div className="p-8 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="space-y-1">
-            <h4 className="text-base font-semibold text-[var(--color-text-primary)]">
+        <div className="p-8 sm:p-10 rounded-2xl specular-card border border-white/10 dark:border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_16px_40px_rgba(0,0,0,0.3)]">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-emerald-400 uppercase tracking-widest font-semibold">
+              <ShieldCheck className="w-4 h-4" />
+              <span>Institutional On-Premise</span>
+            </div>
+            <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
               {isBangla ? 'ভূমি রেজিস্ট্রি অফিস, আইনি প্রতিষ্ঠান বা আর্থিক সংস্থা?' : 'Land Registry Office, Legal Practice, or Financial Institution?'}
             </h4>
-            <p className="text-xs text-[var(--color-text-secondary)]">
+            <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
               {isBangla ? 'আমরা রেজিস্ট্রি অডিটের জন্য প্রাতিষ্ঠানিক স্থাপন, অন-প্রিমিস ডকুমেন্ট ভল্ট এবং উচ্চ-ক্ষমতার ব্যাচ এপিআই সরবরাহ করি।' : 'We offer institutional deployment, on-premise document vaults, and high-throughput batch APIs for registry audits.'}
             </p>
           </div>
           <button
             onClick={() => onSelectPlan(MASSLABS_PRICING[2])}
-            className="px-5 py-2.5 text-xs font-mono text-[var(--color-text-primary)] bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] whitespace-nowrap cursor-pointer transition-colors"
+            className="px-6 py-3.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider bg-white text-black hover:bg-zinc-200 transition-all shrink-0 cursor-pointer shadow-lg flex items-center gap-2"
           >
-            {isBangla ? 'প্রাতিষ্ঠানিক চুক্তি অনুরোধ' : 'Request Enterprise Terms'}
+            <span>{isBangla ? 'ইনস্টিটিউশনাল এপিআই' : 'Contact Enterprise'}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

@@ -80,6 +80,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const gZoomRef = useRef<SVGGElement>(null);
+  const sweepRotatorRef = useRef<SVGGElement>(null);
 
   // Map viewport dimensions
   const [dimensions, setDimensions] = useState({ width: 960, height: 760 });
@@ -108,10 +109,10 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
   const [districtSearchQuery, setDistrictSearchQuery] = useState<string>('');
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
-  // Radar Animation States
+  // Radar Animation States (GPU-accelerated via ref, avoids 60 FPS whole-component re-renders)
   const [isRadarActive, setIsRadarActive] = useState<boolean>(true);
   const [radarRpm, setRadarRpm] = useState<number>(10);
-  const [radarAngle, setRadarAngle] = useState<number>(135);
+  const radarAngleRef = useRef<number>(135);
 
   // Alert Banner State
   const [isAlertVisible, setIsAlertVisible] = useState<boolean>(true);
@@ -154,24 +155,6 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Continuous Radar Sweep Animation Loop
-  useEffect(() => {
-    if (!isRadarActive || mapThemeMode !== 'radar') return;
-    let animId: number;
-    let lastTime = performance.now();
-
-    const tick = (now: number) => {
-      const delta = (now - lastTime) / 1000;
-      lastTime = now;
-      const degreesPerSec = radarRpm * 6;
-      setRadarAngle((prev) => (prev + degreesPerSec * delta) % 360);
-      animId = requestAnimationFrame(tick);
-    };
-
-    animId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(animId);
-  }, [isRadarActive, radarRpm, mapThemeMode]);
-
   // Calibrate D3 Mercator Projection for Bangladesh using fitExtent on real GeoJSON data
   // Ensures optimal center, aspect ratio, scale, and exact padding on all four edges
   const projection = useMemo(() => {
@@ -197,6 +180,31 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
     const coords = projection(lockedHub.coordinates);
     return coords ? { x: coords[0], y: coords[1] } : { x: dimensions.width / 2, y: dimensions.height / 2 };
   }, [projection, lockedHub, dimensions]);
+
+  // Continuous Radar Sweep Animation Loop - Hardware GPU-accelerated via ref (0 React state re-renders)
+  useEffect(() => {
+    if (!isRadarActive || mapThemeMode !== 'radar') return;
+    let animId: number;
+    let lastTime = performance.now();
+
+    const tick = (now: number) => {
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+      const degreesPerSec = radarRpm * 6;
+      radarAngleRef.current = (radarAngleRef.current + degreesPerSec * delta) % 360;
+
+      if (sweepRotatorRef.current) {
+        sweepRotatorRef.current.setAttribute(
+          'transform',
+          `rotate(${radarAngleRef.current}, ${lockedPoint.x}, ${lockedPoint.y})`
+        );
+      }
+      animId = requestAnimationFrame(tick);
+    };
+
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [isRadarActive, radarRpm, mapThemeMode, lockedPoint]);
 
   // Set up D3 Zoom & Pan
   useEffect(() => {
@@ -302,18 +310,37 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
   const gridLats = [21, 22, 23, 24, 25, 26];
   const gridLngs = [88, 89, 90, 91, 92];
 
-  // Radial sweep cone generator path for radar mode
+  // Radial sweep cone generator path for radar mode (pre-calculated base geometry)
   const radarSweepRadius = 260;
   const sweepAngleDeg = 48;
-  const sweepStartRad = ((radarAngle - sweepAngleDeg) * Math.PI) / 180;
-  const sweepEndRad = (radarAngle * Math.PI) / 180;
+  const baseSweepStartRad = (-sweepAngleDeg * Math.PI) / 180;
+  const baseStartX = lockedPoint.x + radarSweepRadius * Math.cos(baseSweepStartRad);
+  const baseStartY = lockedPoint.y + radarSweepRadius * Math.sin(baseSweepStartRad);
+  const baseEndX = lockedPoint.x + radarSweepRadius;
+  const baseEndY = lockedPoint.y;
+  const baseRadarSweepPath = `M ${lockedPoint.x} ${lockedPoint.y} L ${baseStartX} ${baseStartY} A ${radarSweepRadius} ${radarSweepRadius} 0 0 1 ${baseEndX} ${baseEndY} Z`;
 
-  const startX = lockedPoint.x + radarSweepRadius * Math.cos(sweepStartRad);
-  const startY = lockedPoint.y + radarSweepRadius * Math.sin(sweepStartRad);
-  const endX = lockedPoint.x + radarSweepRadius * Math.cos(sweepEndRad);
-  const endY = lockedPoint.y + radarSweepRadius * Math.sin(sweepEndRad);
+  // Pre-calculated memoized path cache for all 8 divisions and rivers (avoids GeoJSON path re-evaluations)
+  const divisionPathMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    BANGLADESH_GEOJSON.features.forEach((feature: any) => {
+      map[feature.id] = geoPathGenerator(feature) || '';
+    });
+    return map;
+  }, [geoPathGenerator]);
 
-  const radarSweepPath = `M ${lockedPoint.x} ${lockedPoint.y} L ${startX} ${startY} A ${radarSweepRadius} ${radarSweepRadius} 0 0 1 ${endX} ${endY} Z`;
+  const riverPathMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    const riverLineGen = d3
+      .line<[number, number]>()
+      .x((d) => projection(d)![0])
+      .y((d) => projection(d)![1])
+      .curve(d3.curveBasis);
+    BANGLADESH_RIVERS.forEach((river) => {
+      map[river.id] = riverLineGen(river.path as [number, number][]) || '';
+    });
+    return map;
+  }, [projection]);
 
   return (
     <div
@@ -1106,18 +1133,24 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
               ))}
 
               <circle cx={lockedPoint.x} cy={lockedPoint.y} r={radarSweepRadius} fill="none" stroke="rgba(239, 68, 68, 0.65)" strokeWidth="1.4" strokeDasharray="6 4" />
-              <path d={radarSweepPath} fill="url(#radarSweepGradient)" opacity="0.45" />
 
-              <line
-                x1={lockedPoint.x}
-                y1={lockedPoint.y}
-                x2={endX}
-                y2={endY}
-                stroke="#ef4444"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                filter="drop-shadow(0 0 6px #ef4444)"
-              />
+              {/* Hardware GPU-transformed Rotating Sweep Group (0 React Re-renders) */}
+              <g
+                ref={sweepRotatorRef}
+                transform={`rotate(${radarAngleRef.current}, ${lockedPoint.x}, ${lockedPoint.y})`}
+              >
+                <path d={baseRadarSweepPath} fill="url(#radarSweepGradient)" opacity="0.45" />
+                <line
+                  x1={lockedPoint.x}
+                  y1={lockedPoint.y}
+                  x2={lockedPoint.x + radarSweepRadius}
+                  y2={lockedPoint.y}
+                  stroke="#ef4444"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  filter="drop-shadow(0 0 6px #ef4444)"
+                />
+              </g>
 
               <line x1={lockedPoint.x - 14} y1={lockedPoint.y} x2={lockedPoint.x + 14} y2={lockedPoint.y} stroke="#ef4444" strokeWidth="1.6" />
               <line x1={lockedPoint.x} y1={lockedPoint.y - 14} x2={lockedPoint.x} y2={lockedPoint.y + 14} stroke="#ef4444" strokeWidth="1.6" />
@@ -1137,7 +1170,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
           <g className="divisions-layer">
             {BANGLADESH_GEOJSON.features.map((feature: any) => {
               const divId = feature.id as string;
-              const pathStr = geoPathGenerator(feature);
+              const pathStr = divisionPathMap[divId];
               const divProfile = BANGLADESH_DIVISIONS.find((d) => d.id === divId);
               const isHovered = hoveredDivisionId === divId;
               const isLocked = lockedHub.divisionId === divId;
@@ -1219,12 +1252,7 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
           {showRivers && (
             <g className="rivers-layer pointer-events-none">
               {BANGLADESH_RIVERS.map((river) => {
-                const riverLineGen = d3
-                  .line<[number, number]>()
-                  .x((d) => projection(d)![0])
-                  .y((d) => projection(d)![1])
-                  .curve(d3.curveBasis);
-                const pathStr = riverLineGen(river.path as [number, number][]);
+                const pathStr = riverPathMap[river.id];
                 const isMajor = river.id === 'padma' || river.id === 'jamuna' || river.id === 'meghna';
                 return (
                   pathStr && (

@@ -10,7 +10,7 @@
  * - High-density cadastral plot dispute inspection table
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Suspense, lazy } from 'react';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -42,7 +42,12 @@ import {
   TrendDataPoint,
   toBnDigit,
 } from '../data/riskAnalyticsData';
-import { BangladeshNationalRiskRadarMap } from './BangladeshNationalRiskRadarMap';
+
+// Performance optimization: Heavy GIS GeoJSON radar map lazy-loaded on demand
+const BangladeshNationalRiskRadarMap = lazy(() =>
+  import('./BangladeshNationalRiskRadarMap').then((m) => ({ default: m.BangladeshNationalRiskRadarMap }))
+);
+
 import { NATIONAL_HUBS, NationalHub } from '../data/bangladeshNationalGeoData';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -323,13 +328,13 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
           {/* Action Toolbar with View Mode & Date-Range Selector */}
           <div className="flex flex-col xl:flex-row xl:items-center gap-3 shrink-0">
             {/* View Mode Switcher: Radar vs Charts vs Split */}
-            <div className="flex items-center p-1 bg-[var(--color-surface-muted)] rounded border border-[var(--color-border-subtle)] text-xs font-mono">
+            <div className="flex items-center p-1.5 bg-[var(--color-surface-muted)] rounded-xl border border-[var(--color-border-subtle)] text-xs font-mono shadow-sm">
               <button
                 onClick={() => setAnalyticsViewMode('radar')}
-                className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                   analyticsViewMode === 'radar'
-                    ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
-                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                    ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/5'
                 }`}
                 title="360° Bangladesh Regional Radar Map (D3.js)"
               >
@@ -338,10 +343,10 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
               </button>
               <button
                 onClick={() => setAnalyticsViewMode('charts')}
-                className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                   analyticsViewMode === 'charts'
-                    ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
-                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                    ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/5'
                 }`}
                 title="Dhaka Metro Zone Rankings & Vectors (Recharts)"
               >
@@ -350,10 +355,10 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
               </button>
               <button
                 onClick={() => setAnalyticsViewMode('split')}
-                className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
                   analyticsViewMode === 'split'
-                    ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-sm'
-                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+                    ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-sm'
+                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/5'
                 }`}
                 title="Split View: National Radar + Metro Analytics"
               >
@@ -560,62 +565,66 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
         {/* ====================================================================
             2. EXECUTIVE STATISTICAL KPI STRIP (TABULAR NUMERALS, NO PILL SANDWICH)
            ==================================================================== */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/60 backdrop-blur-sm space-y-1.5">
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="specular-card p-6 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/40 shadow-lg hover:shadow-xl transition-all duration-300 space-y-2 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase tracking-wider font-medium">
               {isBangla ? 'মেট্রোপলিটন গড় ঝুঁকি সূচক' : 'Metro Average Risk Index'}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-[var(--color-text-primary)] flex items-baseline gap-2">
+            <div className="text-2xl sm:text-4xl font-bold font-mono tabular-nums text-[var(--color-text-primary)] flex items-baseline gap-2">
               <span>52.1</span>
               <span className="text-xs font-normal text-[var(--color-text-secondary)] font-mono">/ 100</span>
             </div>
-            <div className="text-[11px] font-mono text-emerald-500 flex items-center gap-1">
+            <div className="text-[11px] font-mono text-emerald-500 flex items-center gap-1 pt-1 font-semibold">
               <span>↓ -4.3%</span>
-              <span className="text-[var(--color-text-tertiary)]">{isBangla ? 'পূর্ববর্তী ত্রৈমাসিক হতে' : 'from Q2 2026'}</span>
+              <span className="text-[var(--color-text-tertiary)] font-normal">{isBangla ? 'পূর্ববর্তী ত্রৈমাসিক হতে' : 'from Q2 2026'}</span>
             </div>
           </div>
 
-          <div className="p-4 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/60 backdrop-blur-sm space-y-1.5">
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase">
+          <div className="specular-card p-6 rounded-2xl border border-[var(--color-border-subtle)] hover:border-red-500/40 shadow-lg hover:shadow-xl transition-all duration-300 space-y-2 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-red-500/10 transition-colors" />
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase tracking-wider font-medium">
               {isBangla ? 'উচ্চ ঝুঁকিপূর্ণ এলাকা' : 'High & Critical Zones'}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-red-500 flex items-baseline gap-2">
+            <div className="text-2xl sm:text-4xl font-bold font-mono tabular-nums text-red-500 flex items-baseline gap-2">
               <span>4</span>
               <span className="text-xs font-normal text-[var(--color-text-secondary)] font-mono">
                 / 10 {isBangla ? 'থানা' : 'Thanas'}
               </span>
             </div>
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)]">
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] truncate pt-1">
               {isBangla ? 'ধানমন্ডি, পুরান ঢাকা, মিরপুর, বসিলা' : 'Dhanmondi, Old Dhaka, Mirpur, Bosila'}
             </div>
           </div>
 
-          <div className="p-4 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/60 backdrop-blur-sm space-y-1.5">
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase">
+          <div className="specular-card p-6 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/40 shadow-lg hover:shadow-xl transition-all duration-300 space-y-2 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase tracking-wider font-medium">
               {isBangla ? 'প্রতিরোধকৃত দ্বৈত লেনদেন' : 'Prevented Fraud Exposure'}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-[var(--color-surface-raised)] flex items-baseline gap-1.5">
+            <div className="text-2xl sm:text-4xl font-bold font-mono tabular-nums text-emerald-400 flex items-baseline gap-1.5">
               <span>৳ 584.1</span>
               <span className="text-xs font-normal text-[var(--color-text-secondary)] font-mono">
                 {isBangla ? 'কোটি' : 'Cr BDT'}
               </span>
             </div>
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)]">
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] pt-1">
               {isBangla ? '২,১৮৪টি সম্ভাব্য বিরোধ স্থগিত' : '2,184 contested deeds halted'}
             </div>
           </div>
 
-          <div className="p-4 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/60 backdrop-blur-sm space-y-1.5">
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase">
+          <div className="specular-card p-6 rounded-2xl border border-[var(--color-border-subtle)] hover:border-amber-500/40 shadow-lg hover:shadow-xl transition-all duration-300 space-y-2 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full blur-xl pointer-events-none group-hover:bg-amber-500/10 transition-colors" />
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] uppercase tracking-wider font-medium">
               {isBangla ? 'সক্রিয় সফট-লক সুরক্ষিত দাগ' : 'Active Cadastral Locks'}
             </div>
-            <div className="text-2xl sm:text-3xl font-bold font-mono tabular-nums text-amber-500 flex items-baseline gap-2">
+            <div className="text-2xl sm:text-4xl font-bold font-mono tabular-nums text-amber-500 flex items-baseline gap-2">
               <span>88</span>
               <span className="text-xs font-normal text-[var(--color-text-secondary)] font-mono">
                 {isBangla ? 'দাগে লক' : 'Dags'}
               </span>
             </div>
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)]">
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] pt-1">
               {isBangla ? 'দ্বৈত দলিল রোধে সাব-রেজিস্ট্রিতে সংযুক্ত' : 'Synced with Tejgaon & Sadar registries'}
             </div>
           </div>
@@ -659,11 +668,23 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
             </div>
 
             {/* D3 Map Canvas Component */}
-            <BangladeshNationalRiskRadarMap
-              height={analyticsViewMode === 'split' ? '600px' : '760px'}
-              initialLockedHubId={activeNationalHub.id}
-              onSelectHub={(hub) => setSelectedNationalHub(hub)}
-            />
+            <Suspense
+              fallback={
+                <div
+                  style={{ height: analyticsViewMode === 'split' ? '600px' : '760px' }}
+                  className="w-full flex flex-col items-center justify-center gap-3 rounded-[8px] bg-black/60 border border-white/10 font-mono text-xs text-emerald-400"
+                >
+                  <Radio className="w-8 h-8 animate-pulse text-emerald-400" />
+                  <span>{isBangla ? 'বাংলাদেশ ৩৬০° জাতীয় ঝুঁকি রাডার ইঞ্জিন লোড হচ্ছে...' : 'Initializing Bangladesh 360° National Threat Radar Engine...'}</span>
+                </div>
+              }
+            >
+              <BangladeshNationalRiskRadarMap
+                height={analyticsViewMode === 'split' ? '600px' : '760px'}
+                initialLockedHubId={activeNationalHub.id}
+                onSelectHub={(hub) => setSelectedNationalHub(hub)}
+              />
+            </Suspense>
 
             {/* Focal Target Hub Telemetry Dossier Panel */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/50 backdrop-blur-sm">
@@ -842,7 +863,7 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
         {(analyticsViewMode === 'charts' || analyticsViewMode === 'split') && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Chart A: Dhaka High-Risk Zones Bar Chart (7 Cols) */}
-            <div className="lg:col-span-7 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/40 backdrop-blur-sm space-y-4 flex flex-col justify-between">
+            <div className="lg:col-span-7 specular-card p-6 sm:p-7 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all duration-300 shadow-xl space-y-4 flex flex-col justify-between">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
@@ -1050,7 +1071,7 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
           </div>
 
           {/* Chart B: Dynamic Date-Range Fraud Trends AreaChart (5 Cols) */}
-          <div className="lg:col-span-5 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/40 backdrop-blur-sm space-y-4 flex flex-col justify-between">
+          <div className="lg:col-span-5 specular-card p-6 sm:p-7 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all duration-300 shadow-xl space-y-4 flex flex-col justify-between">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
@@ -1427,7 +1448,7 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
            ==================================================================== */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Radar Chart: Multi-Signal Vectors for Selected Zone */}
-          <div className="lg:col-span-6 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/40 backdrop-blur-sm space-y-4">
+          <div className="lg:col-span-6 specular-card p-6 sm:p-7 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all duration-300 shadow-xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
@@ -1548,7 +1569,7 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
           </div>
 
           {/* Donut Chart: Fraud Typology Distribution in Dhaka */}
-          <div className="lg:col-span-6 p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/40 backdrop-blur-sm space-y-4">
+          <div className="lg:col-span-6 specular-card p-6 sm:p-7 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all duration-300 shadow-xl space-y-4">
             <div>
               <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
                 {isBangla ? 'ঢাকায় সংঘটিত জালিয়াতির ধরন ও অনুপাত' : 'Dhaka Land Fraud Modality Distribution'}
@@ -1651,7 +1672,7 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
         {/* ====================================================================
             5. INTERACTIVE HIGH-RISK ZONES CADASTRAL EXPLORER TABLE
            ==================================================================== */}
-        <div className="p-5 sm:p-6 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/40 backdrop-blur-sm space-y-4">
+        <div className="specular-card p-6 sm:p-8 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all duration-300 shadow-xl space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[var(--color-border-subtle)] pb-4">
             <div>
               <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">

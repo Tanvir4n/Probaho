@@ -16,7 +16,7 @@
  * Includes the 5-Minute Live Story Demo Controller.
  */
 
-import React, { useState, useEffect, useId } from 'react';
+import React, { useState, useEffect, useId, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ShieldCheck,
@@ -53,9 +53,17 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
-import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
-import { ShapXaiExplainer } from './ShapXaiExplainer';
-import { InteractiveNetworkXLineageGraph } from './InteractiveNetworkXLineageGraph';
+
+// Performance optimization: Heavy analytical studios lazy-loaded on demand
+const DhakaD3CadastralMap = lazy(() =>
+  import('./DhakaD3CadastralMap').then((m) => ({ default: m.DhakaD3CadastralMap }))
+);
+const ShapXaiExplainer = lazy(() =>
+  import('./ShapXaiExplainer').then((m) => ({ default: m.ShapXaiExplainer }))
+);
+const InteractiveNetworkXLineageGraph = lazy(() =>
+  import('./InteractiveNetworkXLineageGraph').then((m) => ({ default: m.InteractiveNetworkXLineageGraph }))
+);
 
 // ============================================================================
 // DATA MODELS & SYNTHETIC DATA (Complies with Rulebook Synthetic Data Rule)
@@ -493,9 +501,9 @@ export const JomiChainSection: React.FC = () => {
         </div>
 
         {/* ==================================================================== */}
-        {/* INTERACTIVE NAVIGATION TABS */}
+        {/* INTERACTIVE NAVIGATION TABS: Premium Glassmorphic Dock */}
         {/* ==================================================================== */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-[var(--color-border-subtle)]">
+        <div className="p-1.5 rounded-2xl border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 bg-[#d3c9ba]/50 dark:bg-[#4c4637]/40 backdrop-blur-2xl flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-md">
           {[
             { id: 'story', label: isBangla ? '🎬 ৫ মিনিটের লাইভ ডেমো' : '🎬 5-Minute Live Story', badge: 'DEMO' },
             { id: 'dhakamap', label: isBangla ? '🗺️ ঢাকা ক্যাডাস্ট্রাল ম্যাপ' : '🗺️ Dhaka Cadastral Map', badge: 'D3.js' },
@@ -508,14 +516,18 @@ export const JomiChainSection: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 py-2 rounded-[4px] text-xs font-mono transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-mono transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === tab.id
-                  ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-[0_4px_14px_rgba(34,197,94,0.3)]'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10 glass-tile'
+                  ? 'bg-[#4c4637] dark:bg-[#d3c9ba] text-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-md shadow-[#4c4637]/30 dark:shadow-[#d3c9ba]/20'
+                  : 'text-[#332e24] dark:text-[#ede7de] hover:bg-white/70 dark:hover:bg-white/10 font-semibold'
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`text-[9px] px-1 py-0.2 rounded ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-black/10 text-[var(--color-text-tertiary)]'}`}>
+              <span className={`text-[9.5px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
+                activeTab === tab.id 
+                  ? 'bg-white/20 text-[#ede7de] dark:bg-black/20 dark:text-[#332e24]' 
+                  : 'bg-white/90 dark:bg-black/40 text-[#4c4637] dark:text-[#d3c9ba] border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 shadow-xs'
+              }`}>
                 {tab.badge}
               </span>
             </button>
@@ -892,7 +904,16 @@ export const JomiChainSection: React.FC = () => {
             </div>
 
             <div className="rounded-[8px] overflow-hidden border border-[var(--color-border-subtle)] shadow-2xl glass-panel h-[640px]">
-              <DhakaD3CadastralMap height="100%" initialSelectedPlotId="dag-1042-dhanmondi" />
+              <Suspense
+                fallback={
+                  <div className="h-full flex flex-col items-center justify-center gap-3 font-mono text-xs text-emerald-400 bg-black/40">
+                    <Compass className="w-8 h-8 animate-spin text-emerald-400" />
+                    <span>{isBangla ? 'ঢাকা ক্যাডাস্ট্রাল ডি৩ ম্যাপ লোড হচ্ছে...' : 'Loading Dhaka Cadastral GIS Engine...'}</span>
+                  </div>
+                }
+              >
+                <DhakaD3CadastralMap height="100%" initialSelectedPlotId="dag-1042-dhanmondi" />
+              </Suspense>
             </div>
           </div>
         )}
@@ -902,7 +923,16 @@ export const JomiChainSection: React.FC = () => {
         {/* ==================================================================== */}
         {activeTab === 'lineage' && (
           <div id="networkx-graph" className="space-y-6 animate-in fade-in duration-300">
-            <InteractiveNetworkXLineageGraph />
+            <Suspense
+              fallback={
+                <div className="h-96 flex flex-col items-center justify-center gap-3 glass-card rounded-[8px] font-mono text-xs text-emerald-400">
+                  <Network className="w-8 h-8 animate-pulse text-emerald-400" />
+                  <span>{isBangla ? '৩০,০০০ প্লট NetworkX ক্যাডাস্ট্রাল গ্রাফ ইনিশিয়ালাইজ হচ্ছে...' : 'Initializing 30,000-Parcel NetworkX Lineage Topology...'}</span>
+                </div>
+              }
+            >
+              <InteractiveNetworkXLineageGraph />
+            </Suspense>
           </div>
         )}
 
@@ -1195,10 +1225,19 @@ export const JomiChainSection: React.FC = () => {
         {/* ==================================================================== */}
         {activeTab === 'report' && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            <ShapXaiExplainer
-              currentPlotId={selectedPlotId}
-              onOpenTrustReport={() => setIsTrustReportModalOpen(true)}
-            />
+            <Suspense
+              fallback={
+                <div className="h-96 flex flex-col items-center justify-center gap-3 glass-card rounded-[8px] font-mono text-xs text-emerald-400">
+                  <Sparkles className="w-8 h-8 animate-spin text-emerald-400" />
+                  <span>{isBangla ? 'শ্যাপ এক্সএআই বিশ্লেষণ লোড হচ্ছে...' : 'Loading SHAP XAI Risk Explainer...'}</span>
+                </div>
+              }
+            >
+              <ShapXaiExplainer
+                currentPlotId={selectedPlotId}
+                onOpenTrustReport={() => setIsTrustReportModalOpen(true)}
+              />
+            </Suspense>
           </div>
         )}
 

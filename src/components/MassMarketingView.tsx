@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import {
   ARCHITECTURAL_PROJECTS,
   ArchitecturalProject,
@@ -17,11 +17,7 @@ import { PageTransitionEffect } from './PageTransitionEffect';
 import { JomiChainSection } from './JomiChainSection';
 import { RiskAnalyticsDashboard } from './RiskAnalyticsDashboard';
 import { ProbahoLogo, ProbahoBrand } from './ProbahoLogo';
-import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
-import { TemporalOwnershipGraphStudio } from './TemporalOwnershipGraphStudio';
 import { ArchitecturalFooter } from './ArchitecturalFooter';
-import { DocCompareStudioModal } from './DocCompareStudioModal';
-import { AdversarialSimulatorStudioModal } from './AdversarialSimulatorStudioModal';
 import {
   OwnershipGraphWidget,
   FraudEngineGaugeWidget,
@@ -29,6 +25,17 @@ import {
   AdversarialSimulatorWidget,
   CadastralSectionTransitionBeam,
 } from './AnimatedEngineWidgets';
+
+// Heavy analytical studio modals lazy-loaded on-demand (reduces bundle size by over 400KB)
+const TemporalOwnershipGraphStudio = lazy(() =>
+  import('./TemporalOwnershipGraphStudio').then((m) => ({ default: m.TemporalOwnershipGraphStudio }))
+);
+const DocCompareStudioModal = lazy(() =>
+  import('./DocCompareStudioModal').then((m) => ({ default: m.DocCompareStudioModal }))
+);
+const AdversarialSimulatorStudioModal = lazy(() =>
+  import('./AdversarialSimulatorStudioModal').then((m) => ({ default: m.AdversarialSimulatorStudioModal }))
+);
 import {
   ShieldCheck,
   TrendingUp,
@@ -555,18 +562,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 setActiveToolId('archimap');
                 setIsSiteAnalysisStudioOpen(true);
               }}
-              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)] cursor-pointer"
+              className="p-7 sm:p-8 rounded-2xl space-y-6 border border-white/10 dark:border-white/10 hover:border-emerald-500/50 transition-all flex flex-col justify-between specular-card group hover:shadow-[0_24px_50px_rgba(16,185,129,0.20),0_0_20px_rgba(16,185,129,0.12)] cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[var(--color-surface-raised)] font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
+                  <span className="text-xs font-mono text-emerald-400 font-semibold flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     {t.suite.tool1.type}
                   </span>
-                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)] px-2 py-0.5 rounded bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)]">{t.suite.tool1.sub}</span>
+                  <span className="text-[10px] font-mono text-[var(--color-text-secondary)] px-2.5 py-0.5 rounded-full bg-black/20 dark:bg-white/5 border border-white/10">{t.suite.tool1.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool1.name}</h3>
-                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)] group-hover:text-emerald-400 transition-colors">{t.suite.tool1.name}</h3>
+                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
                   {t.suite.tool1.desc}
                 </p>
 
@@ -580,18 +587,24 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                <div className="p-3.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] text-[11px] font-mono text-[var(--color-text-primary)] space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span>{t.suite.tool1.f1}</span>
+                {/* Feature List: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                <div className="space-y-2.5 text-xs font-mono">
+                  {/* Feature 1: Survey Epoch DAG */}
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex items-center gap-2.5 shadow-xs">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#4c4637] dark:bg-[#d3c9ba] shrink-0 shadow-[0_0_8px_rgba(76,70,55,0.4)] dark:shadow-[0_0_8px_rgba(211,201,186,0.6)]" />
+                    <span className="text-[#332e24] dark:text-[#ede7de] font-bold">{t.suite.tool1.f1}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span>{t.suite.tool1.f2}</span>
+
+                  {/* Feature 2: Double-Sale Collision Branch */}
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex items-center gap-2.5 shadow-xs">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#4c4637] dark:bg-[#d3c9ba] shrink-0 shadow-[0_0_8px_rgba(76,70,55,0.4)] dark:shadow-[0_0_8px_rgba(211,201,186,0.6)]" />
+                    <span className="text-[#332e24] dark:text-[#ede7de] font-bold">{t.suite.tool1.f2}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span>{t.suite.tool1.f3}</span>
+
+                  {/* Feature 3: Synchronized D3 GIS Vector Map */}
+                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex items-center gap-2.5 shadow-xs text-white">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#d3c9ba] shrink-0 shadow-[0_0_8px_rgba(211,201,186,0.6)]" />
+                    <span className="text-[#ede7de] font-bold">{t.suite.tool1.f3}</span>
                   </div>
                 </div>
               </div>
@@ -602,7 +615,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setActiveToolId('archimap');
                   setIsSiteAnalysisStudioOpen(true);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2"
+                className="w-full py-3 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 rounded-xl font-mono transition-all cursor-pointer shadow-[0_4px_20px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_28px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
               >
                 <span>{t.suite.tool1.cta}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -612,18 +625,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             {/* Tool 2: LaserFish / FraudEngine */}
             <motion.div
               whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)]"
+              className="p-7 sm:p-8 rounded-2xl space-y-6 border border-white/10 dark:border-white/10 hover:border-rose-500/50 transition-all flex flex-col justify-between specular-card group hover:shadow-[0_24px_50px_rgba(244,63,94,0.20),0_0_20px_rgba(244,63,94,0.12)]"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-red-500 font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                  <span className="text-xs font-mono text-rose-500 font-semibold flex items-center gap-2 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/25">
+                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
                     {t.suite.tool2.type}
                   </span>
-                  <span className="text-[10px] font-mono text-red-600 dark:text-red-400 px-2 py-0.5 rounded bg-red-500/10 border border-red-500/30">{t.suite.tool2.sub}</span>
+                  <span className="text-[10px] font-mono text-rose-600 dark:text-rose-400 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/30">{t.suite.tool2.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool2.name}</h3>
-                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)] group-hover:text-rose-400 transition-colors">{t.suite.tool2.name}</h3>
+                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
                   {t.suite.tool2.desc}
                 </p>
 
@@ -637,40 +650,40 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                {/* Practical Interactive Legal & Evidence Intelligence Deck */}
-                <div className="space-y-2 text-[11px] font-mono">
+                {/* Practical Interactive Legal & Evidence Intelligence Deck: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                <div className="space-y-2.5 text-xs font-mono">
                   {/* Feature 1: Deterministic Legal Rules Engine */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-rose-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <Scale className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
+                        <Scale className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'আইনি বিধি ইঞ্জিন (নিশ্চিত কোড)' : 'Deterministic Legal Rules AST'}</span>
                       </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/25">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-xs">
                         42 {isBangla ? 'ধারা' : 'Rules'}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                    <div className="flex flex-wrap items-center gap-1.5 text-[10.5px]">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         TP Act §53A
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         SAT Act §89
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Reg Act §17
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Penal §420
                       </span>
                     </div>
                   </div>
 
-                  {/* Feature 2: Verifiable Evidence Dossier with Integrity Hashes */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                  {/* Feature 2: Verifiable Evidence Dossier */}
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <FileCheck2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
+                        <FileCheck2 className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'সততা হ্যাশযুক্ত প্রামাণ্য ডসিয়ার' : 'Verifiable Evidence Dossier'}</span>
                       </div>
                       <button
@@ -680,28 +693,28 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                           setToastMessage(isBangla ? '✓ মারকেল রুট যাচাইকৃত: ব্লক #৮৪৯,২০১ (জমিচেইন লেজার)' : '✓ Merkle Root Verified: Block #849,201 on JomiChain Ledger');
                           setTimeout(() => setToastMessage(null), 3500);
                         }}
-                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                        className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isHashVerified
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                            : 'bg-white/5 hover:bg-emerald-500/10 text-[var(--color-text-secondary)] hover:text-emerald-400 border border-white/10'
+                            ? 'bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] shadow-xs'
+                            : 'bg-white/90 dark:bg-black/40 hover:bg-white text-[#332e24] dark:text-[#ede7de] border border-[#4c4637]/30 dark:border-[#d3c9ba]/30 shadow-xs'
                         }`}
                         title={isBangla ? 'ক্রিপ্টোগ্রাফিক হ্যাশ যাচাই করুন' : 'Verify Cryptographic Hash on Ledger'}
                       >
-                        <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />
+                        <CheckCircle className="w-3 h-3 text-[#4c4637] dark:text-[#d3c9ba]" />
                         <span>{isHashVerified ? (isBangla ? 'যাচাইকৃত ✓' : 'VERIFIED ✓') : (isBangla ? 'যাচাই' : 'Verify')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] font-mono bg-black/20 px-2 py-1 rounded">
-                      <span className="truncate">SHA256: 9f8a3c42e81b...7b94</span>
-                      <span className="text-emerald-400 shrink-0 ml-1">256-bit</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-white/90 dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-[#4c4637]/20 dark:border-[#d3c9ba]/20 text-[#332e24] dark:text-[#ede7de]">
+                      <span className="truncate font-semibold">SHA256: 9f8a3c42e81b...7b94</span>
+                      <span className="text-[#4c4637] dark:text-[#d3c9ba] font-bold shrink-0 ml-1">256-bit</span>
                     </div>
                   </div>
 
                   {/* Feature 3: Counterfactual What-If Risk Analysis Simulator */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-cyan-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex flex-col gap-2 shadow-xs text-white">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#ede7de]">
+                        <SlidersHorizontal className="w-4 h-4 text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'কাউন্টারফ্যাকচুয়াল ঝুঁকি বিশ্লেষণ' : 'Counterfactual What-If Engine'}</span>
                       </div>
                       <button
@@ -709,20 +722,20 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                           e.stopPropagation();
                           setIsWhatIfSimulated(!isWhatIfSimulated);
                         }}
-                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                        className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isWhatIfSimulated
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold shadow-sm'
-                            : 'bg-white/5 hover:bg-cyan-500/10 text-[var(--color-text-secondary)] hover:text-cyan-400 border border-white/10'
+                            ? 'bg-[#d3c9ba] text-[#4c4637] shadow-xs'
+                            : 'bg-white/20 hover:bg-white/30 text-[#ede7de] border border-white/30 shadow-xs'
                         }`}
                         title={isBangla ? 'গেজে প্রতিকার পরীক্ষা করুন' : 'Run What-If Test in Gauge'}
                       >
-                        <RotateCcw className={`w-2.5 h-2.5 ${isWhatIfSimulated ? 'rotate-180 text-cyan-300' : ''} transition-transform`} />
+                        <RotateCcw className={`w-3 h-3 ${isWhatIfSimulated ? 'rotate-180 text-[#4c4637]' : 'text-[#d3c9ba]'} transition-transform`} />
                         <span>{isWhatIfSimulated ? (isBangla ? 'সিমুলেশন চলছে' : 'Active Test') : (isBangla ? 'পরীক্ষা করুন' : 'Run Test')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)]">
+                    <div className="flex items-center justify-between text-[11px] text-[#d3c9ba] font-medium">
                       <span>{isBangla ? 'প্রতিকার প্রভাব (Causal Δ):' : 'Causal Remedy Estimate:'}</span>
-                      <span className="text-emerald-400 font-bold font-mono">ΔRisk = -76 pts (p &lt; 0.001)</span>
+                      <span className="text-white font-bold font-mono">ΔRisk = -76 pts (p &lt; 0.001)</span>
                     </div>
                   </div>
                 </div>
@@ -734,7 +747,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setToastMessage(isBangla ? 'ফ্রডইঞ্জিন অ্যানালিটিক্স স্টুডিও লোড হচ্ছে...' : 'Launching FraudEngine Risk Analytics Studio...');
                   setTimeout(() => setToastMessage(null), 3000);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-amber-500 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(244,63,94,0.35)] hover:shadow-[0_6px_24px_rgba(244,63,94,0.5)] flex items-center justify-center gap-2 group/btn"
+                className="w-full py-3 text-xs font-semibold text-white bg-gradient-to-r from-rose-600 via-rose-500 to-amber-600 hover:from-rose-500 hover:to-amber-500 rounded-xl font-mono transition-all cursor-pointer shadow-[0_4px_20px_rgba(244,63,94,0.35)] hover:shadow-[0_6px_28px_rgba(244,63,94,0.5)] flex items-center justify-center gap-2 group/btn"
               >
                 <span>{t.suite.tool2.cta}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
@@ -749,18 +762,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 setActiveToolId('cologram');
                 setIsDocCompareStudioOpen(true);
               }}
-              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(6,182,212,0.18)] cursor-pointer"
+              className="p-7 sm:p-8 rounded-2xl space-y-6 border border-white/10 dark:border-white/10 hover:border-cyan-500/50 transition-all flex flex-col justify-between specular-card group hover:shadow-[0_24px_50px_rgba(6,182,212,0.20),0_0_20px_rgba(6,182,212,0.12)] cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
+                  <span className="text-xs font-mono text-cyan-400 font-semibold flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/25">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
                     {t.suite.tool3.type}
                   </span>
-                  <span className="text-[10px] font-mono text-cyan-700 dark:text-cyan-300 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30">{t.suite.tool3.sub}</span>
+                  <span className="text-[10px] font-mono text-cyan-300 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30">{t.suite.tool3.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool3.name}</h3>
-                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)] group-hover:text-cyan-400 transition-colors">{t.suite.tool3.name}</h3>
+                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
                   {t.suite.tool3.desc}
                 </p>
 
@@ -772,35 +785,35 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                {/* Practical Interactive Cross-Verification & ViT Intelligence Deck */}
-                <div className="space-y-2 text-[11px] font-mono">
+                {/* Practical Interactive Cross-Verification & ViT Intelligence Deck: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                <div className="space-y-2.5 text-xs font-mono">
                   {/* Feature 1: Multi-Document Cross-Verification */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-cyan-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <FileText className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
+                        <FileText className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'বহু-নথি ক্রস-যাচাই (দলিল বনাম খতিয়ান)' : 'Multi-Document Cross-Verification'}</span>
                       </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/25">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-xs">
                         {isBangla ? 'আইন ↔ ভূমি' : 'Law ↔ Land'}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                    <div className="flex flex-wrap items-center gap-1.5 text-[10.5px]">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Deed #912 (Sub-Reg)
                       </span>
-                      <span className="text-cyan-400 font-bold">≠</span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[var(--color-text-secondary)]">
+                      <span className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">≠</span>
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Khatian #1042 (AC Land)
                       </span>
                     </div>
                   </div>
 
                   {/* Feature 2: Bangla OCR Vision Transformer & Bounding-Box Tagger */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <Scan className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
+                        <Scan className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'বাংলা ওসিআর ভিশন ট্রান্সফরমার (ViT)' : 'Bangla OCR ViT Entity Tagger'}</span>
                       </div>
                       <button
@@ -810,27 +823,27 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                           setToastMessage(isBangla ? '✓ ভিশন ট্রান্সফরমার: ৩৮টি ফিল্ড টোকেন সমন্বিত (৯৯.৪% কনফিডেন্স)' : '✓ Vision Transformer: 38 Field Tokens Normalized (99.4% Conf)');
                           setTimeout(() => setToastMessage(null), 3500);
                         }}
-                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                        className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isViTVerified
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                            : 'bg-white/5 hover:bg-emerald-500/10 text-[var(--color-text-secondary)] hover:text-emerald-400 border border-white/10'
+                            ? 'bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] shadow-xs'
+                            : 'bg-white/90 dark:bg-black/40 hover:bg-white text-[#332e24] dark:text-[#ede7de] border border-[#4c4637]/30 dark:border-[#d3c9ba]/30 shadow-xs'
                         }`}
                       >
-                        <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />
+                        <CheckCircle className="w-3 h-3 text-[#4c4637] dark:text-[#d3c9ba]" />
                         <span>{isViTVerified ? (isBangla ? 'টোকেন সক্রিয় ✓' : 'TOKENS ON ✓') : (isBangla ? 'টোকেন পরীক্ষা' : 'Tokens')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)]">
+                    <div className="flex items-center justify-between text-[11px] text-[#332e24] dark:text-[#ede7de] font-medium">
                       <span>{isBangla ? 'সমর্থিত ফন্ট ও লিপি:' : 'Supported Models:'}</span>
-                      <span className="text-emerald-400 font-mono font-bold">SutonnyMJ · Nikosh · Handwritten</span>
+                      <span className="text-[#4c4637] dark:text-[#d3c9ba] font-mono font-bold">SutonnyMJ · Nikosh · Handwritten</span>
                     </div>
                   </div>
 
                   {/* Feature 3: Discrepancy Evidence Dossier & Conflict Resolution */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-rose-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex flex-col gap-2 shadow-xs text-white">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <Scale className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#ede7de]">
+                        <Scale className="w-4 h-4 text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'আইনি অসঙ্গতি ও ধারা উদ্ধৃতি ডসিয়ার' : 'Legal Contradiction AST Dossier'}</span>
                       </div>
                       <button
@@ -841,16 +854,16 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                           setToastMessage(isBangla ? '✓ অসঙ্গতি অডিট ডসিয়ার ক্লিপবোর্ডে কপি সম্পন্ন' : '✓ Contradiction Audit Dossier Copied to Clipboard');
                           setTimeout(() => setToastMessage(null), 3500);
                         }}
-                        className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-rose-500/10 text-[var(--color-text-secondary)] hover:text-rose-300 border border-white/10 transition-colors flex items-center gap-1 cursor-pointer"
+                        className="text-[10.5px] px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-[#ede7de] border border-white/30 transition-colors flex items-center gap-1.5 cursor-pointer font-bold shadow-xs"
                         title={isBangla ? 'আইনি প্রমাণ কপি' : 'Copy Evidence JSON'}
                       >
-                        <Copy className="w-2.5 h-2.5" />
+                        <Copy className="w-3 h-3 text-[#d3c9ba]" />
                         <span>{isBangla ? 'কপি' : 'Copy'}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)]">
-                      <span className="text-rose-400 font-semibold truncate">Reg Act §22A · Dag Contradiction</span>
-                      <span className="text-white shrink-0 ml-1">EVIDENCE LOGGED</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-black/35 px-2.5 py-1.5 rounded-lg border border-white/15 text-[#ede7de]">
+                      <span className="text-[#d3c9ba] font-bold truncate">Reg Act §22A · Dag Contradiction</span>
+                      <span className="text-white font-bold shrink-0 ml-1">EVIDENCE LOGGED</span>
                     </div>
                   </div>
                 </div>
@@ -860,7 +873,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setActiveToolId('cologram');
                   setIsDocCompareStudioOpen(true);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 via-cyan-500 to-teal-500 hover:from-cyan-500 hover:to-teal-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(6,182,212,0.35)] hover:shadow-[0_6px_24px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 group/btn"
+                className="w-full py-3 text-xs font-semibold text-white bg-gradient-to-r from-cyan-600 via-cyan-500 to-teal-500 hover:from-cyan-500 hover:to-teal-400 rounded-xl font-mono transition-all cursor-pointer shadow-[0_4px_20px_rgba(6,182,212,0.35)] hover:shadow-[0_6px_28px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 group/btn"
               >
                 <span>{t.suite.tool3.cta}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
@@ -875,18 +888,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 setActiveToolId('globee');
                 setIsAdversarialStudioOpen(true);
               }}
-              className="p-7 rounded-[8px] space-y-5 border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card group hover:shadow-[0_16px_48px_rgba(34,197,94,0.18)] cursor-pointer"
+              className="p-7 sm:p-8 rounded-2xl space-y-6 border border-white/10 dark:border-white/10 hover:border-emerald-500/50 transition-all flex flex-col justify-between specular-card group hover:shadow-[0_24px_50px_rgba(16,185,129,0.20),0_0_20px_rgba(16,185,129,0.12)] cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-emerald-500 font-semibold flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                  <span className="text-xs font-mono text-emerald-400 font-semibold flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                     {t.suite.tool4.type}
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">{t.suite.tool4.sub}</span>
+                  <span className="text-[10px] font-mono text-emerald-300 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30">{t.suite.tool4.sub}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">{t.suite.tool4.name}</h3>
-                <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)] group-hover:text-emerald-400 transition-colors">{t.suite.tool4.name}</h3>
+                <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
                   {t.suite.tool4.desc}
                 </p>
 
@@ -902,40 +915,40 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                {/* Practical Interactive Stress-Test & Attack Intelligence Deck */}
-                <div className="space-y-2 text-[11px] font-mono">
+                {/* Practical Interactive Stress-Test & Attack Intelligence Deck: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                <div className="space-y-2.5 text-xs font-mono">
                   {/* Feature 1: Synthetic Attack Vector Testbench */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
+                        <Zap className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'সিন্থেটিক আক্রমণ ইনজেকশন টেস্টবেঞ্চ' : 'Synthetic Attack Vector Testbench'}</span>
                       </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/25">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-xs">
                         4 {isBangla ? 'ভেক্টর' : 'Vectors'}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-1 text-[9px]">
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-rose-300">
+                    <div className="flex flex-wrap items-center gap-1.5 text-[10.5px]">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Double-Sale
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-amber-300">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Forged Seal
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-cyan-300">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Boundary Warp
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-purple-300">
+                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
                         Ghost Warish
                       </span>
                     </div>
                   </div>
 
                   {/* Feature 2: Monte Carlo Resilience & Precision Metrics */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-cyan-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
+                        <Activity className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'শনাক্তকরণ হার ও প্রেসিশন-রিকল বেঞ্চমার্ক' : 'Detection & Precision Benchmark'}</span>
                       </div>
                       <button
@@ -948,28 +961,28 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                             setToastMessage(null);
                           }, 3500);
                         }}
-                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                        className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isMonteCarloRunning
-                            ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
-                            : 'bg-white/5 hover:bg-cyan-500/10 text-[var(--color-text-secondary)] hover:text-cyan-400 border border-white/10'
+                            ? 'bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] shadow-xs'
+                            : 'bg-white/90 dark:bg-black/40 hover:bg-white text-[#332e24] dark:text-[#ede7de] border border-[#4c4637]/30 dark:border-[#d3c9ba]/30 shadow-xs'
                         }`}
                       >
-                        <RotateCcw className={`w-2.5 h-2.5 ${isMonteCarloRunning ? 'animate-spin text-cyan-300' : ''}`} />
+                        <RotateCcw className={`w-3 h-3 ${isMonteCarloRunning ? 'animate-spin text-[#d3c9ba] dark:text-[#4c4637]' : 'text-[#4c4637] dark:text-[#d3c9ba]'}`} />
                         <span>{isMonteCarloRunning ? (isBangla ? 'বেঞ্চমার্কিং...' : 'Testing...') : (isBangla ? '১০k রান' : 'Run 10k')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] font-mono">
-                      <span>Catch: <strong className="text-emerald-400">99.8%</strong></span>
-                      <span>Latency: <strong className="text-cyan-400">12ms</strong></span>
-                      <span>FP Rate: <strong className="text-white">&lt;0.02%</strong></span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-white/90 dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-[#4c4637]/20 dark:border-[#d3c9ba]/20 text-[#332e24] dark:text-[#ede7de]">
+                      <span>Catch: <strong className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">99.8%</strong></span>
+                      <span>Latency: <strong className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">12ms</strong></span>
+                      <span>FP Rate: <strong className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">&lt;0.02%</strong></span>
                     </div>
                   </div>
 
                   {/* Feature 3: Automated Registry WAF & Consensus Rules */}
-                  <div className="p-2.5 glass-tile rounded-[6px] border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all flex flex-col gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex flex-col gap-2 shadow-xs text-white">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text-primary)]">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-[#ede7de]">
+                        <ShieldCheck className="w-4 h-4 text-[#d3c9ba] shrink-0" />
                         <span>{isBangla ? 'ভূমি রেজিস্ট্রি নিরবচ্ছিন্ন প্রতিরক্ষা ও WAF' : 'Registry Hardening & WAF Rules'}</span>
                       </div>
                       <button
@@ -979,19 +992,19 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                           setToastMessage(isBangla ? '✓ জমিচেইন রুল §P3-04 সক্রিয়: সকল সাব-রেজিস্ট্রি নোডে এনফোর্সড' : '✓ JomiChain Rule §P3-04 Enforced Across All Sub-Registry Nodes');
                           setTimeout(() => setToastMessage(null), 3500);
                         }}
-                        className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                        className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isWafVerified
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold'
-                            : 'bg-white/5 hover:bg-emerald-500/10 text-[var(--color-text-secondary)] hover:text-emerald-400 border border-white/10'
+                            ? 'bg-[#d3c9ba] text-[#4c4637] shadow-xs'
+                            : 'bg-white/20 hover:bg-white/30 text-[#ede7de] border border-white/30 shadow-xs'
                         }`}
                       >
-                        <CheckCircle className="w-2.5 h-2.5 text-emerald-400" />
+                        <CheckCircle className={`w-3 h-3 ${isWafVerified ? 'text-[#4c4637]' : 'text-[#d3c9ba]'}`} />
                         <span>{isWafVerified ? (isBangla ? 'নিয়ম কার্যকর ✓' : 'ACTIVE ✓') : (isBangla ? 'নিয়ম পরীক্ষা' : 'Verify')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[9px] text-[var(--color-text-secondary)] font-mono bg-black/20 px-2 py-1 rounded">
-                      <span className="truncate">Policy: 72H_SOFT_LOCK_ON_COLLISION</span>
-                      <span className="text-emerald-400 shrink-0 ml-1">7/7 Nodes</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-black/35 px-2.5 py-1.5 rounded-lg border border-white/15 text-[#ede7de]">
+                      <span className="truncate font-semibold text-[#d3c9ba]">Policy: 72H_SOFT_LOCK_ON_COLLISION</span>
+                      <span className="text-white font-bold shrink-0 ml-1">7/7 Nodes</span>
                     </div>
                   </div>
                 </div>
@@ -1001,7 +1014,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   setActiveToolId('globee');
                   setIsAdversarialStudioOpen(true);
                 }}
-                className="w-full py-2.5 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-[5px] font-mono transition-all cursor-pointer shadow-[0_4px_18px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_24px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 group/btn"
+                className="w-full py-3 text-xs font-semibold text-white bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 rounded-xl font-mono transition-all cursor-pointer shadow-[0_4px_20px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_28px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2 group/btn"
               >
                 <span>{t.suite.tool4.cta}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
@@ -1060,7 +1073,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             </div>
 
             {/* Filter Buttons */}
-            <div className="flex items-center gap-1.5 p-1 glass-pill rounded-[6px]">
+            <div className="flex items-center gap-1.5 p-1.5 bg-black/40 dark:bg-black/40 backdrop-blur-xl border border-white/10 rounded-xl">
               {[
                 { id: 'all', label: t.cases.tabAll },
                 { id: 'clean', label: t.cases.tabClean },
@@ -1070,8 +1083,8 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setFilterCategory(tab.id)}
-                  className={`px-3 py-1.5 text-[11.52px] font-mono transition-colors rounded-[3px] whitespace-nowrap shrink-0 cursor-pointer ${filterCategory === tab.id
-                      ? 'bg-[var(--color-surface-raised)] text-white font-semibold shadow-md'
+                  className={`px-3.5 py-1.5 text-xs font-mono transition-all rounded-lg whitespace-nowrap shrink-0 cursor-pointer ${filterCategory === tab.id
+                      ? 'bg-[var(--color-surface-raised)] text-white font-bold shadow-md'
                       : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/10'
                     }`}
                 >
@@ -1091,7 +1104,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }}
-                className="rounded-[8px] overflow-hidden group border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] transition-all flex flex-col justify-between glass-card hover:shadow-[0_16px_40px_rgba(34,197,94,0.15)]"
+                className="specular-card rounded-2xl overflow-hidden group border border-[var(--color-border-subtle)] hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between shadow-xl hover:shadow-[0_20px_50px_rgba(16,185,129,0.12)]"
               >
                 <div>
                   <div className="relative aspect-[4/3] overflow-hidden bg-black/60">
@@ -1101,38 +1114,38 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute top-3 left-3 glass-pill px-2.5 py-1 text-[9.6px] font-mono text-white rounded-[3px] bg-black/70 backdrop-blur-sm border border-white/10">
+                    <div className="absolute top-3 left-3 glass-pill px-3 py-1 text-[10px] font-mono text-white rounded-lg bg-black/75 backdrop-blur-md border border-white/15 shadow-sm">
                       {isBangla && project.locationBn ? project.locationBn : project.location}
                     </div>
                     {/* Live Case Forensic Status Tag */}
-                    <div className="absolute top-3 right-3 glass-pill px-2 py-1 text-[9px] font-mono rounded-[3px] flex items-center gap-1.5 bg-black/75 backdrop-blur-sm border border-white/10">
-                      <span className={`w-1.5 h-1.5 rounded-full ${project.category.includes('Double') ? 'bg-red-400 animate-ping' : 'bg-[var(--color-surface-raised)] animate-pulse'}`} />
-                      <span className={project.category.includes('Double') ? 'text-red-300 font-semibold' : 'text-emerald-300 font-semibold'}>
+                    <div className="absolute top-3 right-3 glass-pill px-2.5 py-1 text-[9.5px] font-mono rounded-lg flex items-center gap-1.5 bg-black/80 backdrop-blur-md border border-white/15 shadow-sm">
+                      <span className={`w-1.5 h-1.5 rounded-full ${project.category.includes('Double') ? 'bg-red-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
+                      <span className={project.category.includes('Double') ? 'text-red-300 font-bold' : 'text-emerald-300 font-bold'}>
                         {project.category.includes('Double') ? (isBangla ? 'দ্বৈত-সংঘর্ষ চিহ্নিত' : 'COLLISION CAUGHT') : (isBangla ? 'যাচাইকৃত প্রমাণ' : 'VERIFIED PROOF')}
                       </span>
                     </div>
                   </div>
 
                   <div className="p-6 space-y-3">
-                    <div className="flex items-center gap-2 text-[10.56px] text-[var(--color-text-secondary)] font-mono">
+                    <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] font-mono">
                       <span>{isBangla && project.categoryBn ? project.categoryBn : project.category}</span>
                       <span aria-hidden="true">·</span>
                       <span>{project.year}</span>
                     </div>
 
-                    <h3 className="text-lg font-semibold text-[var(--color-text-primary)] group-hover:text-[var(--color-surface-raised)] transition-colors">
+                    <h3 className="text-lg font-bold text-[var(--color-text-primary)] group-hover:text-emerald-500 transition-colors">
                       {isBangla && project.titleBn ? project.titleBn : project.title}
                     </h3>
 
-                    <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
+                    <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
                       {isBangla && project.summaryBn ? project.summaryBn : project.summary}
                     </p>
 
-                    <div className="pt-2 border-t border-[var(--color-border-subtle)] flex items-center justify-between text-[11.52px] font-mono">
+                    <div className="pt-3 border-t border-[var(--color-border-subtle)] flex items-center justify-between text-xs font-mono">
                       <span className="text-[var(--color-text-secondary)]">
                         {isBangla && project.metricLabelBn ? project.metricLabelBn : project.metricLabel}
                       </span>
-                      <span className="text-[var(--color-text-primary)] font-bold mass-num">{project.metric}</span>
+                      <span className="text-[var(--color-text-primary)] font-bold mass-num text-sm">{project.metric}</span>
                     </div>
                   </div>
                 </div>
@@ -1140,7 +1153,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                 <div className="p-6 pt-0">
                   <button
                     onClick={() => setSelectedProject(project)}
-                    className="w-full py-2.5 text-xs font-mono text-[var(--color-text-primary)] glass-tile border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] hover:text-[var(--color-surface-raised)] rounded-[3px] transition-colors flex items-center justify-center gap-2 cursor-pointer group-hover:bg-[var(--color-surface-raised)]/10"
+                    className="w-full py-2.5 text-xs font-mono font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-emerald-500/50 hover:bg-emerald-500/10 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                   >
                     <span>{t.cases.inspectDossier}</span>
                     <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -1163,14 +1176,14 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="py-20 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
+        className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="max-w-2xl space-y-3">
-            <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono">
+            <div className="text-[11px] text-emerald-500 uppercase tracking-widest font-mono font-bold">
               {t.methodology.tag}
             </div>
-            <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">
+            <h2 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
               {t.methodology.heading}
             </h2>
             <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
@@ -1179,38 +1192,44 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
-              <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                {isBangla ? '০১. ডিজিটাইজেশন ও ওসিআর' : '01. Ingestion & Structured OCR'}
+            <div className="specular-card p-8 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/40 space-y-4 shadow-lg hover:shadow-xl transition-all duration-300 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{isBangla ? '০১. ডিজিটাইজেশন ও ওসিআর' : '01. Ingestion & Structured OCR'}</span>
               </div>
-              <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)] tracking-tight">
                 {t.methodology.step1Title}
               </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 {t.methodology.step1Desc}
               </p>
             </div>
 
-            <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
-              <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                {isBangla ? '০২. গ্রাফ বিশ্লেষণ ও ক্রস-ভেরিফিকেশন' : '02. Graph Analysis & Cross-Verification'}
+            <div className="specular-card p-8 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/40 space-y-4 shadow-lg hover:shadow-xl transition-all duration-300 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{isBangla ? '০২. গ্রাফ বিশ্লেষণ ও ক্রস-ভেরিফিকেশন' : '02. Graph Analysis & Cross-Verification'}</span>
               </div>
-              <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)] tracking-tight">
                 {t.methodology.step2Title}
               </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 {t.methodology.step2Desc}
               </p>
             </div>
 
-            <div className="p-6 bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] rounded-[2px] space-y-4 shadow-sm">
-              <div className="text-sm font-mono text-[var(--color-surface-raised)] font-semibold">
-                {isBangla ? '০৩. ব্যাখ্যাযোগ্য ঝুঁকি ও প্রমাণ' : '03. Explainable Risk & Evidence'}
+            <div className="specular-card p-8 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/40 space-y-4 shadow-lg hover:shadow-xl transition-all duration-300 relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400 font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{isBangla ? '০৩. ব্যাখ্যাযোগ্য ঝুঁকি ও প্রমাণ' : '03. Explainable Risk & Evidence'}</span>
               </div>
-              <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)] tracking-tight">
                 {t.methodology.step3Title}
               </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
                 {t.methodology.step3Desc}
               </p>
             </div>
@@ -1229,15 +1248,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="py-20 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
+        className="py-24 border-t border-[var(--color-border-subtle)] bg-[var(--color-surface-base)] transition-colors duration-200"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="text-[10.56px] text-[var(--color-text-secondary)] uppercase tracking-widest font-mono">
+              <div className="text-[11px] text-emerald-500 uppercase tracking-widest font-mono font-bold">
                 {isBangla ? 'প্রাতিষ্ঠানিক অনুসন্ধান' : 'Institutional Investigation'}
               </div>
-              <h2 className="text-3xl font-semibold tracking-tight text-[var(--color-text-primary)]">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
                 {t.inquiry.heading}
               </h2>
               <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
@@ -1245,30 +1264,30 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               </p>
 
               <div className="space-y-3 font-mono text-xs text-[var(--color-text-secondary)]">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full shrink-0" />
                   <span>{isBangla ? 'সিনিয়র ল্যান্ড ফ্রড ইন্টেলিজেন্স টিম কর্তৃক সরাসরি বিশ্লেষণ' : 'Direct analysis by senior land fraud intelligence team'}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full shrink-0" />
                   <span>{isBangla ? 'ক্রস-ডকুমেন্ট অডিটসহ ক্রিপ্টোগ্রাফিক SHA-256 প্রমাণ প্যাকেজ' : 'Cryptographic SHA-256 evidence package with cross-document audit'}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-[var(--color-surface-raised)] rounded-full" />
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full shrink-0" />
                   <span>{isBangla ? 'কঠোর প্রাতিষ্ঠানিক গোপনীয়তা ও ডাটা আইসোলেশন প্রোটোকল' : 'Strict confidentiality & institutional data isolation protocols'}</span>
                 </div>
               </div>
             </div>
 
             {/* The Form */}
-            <div className="bg-[var(--color-surface-strong)] border border-[var(--color-border-subtle)] p-8 rounded-[2px] shadow-2xl transition-colors">
+            <div className="specular-card border border-white/10 dark:border-white/10 p-8 sm:p-10 rounded-2xl shadow-2xl transition-all">
               {formState === 'success' ? (
                 <div className="py-8 text-center space-y-4">
-                  <CheckCircle className="w-12 h-12 text-[var(--color-surface-raised)] mx-auto" />
-                  <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">
+                  <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto" />
+                  <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
                     {isBangla ? 'অনুসন্ধান অনুরোধ প্রেরণ সফল' : 'Investigation Request Dispatched'}
                   </h3>
-                  <p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[var(--color-text-secondary)] max-w-sm mx-auto leading-relaxed">
                     {isBangla 
                       ? <>ধন্যবাদ। প্রবাহ ইন্টেলিজেন্স টিম <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span> সম্পর্কিত আপনার অনুসন্ধান অনুরোধ গ্রহণ করেছে। {inquiryEmail} এর মাধ্যমে শীঘ্রই যোগাযোগ করা হবে।</>
                       : <>Thank you. The Probaho intelligence team has received your parcel inquiry for <span className="text-[var(--color-text-primary)] font-semibold">{inquiryScope}</span>. An analyst will correspond directly via {inquiryEmail}.</>}
@@ -1279,7 +1298,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       setInquiryEmail('');
                       setInquiryNotes('');
                     }}
-                    className="px-4 py-2 text-xs font-mono text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-surface-raised)] rounded-[2px] cursor-pointer"
+                    className="px-5 py-2.5 text-xs font-mono font-semibold text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-emerald-500 rounded-xl cursor-pointer transition-colors"
                   >
                     {isBangla ? 'আরেকটি অনুসন্ধান জমা দিন' : 'Submit Another Inquiry'}
                   </button>
@@ -1287,7 +1306,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               ) : (
                 <form onSubmit={handleInquirySubmit} className="space-y-5">
                   <div>
-                    <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
+                    <label className="block text-xs font-mono text-[var(--color-text-secondary)] mb-2 font-medium">
                       {t.inquiry.emailLabel} *
                     </label>
                     <input
@@ -1296,18 +1315,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       placeholder="analyst@land-registry.gov.bd"
                       value={inquiryEmail}
                       onChange={(e) => setInquiryEmail(e.target.value)}
-                      className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
+                      className="w-full px-4 py-3 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 focus:outline-none rounded-xl transition-all font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
+                    <label className="block text-xs font-mono text-[var(--color-text-secondary)] mb-2 font-medium">
                       {t.inquiry.typologyLabel}
                     </label>
                     <select
                       value={inquiryScope}
                       onChange={(e) => setInquiryScope(e.target.value)}
-                      className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
+                      className="w-full px-4 py-3 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 focus:outline-none rounded-xl transition-all font-mono"
                     >
                       <option value="Commercial / High-Value Parcel Audit">{isBangla ? 'বাণিজ্যিক / উচ্চ মূল্যের প্লট অডিট' : 'Commercial / High-Value Parcel Audit'}</option>
                       <option value="Institutional Registry Bulk Verification">{isBangla ? 'রেজিস্ট্রি অফিস বাল্ক যাচাইকরণ' : 'Institutional Registry Bulk Verification'}</option>
@@ -1317,7 +1336,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-[11.52px] font-mono text-[var(--color-text-secondary)] mb-1.5">
+                    <label className="block text-xs font-mono text-[var(--color-text-secondary)] mb-2 font-medium">
                       {t.inquiry.detailsLabel}
                     </label>
                     <textarea
@@ -1325,7 +1344,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                       placeholder={isBangla ? 'জেলা, মৌজা, দাগ ও খতিয়ান নম্বর এবং জমির আনুমানিক পরিমাণ লিখুন...' : 'Specify District, Mouza name, Dag/Plot numbers, Khatian identifiers, and estimated parcel area...'}
                       value={inquiryNotes}
                       onChange={(e) => setInquiryNotes(e.target.value)}
-                      className="w-full px-[14px] py-[10px] text-[12.64px] bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] focus:border-[var(--color-surface-raised)] focus:outline-none rounded-[2px] transition-colors font-mono"
+                      className="w-full px-4 py-3 text-xs bg-[var(--color-surface-base)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/40 focus:outline-none rounded-xl transition-all font-mono"
                     />
                   </div>
 
@@ -1338,7 +1357,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   <button
                     type="submit"
                     disabled={formState === 'loading'}
-                    className="w-full py-3 text-xs font-semibold text-white bg-[var(--color-surface-raised)] hover:brightness-110 active:translate-y-[1px] rounded-[2px] transition-all flex items-center justify-center gap-2 font-mono cursor-pointer shadow-md"
+                    className="w-full py-3.5 text-xs font-bold uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl transition-all flex items-center justify-center gap-2 font-mono cursor-pointer shadow-lg hover:shadow-emerald-500/25 active:translate-y-[1px]"
                   >
                     {formState === 'loading' ? (
                       <>
@@ -1523,13 +1542,22 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
               <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
                 {activeStudioMap.id === 'dhaka-metro' ? (
                   <div className="flex-1 relative w-full h-full overflow-hidden">
-                    <TemporalOwnershipGraphStudio
-                      onClose={() => setIsSiteAnalysisStudioOpen(false)}
-                      defaultViewMode="split"
-                      cities={URBAN_MAP_DATASETS}
-                      currentCityIndex={studioCityIndex}
-                      onCityChange={setStudioCityIndex}
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-[var(--color-surface-base)] text-xs font-mono text-[var(--color-surface-raised)]">
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                          <span>Loading Cadastral Ownership Studio...</span>
+                        </div>
+                      }
+                    >
+                      <TemporalOwnershipGraphStudio
+                        onClose={() => setIsSiteAnalysisStudioOpen(false)}
+                        defaultViewMode="split"
+                        cities={URBAN_MAP_DATASETS}
+                        currentCityIndex={studioCityIndex}
+                        onCityChange={setStudioCityIndex}
+                      />
+                    </Suspense>
                   </div>
                 ) : (
                   <>
@@ -1673,23 +1701,31 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
 
       {/* 
         ====================================================================
-        DOCCOMPARE DUAL-DOCUMENT CONTRADICTION STUDIO MODAL
+        DOCCOMPARE DUAL-DOCUMENT CONTRADICTION STUDIO MODAL (Lazy Loaded)
         ====================================================================
       */}
-      <DocCompareStudioModal
-        isOpen={isDocCompareStudioOpen}
-        onClose={() => setIsDocCompareStudioOpen(false)}
-      />
+      {isDocCompareStudioOpen && (
+        <Suspense fallback={null}>
+          <DocCompareStudioModal
+            isOpen={isDocCompareStudioOpen}
+            onClose={() => setIsDocCompareStudioOpen(false)}
+          />
+        </Suspense>
+      )}
 
       {/* 
         ====================================================================
-        ADVERSARIAL SIMULATOR CYBER FRAUD DEFENSE TESTBENCH STUDIO MODAL
+        ADVERSARIAL SIMULATOR CYBER FRAUD DEFENSE TESTBENCH STUDIO MODAL (Lazy Loaded)
         ====================================================================
       */}
-      <AdversarialSimulatorStudioModal
-        isOpen={isAdversarialStudioOpen}
-        onClose={() => setIsAdversarialStudioOpen(false)}
-      />
+      {isAdversarialStudioOpen && (
+        <Suspense fallback={null}>
+          <AdversarialSimulatorStudioModal
+            isOpen={isAdversarialStudioOpen}
+            onClose={() => setIsAdversarialStudioOpen(false)}
+          />
+        </Suspense>
+      )}
 
       {/* Modal: Project Monograph Inspector */}
       <AnimatePresence>
