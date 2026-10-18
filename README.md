@@ -47,12 +47,19 @@ Most solutions treat each land record or khatian in isolation. Probaho models a 
 * **Four Historical Survey Generations:** Tracks partitions, splits, merges, and continuations across **CS 1940 → SA 1962 → RS 1988 → BS 2021** across a **30,000-parcel synthetic engineering dataset** with **29,065 directed lineage edges**.
 * **Mathematical Area Conservation Enforced:** 
   $$\sum \text{Area}(\text{Children}) \le \text{Area}(\text{Parent}) + \epsilon$$
+* **Interactive NetworkX Lineage Studio & 30k Explorer (In-App):**
+  - **4-Gen SVG Node-Link Canvas:** Interactive visualizer displaying ancestral lineages with dynamic bezier edge flow and real-time ancestor/descendant click-tracing.
+  - **8 Curated Case Studies:** Switch seamlessly between 4 verified clean lineages (`LIN-000001`, `LIN-000017`, `LIN-000042`, `LIN-000105`) and 4 fraud/anomaly test lineages (`LIN-000053`, `LIN-000088`, `LIN-000142`, `LIN-000248`).
+  - **Live Area Conservation Auditor:** Computes exact parent vs. children shotok delta, percentage inflation, and pass/fail badges on the fly.
+  - **30,000-Parcel Tabular Browser:** Instant search by Dag/Khatian/Mouza, filter by survey tier and status, with 1-click dataset CSV and JSON downloads.
+  - **Live NetworkX Simulation & Python Script Console:** Test DAG acyclicity and connected components live in the browser, or copy executable Python 3.10+ code.
 * **Dual Machine Learning Validation:**
   1. **NetworkX Topological Engine:** Validates DAG acyclicity, computes parent-child deficits, and identifies orphaned or missing ancestral lineages.
   2. **XGBoost Supervised Risk Classifier:** Achieves **0.9909 ROC-AUC**, **0.8514 PR-AUC**, and **99.15% accuracy** on lineage-grouped held-out test data.
   3. **Isolation Forest Unsupervised Outlier Detector:** Surfaces structural anomalies without pre-existing labels.
 * **Game-Theoretic SHAP Explainability:** Decomposes risk predictions into exact Shapley values ($f(x) = \mathbb{E}[f(x)] + \sum \phi_i$) providing transparent, court-admissible audit trails.
 * **Automated Anomaly Detection:** Flags area inflation, missing ancestral lineages, and disjoint duplicate dag collisions across genealogical trees.
+
 
 ### Novelty 2. Hash-Chained Land Ledger (No Heavy Blockchain)
 Avoids the cost, latency, and environmental overhead of proof-of-work blockchains while delivering enterprise-grade cryptographic verification:
@@ -381,7 +388,7 @@ Probaho's **Novelty 1** is powered by a production-grade Machine Learning engine
 | **`DUPLICATE_DAG_DISJOINT_GENEALOGY`** | 115 | Same dag number injected across unrelated genealogical trees |
 | **`NONE` (Normal Verified)** | 29,399 | Clean, continuous lineage satisfying mathematical area conservation |
 
-### 2. NetworkX Cadastral Lineage Graph Visualization
+### 2. NetworkX Cadastral Lineage Graph Visualization & Interactive Studio
 
 <p align="center">
   <img src="./ml/plots/networkx_lineage_graph.png" alt="Probaho NetworkX Cadastral Lineage Graph (CS 1940 -> SA 1962 -> RS 1988 -> BS 2021)" width="100%" />
@@ -408,6 +415,102 @@ Probaho's **Novelty 1** transforms 100+ years of cadastral records into a mathem
 * **Right Panel — Fraud Lineage with Injected Anomalies (`LIN-000053`):** 
   - **🚨 `AREA_INFLATION` (Node `PL-1962-000081`):** Flagged in glowing red. Outgoing children area sum exceeds the CS 1940 parental khatian without a supporting partition deed.
   - **⚠️ `MISSING_ANCESTOR` (Node `PL-1988-007300`):** Flagged in amber. Disconnected orphan parcel lacking a valid historical parent reference.
+
+---
+
+#### 🖥️ In-App Interactive NetworkX Lineage Graph Studio & 30k Explorer
+In addition to static script outputs, Probaho features a complete **Interactive NetworkX Lineage Studio** (`src/components/InteractiveNetworkXLineageGraph.tsx`) directly embedded in both the **JomiChain Section** and the **Temporal Ownership Studio**:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                      PROBAHO INTERACTIVE NETWORKX LINEAGE STUDIO                       │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  [Tab 1: Interactive Graph Canvas]  │  [Tab 2: 30k Dataset Explorer]                   │
+│  [Tab 3: Python NetworkX Console]   │  [Tab 4: Topology & Anomaly Metrics]             │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  • Curated Lineage Selector (8 Subgraphs: 4 Verified Clean + 4 Anomaly Cases)          │
+│  • 4-Gen SVG Node-Link DAG Canvas: CS 1940 ──▶ SA 1962 ──▶ RS 1988 ──▶ BS 2021       │
+│  • Live Click-to-Trace Ancestry: Instant highlight of upstream roots & child branches  │
+│  • Mathematical Area Conservation Auditor: Live Σ(Child Areas) ≤ Parent Area check     │
+│  • Real-Time "Run NetworkX Simulation" Engine with sub-millisecond execution telemetry │
+│  • 30,000-Parcel Tabular Browser: Instant search, survey filters & anomaly filters     │
+│  • Direct 1-Click Downloads for CSV Datasets & JSON Manifest                           │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+##### 1. Curated Lineage Case Studies in the Studio:
+Users and evaluators can switch between 8 pre-indexed lineages representing distinct real-world cadastral scenarios:
+
+| Lineage ID | Title & Archetype | Generational Path | Nodes / Edges | Status & Validation |
+|:---|:---|:---:|:---:|:---|
+| **`LIN-000001`** | Standard 4-Generation Clean Partition | CS $\to$ SA $\to$ RS $\to$ BS | 17 / 16 | **Verified Clean** (0.0% variance) |
+| **`LIN-000017`** | Multi-Branch Inheritance Subdivision | CS $\to$ SA $\to$ RS $\to$ BS | 14 / 13 | **Verified Clean** (Conservation passed) |
+| **`LIN-000042`** | Balanced Agricultural Subdivisions | CS $\to$ SA $\to$ RS $\to$ BS | 11 / 10 | **Verified Clean** (Conserved acreage) |
+| **`LIN-000105`** | Deep Urban Subdivision Hierarchy | CS $\to$ SA $\to$ RS $\to$ BS | 19 / 18 | **Verified Clean** (High-density leaf nodes) |
+| **`LIN-000053`** | Illegal Boundary & Area Inflation | CS $\to$ SA $\to$ RS $\to$ BS | 12 / 11 | **🚨 AREA_INFLATION** (+51.6% excess child) |
+| **`LIN-000088`** | Disconnected Orphan Parcel | CS $\to$ SA $\to$ RS $\to$ BS | 7 / 6 | **⚠️ MISSING_ANCESTOR** (Parentless node) |
+| **`LIN-000142`** | Multi-Family Dag Number Collision | CS $\to$ SA $\to$ RS $\to$ BS | 8 / 7 | **⚡ DUPLICATE_DAG** (Cross-family collision) |
+| **`LIN-000248`** | Multi-Anomaly High-Risk Fraud Cascade | CS $\to$ SA $\to$ RS $\to$ BS | 7 / 6 | **🚨 MULTI_ANOMALY** (Orphan + Area Inflation) |
+
+##### 2. Live Mathematical Area Conservation Auditor:
+Clicking any parcel node inside the SVG canvas triggers an instant recursive query:
+* **Parent Acreage:** Retrieves registered parental survey area in shotok.
+* **Child Partition Sum:** Sums all outgoing legal child allocations:
+  $$\text{Child Sum} = \sum_{c \in \text{Children}(p)} \text{Area}(c)$$
+* **Variance Delta:** Displays exact shotok difference and percentage expansion.
+* **Automated Flag:** Marks plot as **`AREA_CONSERVED`** (Green ✓) or **`AREA_INFLATION_VIOLATION`** (Red ✗).
+
+##### 3. 30,000-Parcel Tabular Dataset Explorer:
+The studio includes an interactive data table directly integrated with the 30,000-row cadastral dataset:
+* **Global Real-Time Search:** Search dynamically across **Parcel ID**, **Dag Number**, **Mouza Name**, and **Khatian Number**.
+* **Survey Tier Filters:** Instant tab switching between `All`, `CS 1940`, `SA 1962`, `RS 1988`, and `BS 2021`.
+* **Integrity Status Filters:** Filter exclusively for `All Parcels`, `Verified Only`, or `Anomalies Only`.
+* **Detailed Row Attributes:** Displays Parcel ID, Dag, Mouza, Survey, Area (shotok), Owner, Sibling Count, Parent Excess, and Anomaly Classification.
+
+##### 4. Downloadable Cadastral Engineering Datasets:
+All dataset files are packaged in the public asset directory for direct download, testing, and independent audit:
+
+| Dataset File | Format | Size | Description & Direct Link |
+|:---|:---:|:---:|:---|
+| **Main Survey-Lineage Dataset** | CSV | 6.7 MB | [Download CSV (`probaho_novelty1_survey_lineage_30000.csv`)](public/data/probaho_novelty1_survey_lineage_30000.csv)<br/>30,000 records across 22 engineered attributes spanning CS, SA, RS, and BS. |
+| **Lineage Graph Edges** | CSV | 1.96 MB | [Download CSV (`probaho_novelty1_lineage_edges.csv`)](public/data/probaho_novelty1_lineage_edges.csv)<br/>29,065 directed parent-child edges with transition types (`SPLIT`, `MERGE`, `CONTINUATION`). |
+| **NetworkX Manifest** | JSON | 205 KB | [Download JSON (`networkx_lineage_30k_manifest.json`)](public/data/networkx_lineage_30k_manifest.json)<br/>Pre-computed multi-lineage topological manifest with 95 nodes and 91 edges for instantaneous frontend rendering. |
+| **Data Dictionary** | Markdown | 12 KB | [View Data Dictionary (`probaho_novelty1_data_dictionary.md`)](probaho_novelty1_data_dictionary.md)<br/>Complete specification of all 22 columns, validation formulas, and anomaly injection parameters. |
+
+##### 5. Executable NetworkX Python Verification Code:
+The studio embeds the following ready-to-run Python snippet for developers, researchers, and land revenue officers:
+
+```python
+import networkx as nx
+import pandas as pd
+
+# 1. Load the 30,000-parcel dataset & directed edge table
+df_parcels = pd.read_csv("probaho_novelty1_survey_lineage_30000.csv")
+df_edges = pd.read_csv("probaho_novelty1_lineage_edges.csv")
+
+# 2. Construct the Directed Acyclic Graph (DAG)
+G = nx.DiGraph()
+for _, row in df_parcels.iterrows():
+    G.add_node(row['parcel_id'], dag=row['dag_no'], survey=row['survey_type'], area=row['area_shotok'])
+
+for _, row in df_edges.iterrows():
+    G.add_edge(row['parent_parcel_id'], row['child_parcel_id'], transition=row['transition_type'])
+
+# 3. Topological Verification
+print(f"Total Cadastral Nodes: {G.number_of_nodes()}")
+print(f"Directed Lineage Edges: {G.number_of_edges()}")
+print(f"Is DAG (Zero Circular Mutations): {nx.is_directed_acyclic_graph(G)}")
+
+# 4. Mathematical Area Conservation Audit
+for parent in G.nodes():
+    children = list(G.successors(parent))
+    if children:
+        parent_area = G.nodes[parent]['area']
+        children_sum = sum(G.nodes[c]['area'] for c in children)
+        if children_sum > parent_area + 0.01:
+            print(f"🚨 FRAUD DETECTED on {parent}: Children sum ({children_sum:.2f}) exceeds parent ({parent_area:.2f})!")
+```
+
 
 ---
 
@@ -506,12 +609,14 @@ Probaho includes an interactive **Live Story Controller** built directly into th
 
 | Step | Action | What Judges See |
 |:---:|:---|:---|
+| **0** | **Interactive NetworkX Lineage & 30k Dataset Explorer** | Open the in-app Lineage Studio. Switch between 8 curated subgraphs (e.g. `LIN-000053` demonstrating illegal +51.6% Area Inflation), click nodes to trace parent-child trees with live mathematical area conservation checks, run instant topological simulations, and search the 30,000-parcel dataset with direct CSV/JSON downloads. |
 | **1** | **Clean Baseline Plot** | Inspect Dag 1042 (Dhanmondi). 4-generation lineage tree (CS→SA→RS→BS) with 0.0% area variance, green Trust Report, and 4/100 risk score. |
 | **2** | **Office A Soft-Lock** | Simulate Tejgaon Sub-Registry initiating deed processing. Plot transitions to `🔒 SOFT-LOCKED` with reservation token `#RES-794021`. |
 | **3** | **Office B Double-Sale Attack** | Simulate Gulshan Sub-Registry attempting a simultaneous deed. The system blocks the transaction live with a `409 Concurrency Conflict`. |
 | **4** | **Database Tamper Simulation** | Directly edit a historical database record (e.g., modifying RS area from 14.5 to 22.0 shotok). The hash chain severs into bright red and the Merkle root is invalidated. |
 | **5** | **Bangla Fuzzy Matching** | Compare deed names (`মোহাম্মদ রফিকুল ইসলাম` vs `মুহাম্মদ রফিকুল ইসলাম`). The engine displays a 96.8% match with plain-language linguistic reasoning. |
 | **6** | **Citizen QR Verification** | Launch the mobile-friendly smartphone Trust Report view via the scannable QR digital seal. |
+
 
 ---
 
@@ -626,6 +731,13 @@ Probaho/
 ├── probaho_novelty1_survey_lineage_30000.csv   # 30,000-Row Synthetic Survey-Lineage Dataset
 ├── probaho_novelty1_lineage_edges.csv          # 29,065 Normalized Parent-Child Graph Edges
 ├── probaho_novelty1_data_dictionary.md         # Lineage Data Dictionary & Validation Guide
+├── public/                                     # Static Public Assets & Downloadable Datasets
+│   └── data/
+│       ├── probaho_novelty1_survey_lineage_30000.csv # 30k Dataset (Direct HTTP Download, 6.7MB)
+│       ├── probaho_novelty1_lineage_edges.csv        # 29k Lineage Edges (Direct HTTP Download, 1.96MB)
+│       └── networkx_lineage_30k_manifest.json       # 8 Precomputed Lineage Subgraphs (205KB)
+├── scripts/
+│   └── export_lineage_data.py                  # Cadastral Lineage Graph & JSON Exporter
 ├── ml/                                         # Novelty 1 Machine Learning & XAI Suite
 │   ├── README.md                               # ML Architecture & Benchmark Documentation
 │   ├── train_lineage_models.py                 # Production Training & Evaluation Script
@@ -637,6 +749,7 @@ Probaho/
 │   │   ├── evaluation_metrics.json             # ROC-AUC (0.9909), PR-AUC (0.8514) Benchmarks
 │   │   └── sample_shap_waterfall.json          # Precomputed SHAP Waterfall Payload
 │   └── plots/
+│       ├── networkx_lineage_graph.png          # High-Res Cadastral Lineage Graph Benchmark
 │       ├── shap_summary_beeswarm.png           # Global Feature Impact Beeswarm Plot
 │       ├── shap_feature_importance_bar.png     # Feature Importance Ranking Bar Chart
 │       ├── shap_waterfall_anomaly.png          # Individual Parcel Waterfall Attribution
@@ -644,7 +757,9 @@ Probaho/
 │       └── confusion_matrix.png                # Confusion Matrix Heatmap
 ├── src/
 │   ├── components/
+│   │   ├── InteractiveNetworkXLineageGraph.tsx # In-App 4-Gen SVG Visualizer, Auditor & 30k Explorer
 │   │   ├── JomiChainSection.tsx                # Plot Passport, 5 Novelties & Live Story Demo
+│   │   ├── TemporalOwnershipGraphStudio.tsx    # Cadastral Lineage Graph Studio & Subgraph Inspector
 │   │   ├── ShapXaiExplainer.tsx                # Interactive SHAP XAI Waterfall & Tornado Studio
 │   │   ├── RiskAnalyticsDashboard.tsx          # Real-Time Cadastral Risk Telemetry Dashboard
 │   │   ├── ProbahoHeroSvg.tsx                  # In-App Cadastral Hero SVG Component
@@ -655,6 +770,7 @@ Probaho/
 │   │   ├── MassPricingSection.tsx              # Tiered Institutional Access Plans
 │   │   └── ArchitecturalBackground.tsx         # Cadastral Grid & Coordinate Canvas
 │   ├── data/
+│   │   ├── networkxLineageData.ts              # Curated Subgraphs & Lineage Manifest Type Definitions
 │   │   └── tokens.ts                           # Design Tokens, Plot Datasets & Tool Schemas
 │   ├── context/
 │   │   ├── ThemeContext.tsx                    # Day/Night Architectural Color Mode Context
