@@ -30,6 +30,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  Sector,
 } from 'recharts';
 import {
   DHAKA_RISK_ZONES,
@@ -110,6 +111,59 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [isAuditing, setIsAuditing] = useState<boolean>(false);
   const [auditSuccessMsg, setAuditSuccessMsg] = useState<string | null>(null);
+
+  // Interactive Hover & Focus state for Dhaka Fraud Modality Donut Chart
+  const [activeModalityIndex, setActiveModalityIndex] = useState<number | null>(null);
+
+  // Radar Chart Interactive Baseline & Hover states
+  const [showMetroBaseline, setShowMetroBaseline] = useState<boolean>(true);
+  const [hoveredVectorSubject, setHoveredVectorSubject] = useState<string | null>(null);
+
+  const activeModality = useMemo(() => {
+    if (activeModalityIndex !== null && DHAKA_FRAUD_TYPOLOGIES[activeModalityIndex]) {
+      return DHAKA_FRAUD_TYPOLOGIES[activeModalityIndex];
+    }
+    return null;
+  }, [activeModalityIndex]);
+
+  // High-performance custom active shape for Donut Chart slice hover
+  const renderActiveShape = (props: any) => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+    return (
+      <g className="transition-all duration-200">
+        {/* Main active slice expanded outwards with rich shadow */}
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius - 4}
+          outerRadius={outerRadius + 8}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+          cornerRadius={4}
+          style={{
+            filter: `drop-shadow(0 6px 14px ${fill}99)`,
+            cursor: 'pointer',
+          }}
+        />
+        {/* Outer orbital accent arc */}
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={outerRadius + 12}
+          outerRadius={outerRadius + 15}
+          fill={fill}
+          cornerRadius={2}
+          style={{
+            opacity: 0.9,
+            filter: `drop-shadow(0 0 6px ${fill})`,
+          }}
+        />
+      </g>
+    );
+  };
 
   // Selected Zone Object
   const selectedZone = useMemo(() => {
@@ -229,6 +283,14 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
       },
     ];
   }, [selectedZone, isBangla]);
+
+  // Active hovered vector telemetry for Radar Chart (zero-overlap HUD)
+  const activeRadarVector = useMemo(() => {
+    if (hoveredVectorSubject) {
+      return radarData.find((r) => r.subject === hoveredVectorSubject) || null;
+    }
+    return null;
+  }, [hoveredVectorSubject, radarData]);
 
   // Color helper for Risk Levels
   const getRiskColor = (level: string) => {
@@ -1449,13 +1511,25 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Radar Chart: Multi-Signal Vectors for Selected Zone */}
           <div className="lg:col-span-6 specular-card p-6 sm:p-7 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all duration-300 shadow-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
-                  {isBangla
-                    ? `${selectedZone.nameBn} এর জালিয়াতি ভেক্টর বিশ্লেষণ`
-                    : `${selectedZone.name} Anomaly Vector Radar`}
-                </h3>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
+                    {isBangla
+                      ? `${selectedZone.nameBn} এর জালিয়াতি ভেক্টর বিশ্লেষণ`
+                      : `${selectedZone.name} Anomaly Vector Radar`}
+                  </h3>
+                  <span
+                    className="text-[10.5px] font-mono font-bold px-2 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: `${getRiskColor(selectedZone.riskLevel)}18`,
+                      color: getRiskColor(selectedZone.riskLevel),
+                      border: `1px solid ${getRiskColor(selectedZone.riskLevel)}40`,
+                    }}
+                  >
+                    {selectedZone.riskScore} PTS · {selectedZone.riskLevel}
+                  </span>
+                </div>
                 <p className="text-xs text-[var(--color-text-secondary)]">
                   {isBangla
                     ? 'মেট্রোপলিটন গড়ের তুলনায় ৬টি মৌলিক ঝুঁকি মাত্রার তুলনা'
@@ -1463,208 +1537,644 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                 </p>
               </div>
 
-              {/* Zone switcher quick select */}
-              <select
-                value={selectedZoneId}
-                onChange={(e) => setSelectedZoneId(e.target.value)}
-                className="px-2.5 py-1 text-xs font-mono bg-[var(--color-surface-muted)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] rounded cursor-pointer self-start sm:self-auto"
-              >
-                {DHAKA_RISK_ZONES.map((z) => (
-                  <option key={z.id} value={z.id}>
-                    {isBangla ? z.nameBn : z.name} ({z.riskScore})
-                  </option>
-                ))}
-              </select>
+              {/* Controls: Baseline toggle & Zone switcher */}
+              <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowMetroBaseline(!showMetroBaseline)}
+                  className={`text-[10px] font-mono px-2 py-1 rounded-lg border transition-all cursor-pointer ${
+                    showMetroBaseline
+                      ? 'bg-slate-800/10 dark:bg-white/10 text-[var(--color-text-primary)] border-slate-400/40'
+                      : 'bg-transparent text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)]'
+                  }`}
+                  title={isBangla ? 'মেট্রো গড় রেফারেন্স অন/অফ' : 'Toggle Metro Average Baseline'}
+                >
+                  {isBangla ? 'মেট্রো গড়' : 'Metro Avg'}: {showMetroBaseline ? 'ON' : 'OFF'}
+                </button>
+
+                <div className="relative">
+                  <select
+                    value={selectedZoneId}
+                    onChange={(e) => setSelectedZoneId(e.target.value)}
+                    className="pl-2.5 pr-6 py-1 text-xs font-mono bg-[var(--color-surface-muted)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] rounded-lg cursor-pointer appearance-none hover:border-slate-400/60 transition-colors focus:outline-none focus:border-emerald-500"
+                  >
+                    {DHAKA_RISK_ZONES.map((z) => (
+                      <option key={z.id} value={z.id}>
+                        {isBangla ? z.nameBn : z.name} ({z.riskScore})
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronRight className="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 rotate-90 text-[var(--color-text-secondary)] pointer-events-none" />
+                </div>
+              </div>
             </div>
 
-            {/* RadarChart */}
-            <div className="w-full h-80 flex items-center justify-center">
+            {/* Intelligent Zero-Overlap Telemetry Shelf (Fixed HUD, never covers radar) */}
+            <div className="min-h-[42px] px-3.5 py-2 rounded-xl bg-[var(--color-surface-muted)]/70 border border-[var(--color-border-subtle)] font-mono text-xs flex items-center justify-between transition-all">
+              {activeRadarVector ? (
+                <div className="w-full flex flex-wrap items-center justify-between gap-2 animate-in fade-in duration-150">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full animate-pulse shadow-xs"
+                      style={{
+                        backgroundColor: getRiskColor(selectedZone.riskLevel),
+                        boxShadow: `0 0 8px ${getRiskColor(selectedZone.riskLevel)}`,
+                      }}
+                    />
+                    <span className="font-bold text-[var(--color-text-primary)]">
+                      {activeRadarVector.subject}
+                    </span>
+                    <span
+                      className="text-[9.5px] px-2 py-0.5 rounded font-bold uppercase tracking-wider"
+                      style={{
+                        backgroundColor: `${getRiskColor(selectedZone.riskLevel)}18`,
+                        color: getRiskColor(selectedZone.riskLevel),
+                        border: `1px solid ${getRiskColor(selectedZone.riskLevel)}35`,
+                      }}
+                    >
+                      {activeRadarVector.zone >= 70 ? (isBangla ? 'উচ্চ ঝুঁকি' : 'High Threat') : (isBangla ? 'নজরদারিতে' : 'Monitored')}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[11px]">
+                    <span className="text-[var(--color-text-secondary)]">
+                      {isBangla ? selectedZone.nameBn : selectedZone.name}:{' '}
+                      <strong className="font-bold tabular-nums" style={{ color: getRiskColor(selectedZone.riskLevel) }}>
+                        {activeRadarVector.zone} / 100
+                      </strong>
+                    </span>
+                    <span className="text-[var(--color-text-tertiary)]">|</span>
+                    <span className="text-[var(--color-text-secondary)]">
+                      Metro Avg:{' '}
+                      <strong className="text-slate-400 font-bold tabular-nums">
+                        {activeRadarVector.metroAvg}
+                      </strong>
+                    </span>
+                    <span
+                      className={`font-bold px-1.5 py-0.5 rounded text-[10.5px] tabular-nums ${
+                        activeRadarVector.zone - activeRadarVector.metroAvg > 0
+                          ? 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/25'
+                          : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25'
+                      }`}
+                    >
+                      Δ {activeRadarVector.zone - activeRadarVector.metroAvg > 0 ? `+${activeRadarVector.zone - activeRadarVector.metroAvg}` : activeRadarVector.zone - activeRadarVector.metroAvg} pts
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full flex items-center justify-between text-[11px] text-[var(--color-text-secondary)]">
+                  <span className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                    <span>{isBangla ? '৬টি ভেক্টর পর্যবেক্ষণরত · পয়েন্ট বা চিপসে হোভার করুন' : '6 Fraud Vectors Tracked · Hover vertex or chip to inspect'}</span>
+                  </span>
+                  <span className="text-[10px] text-[var(--color-text-tertiary)] hidden sm:inline">
+                    {isBangla ? 'শীর্ষ ঝুঁকি: ' : 'Peak Risk: '}
+                    <strong className="text-red-500 font-bold">{selectedZone.primaryVector}</strong>
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* RadarChart with Cyber Glowing Gradients & Interactive Vertex Dots (Zero-Overlap Floating Inspector) */}
+            <div
+              className="w-full h-80 flex items-center justify-center relative"
+              onMouseLeave={() => setHoveredVectorSubject(null)}
+            >
+              {/* Intelligent Dynamic Non-Colliding Floating Inspector Card */}
+              {activeRadarVector && (
+                <div
+                  className={`absolute z-30 transition-all duration-300 pointer-events-none select-none ${
+                    // If active vector is on the right side, dock top-left so it NEVER collides with the vertex or cursor
+                    activeRadarVector.subject === (isBangla ? 'দ্বৈত দলিল রেজিস্ট্রি' : 'Double Sale Velocity') ||
+                    activeRadarVector.subject === (isBangla ? 'আমমোক্তারনামা জাল' : 'Power of Attorney')
+                      ? 'top-2 left-2 sm:top-3 sm:left-3 animate-in fade-in slide-in-from-left-2 duration-150'
+                      : 'top-2 right-2 sm:top-3 sm:right-3 animate-in fade-in slide-in-from-right-2 duration-150'
+                  }`}
+                >
+                  <div className="p-3.5 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-2xl text-xs font-mono space-y-2 backdrop-blur-md min-w-[210px] max-w-[245px]">
+                    {/* Header with Title and Threat Badge */}
+                    <div className="flex items-center justify-between gap-2 border-b border-[var(--color-border-subtle)] pb-1.5">
+                      <div className="flex items-center gap-1.5 truncate">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0 animate-pulse shadow-xs"
+                          style={{
+                            backgroundColor: getRiskColor(selectedZone.riskLevel),
+                            boxShadow: `0 0 8px ${getRiskColor(selectedZone.riskLevel)}`,
+                          }}
+                        />
+                        <span className="font-bold text-[var(--color-text-primary)] truncate text-[11.5px]">
+                          {activeRadarVector.subject}
+                        </span>
+                      </div>
+                      <span
+                        className="text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0"
+                        style={{
+                          backgroundColor: `${getRiskColor(selectedZone.riskLevel)}18`,
+                          color: getRiskColor(selectedZone.riskLevel),
+                          border: `1px solid ${getRiskColor(selectedZone.riskLevel)}35`,
+                        }}
+                      >
+                        {activeRadarVector.zone >= 70
+                          ? isBangla ? 'উচ্চ ঝুঁকি' : 'High Threat'
+                          : isBangla ? 'নজরদারিতে' : 'Monitored'}
+                      </span>
+                    </div>
+
+                    {/* Zone Score */}
+                    <div className="flex items-center justify-between gap-3 text-[11px]">
+                      <span className="text-[var(--color-text-secondary)]">
+                        {isBangla ? selectedZone.nameBn : selectedZone.name}:
+                      </span>
+                      <strong
+                        className="font-bold tabular-nums text-sm"
+                        style={{ color: getRiskColor(selectedZone.riskLevel) }}
+                      >
+                        {activeRadarVector.zone} / 100
+                      </strong>
+                    </div>
+
+                    {/* Metro Average */}
+                    <div className="flex items-center justify-between gap-3 text-[11px]">
+                      <span className="text-[var(--color-text-secondary)]">
+                        {isBangla ? 'ঢাকা মেট্রো গড়:' : 'Dhaka Metro Avg:'}
+                      </span>
+                      <strong className="text-slate-400 font-bold tabular-nums">
+                        {activeRadarVector.metroAvg} / 100
+                      </strong>
+                    </div>
+
+                    {/* Variance Calculation */}
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-[var(--color-border-subtle)] text-[10.5px]">
+                      <span className="text-[var(--color-text-secondary)]">
+                        {isBangla ? 'পার্থক্য:' : 'Variance:'}
+                      </span>
+                      <span
+                        className={`font-bold tabular-nums ${
+                          activeRadarVector.zone - activeRadarVector.metroAvg > 0
+                            ? 'text-red-500'
+                            : 'text-emerald-500'
+                        }`}
+                      >
+                        {activeRadarVector.zone - activeRadarVector.metroAvg > 0
+                          ? `+${activeRadarVector.zone - activeRadarVector.metroAvg}`
+                          : activeRadarVector.zone - activeRadarVector.metroAvg}{' '}
+                        pts{' '}
+                        <span className="text-[9px] font-normal opacity-80">
+                          ({activeRadarVector.zone - activeRadarVector.metroAvg > 0
+                            ? isBangla ? 'অধিক ঝুঁকি' : 'higher risk'
+                            : isBangla ? 'কম ঝুঁকি' : 'lower risk'})
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="75%" data={radarData}>
-                  <PolarGrid stroke={gridColor} />
+                <RadarChart
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="75%"
+                  data={radarData}
+                  onMouseMove={(state: any) => {
+                    if (state && state.activePayload && state.activePayload.length) {
+                      const subj = state.activePayload[0].payload?.subject;
+                      if (subj && subj !== hoveredVectorSubject) {
+                        setHoveredVectorSubject(subj);
+                      }
+                    }
+                  }}
+                >
+                  <defs>
+                    <linearGradient id="zoneRadarGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={getRiskColor(selectedZone.riskLevel)} stopOpacity={0.65} />
+                      <stop offset="95%" stopColor={getRiskColor(selectedZone.riskLevel)} stopOpacity={0.12} />
+                    </linearGradient>
+                    <linearGradient id="metroRadarGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#64748b" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#64748b" stopOpacity={0.04} />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Silent Tooltip so Recharts calculates activePayload on hover */}
+                  <Tooltip cursor={false} content={() => null} />
+
+                  <PolarGrid
+                    stroke={isDay ? 'rgba(0, 0, 0, 0.09)' : 'rgba(255, 255, 255, 0.12)'}
+                    strokeDasharray="3 3"
+                  />
                   <PolarAngleAxis
                     dataKey="subject"
-                    tick={{ fill: tickColor, fontSize: 10, fontFamily: 'monospace' }}
-                  />
-                  <PolarRadiusAxis
-                    angle={30}
-                    domain={[0, 100]}
-                    stroke={tickColor}
-                    tick={{ fill: tickColor, fontSize: 9 }}
-                  />
-                  <Tooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const dataPoint = payload[0].payload;
-                        const zoneVal = dataPoint.zone;
-                        const metroVal = dataPoint.metroAvg;
-                        const diff = Math.round((zoneVal - metroVal) * 10) / 10;
-                        return (
-                          <div className="p-3 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-xl text-xs font-mono space-y-1.5 backdrop-blur-md">
-                            <div className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-border-subtle)] pb-1">
-                              {dataPoint.subject}
-                            </div>
-                            <div className="space-y-1 text-[11px]">
-                              <div className="flex items-center justify-between gap-4">
-                                <span className="text-[var(--color-text-secondary)]">
-                                  {isBangla ? selectedZone.nameBn : selectedZone.name}:
-                                </span>
-                                <span className="font-bold tabular-nums" style={{ color: getRiskColor(selectedZone.riskLevel) }}>
-                                  {zoneVal} / 100
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between gap-4">
-                                <span className="text-[var(--color-text-secondary)]">
-                                  {isBangla ? 'ঢাকা মেট্রো গড়:' : 'Dhaka Metro Avg:'}
-                                </span>
-                                <span className="font-bold text-emerald-400 tabular-nums">
-                                  {metroVal} / 100
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between gap-4 text-[10px] pt-1 border-t border-[var(--color-border-subtle)]">
-                                <span className="text-[var(--color-text-tertiary)]">{isBangla ? 'তারতম্য:' : 'Variance:'}</span>
-                                <span className={`font-semibold tabular-nums ${diff > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
-                                  {diff > 0 ? `+${diff}` : diff} pts ({diff > 0 ? (isBangla ? 'উচ্চতর ঝুঁকি' : 'higher risk') : (isBangla ? 'নিম্নতর ঝুঁকি' : 'lower risk')})
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
+                    tick={({ x, y, payload, textAnchor }: any) => {
+                      const isHovered = hoveredVectorSubject === payload.value;
+                      const rColor = getRiskColor(selectedZone.riskLevel);
+                      return (
+                        <text
+                          x={x}
+                          y={y}
+                          textAnchor={textAnchor}
+                          fontSize={10}
+                          fontFamily="monospace"
+                          fontWeight={isHovered ? 700 : 500}
+                          fill={isHovered ? rColor : tickColor}
+                          className="transition-colors duration-150 cursor-pointer"
+                          onMouseEnter={() => setHoveredVectorSubject(payload.value)}
+                        >
+                          {payload.value}
+                        </text>
+                      );
                     }}
                   />
+                  <PolarRadiusAxis
+                    angle={90}
+                    domain={[0, 100]}
+                    stroke={isDay ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.15)'}
+                    tick={{ fill: tickColor, fontSize: 8, fontFamily: 'monospace' }}
+                  />
+
+                  {showMetroBaseline && (
+                    <Radar
+                      name={isBangla ? 'ঢাকা মেট্রো গড়' : 'Dhaka Metro Avg'}
+                      dataKey="metroAvg"
+                      stroke="#94a3b8"
+                      strokeWidth={1.5}
+                      strokeDasharray="4 4"
+                      fill="url(#metroRadarGrad)"
+                      fillOpacity={0.9}
+                      dot={{ r: 2.5, fill: '#94a3b8', stroke: isDay ? '#ffffff' : '#0f172a', strokeWidth: 1 }}
+                      isAnimationActive={true}
+                      animationDuration={800}
+                    />
+                  )}
+
                   <Radar
                     name={isBangla ? selectedZone.nameBn : selectedZone.name}
                     dataKey="zone"
                     stroke={getRiskColor(selectedZone.riskLevel)}
-                    fill={getRiskColor(selectedZone.riskLevel)}
-                    fillOpacity={0.45}
+                    strokeWidth={2.5}
+                    fill="url(#zoneRadarGrad)"
+                    fillOpacity={0.9}
+                    dot={(props: any) => {
+                      const { cx, cy, payload, index } = props;
+                      const isHovered = hoveredVectorSubject === payload?.subject;
+                      const rColor = getRiskColor(selectedZone.riskLevel);
+                      return (
+                        <g key={`radar-dot-${index}`}>
+                          {isHovered && (
+                            <circle
+                              cx={cx}
+                              cy={cy}
+                              r={12}
+                              fill={rColor}
+                              fillOpacity={0.25}
+                              className="animate-ping"
+                            />
+                          )}
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r={isHovered ? 6.5 : 4}
+                            fill={isHovered ? '#ffffff' : rColor}
+                            stroke={rColor}
+                            strokeWidth={isHovered ? 2.5 : 2}
+                            className="transition-all duration-200 cursor-pointer"
+                            style={{
+                              filter: isHovered ? `drop-shadow(0 0 10px ${rColor})` : 'none',
+                            }}
+                            onMouseEnter={() => setHoveredVectorSubject(payload?.subject)}
+                          />
+                        </g>
+                      );
+                    }}
+                    activeDot={false}
+                    isAnimationActive={true}
+                    animationDuration={800}
+                    animationEasing="ease-out"
                   />
-                  <Radar
-                    name={isBangla ? 'ঢাকা গড়' : 'Dhaka Metro Avg'}
-                    dataKey="metroAvg"
-                    stroke="#8a8a86"
-                    fill="#8a8a86"
-                    fillOpacity={0.15}
-                  />
-                  <Legend wrapperStyle={{ fontSize: 11, fontFamily: 'monospace' }} />
+
+                  <Legend wrapperStyle={{ fontSize: 11, fontFamily: 'monospace', paddingTop: 8 }} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="p-3 bg-[var(--color-surface-muted)]/60 rounded border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] space-y-1">
-              <div className="font-semibold text-[var(--color-text-primary)] font-mono text-[11px]">
-                {isBangla ? 'প্রধান ঝুঁকি উপাদান:' : 'Primary Vulnerability Vector:'}{' '}
-                <span className="text-[var(--color-surface-raised)]">
-                  {isBangla ? selectedZone.primaryVectorBn : selectedZone.primaryVector}
+            {/* Interactive 6-Vector Telemetry Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-mono">
+              {radarData.map((item) => {
+                const diff = Math.round((item.zone - item.metroAvg) * 10) / 10;
+                const isCritical = item.zone >= 75;
+                const isHigh = item.zone >= 50 && item.zone < 75;
+                const isHovered = hoveredVectorSubject === item.subject;
+                return (
+                  <div
+                    key={item.subject}
+                    onMouseEnter={() => setHoveredVectorSubject(item.subject)}
+                    onMouseLeave={() => setHoveredVectorSubject(null)}
+                    onClick={() => setHoveredVectorSubject(hoveredVectorSubject === item.subject ? null : item.subject)}
+                    className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer ${
+                      isHovered
+                        ? 'border-emerald-500/50 bg-[var(--color-surface-strong)] shadow-md scale-[1.02]'
+                        : 'border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)]/40 hover:bg-[var(--color-surface-muted)]/80'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-[11px] mb-1">
+                      <span className="truncate text-[var(--color-text-secondary)] font-medium">
+                        {item.subject}
+                      </span>
+                      <span
+                        className={`font-bold tabular-nums text-[10.5px] px-1.5 py-0.2 rounded ${
+                          isCritical
+                            ? 'bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30'
+                            : isHigh
+                            ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                            : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        }`}
+                      >
+                        {item.zone}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-[9.5px] text-[var(--color-text-tertiary)]">
+                      <span>Metro: {item.metroAvg}</span>
+                      <span className={`font-semibold ${diff > 0 ? 'text-red-500' : 'text-emerald-500'}`}>
+                        {diff > 0 ? `+${diff}` : diff} pts
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Primary Threat Dossier Box */}
+            <div className="p-3.5 rounded-xl border border-[var(--color-border-subtle)] bg-gradient-to-r from-[var(--color-surface-muted)]/80 to-[var(--color-surface-muted)]/40 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)] shrink-0" />
+                  <span className="text-[11px] font-mono font-bold text-[var(--color-text-primary)]">
+                    {isBangla ? 'সর্বোচ্চ ঝুঁকিপূর্ণ ভেক্টর:' : 'Primary Vulnerability Vector:'}
+                  </span>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-red-500/15 text-red-600 dark:text-red-400 font-bold border border-red-500/30">
+                    {isBangla ? selectedZone.primaryVectorBn : selectedZone.primaryVector}
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/25">
+                  {isBangla ? '৭২ ঘণ্টা সফট-লক এনফোর্সড' : '72h Soft-Lock Enforced'}
                 </span>
               </div>
-              <div className="text-[11px]">
-                {isBangla
-                  ? `নজরদারিকৃত সাব-রেজিস্ট্রি: ${selectedZone.subRegistryBn}`
-                  : `Supervising Registry Office: ${selectedZone.subRegistry}`}
+              <div className="text-[11px] font-mono text-[var(--color-text-secondary)] flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  {isBangla ? 'তত্ত্বাবধানকারী সাব-রেজিস্ট্রি:' : 'Supervising Registry Office:'}{' '}
+                  <strong className="text-[var(--color-text-primary)] font-semibold">
+                    {isBangla ? selectedZone.subRegistryBn : selectedZone.subRegistry}
+                  </strong>
+                </span>
+                <span className="text-[10.5px] text-[var(--color-text-tertiary)]">
+                  Hotspot Mouzas: {selectedZone.hotspotMouzas.slice(0, 2).join(', ')}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Donut Chart: Fraud Typology Distribution in Dhaka */}
           <div className="lg:col-span-6 specular-card p-6 sm:p-7 rounded-2xl border border-[var(--color-border-subtle)] hover:border-emerald-500/30 transition-all duration-300 shadow-xl space-y-4">
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)]">
-                {isBangla ? 'ঢাকায় সংঘটিত জালিয়াতির ধরন ও অনুপাত' : 'Dhaka Land Fraud Modality Distribution'}
-              </h3>
-              <p className="text-xs text-[var(--color-text-secondary)]">
-                {isBangla
-                  ? 'শনাক্তকৃত জালিয়াতিগুলোর শতকরা হার এবং আটকে যাওয়া আর্থিক ক্ষতির পরিমাণ'
-                  : 'Breakdown of primary fraud modalities and halted financial exposure (BDT Cr)'}
-              </p>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)] flex items-center gap-2 flex-wrap">
+                  <span>{isBangla ? 'ঢাকায় সংঘটিত জালিয়াতির ধরন ও অনুপাত' : 'Dhaka Land Fraud Modality Distribution'}</span>
+                  {activeModality && (
+                    <span
+                      className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full transition-all duration-200"
+                      style={{
+                        color: activeModality.color,
+                        backgroundColor: `${activeModality.color}18`,
+                        border: `1px solid ${activeModality.color}40`,
+                      }}
+                    >
+                      {activeModality.percentage}% ACTIVE
+                    </span>
+                  )}
+                </h3>
+                <p className="text-xs text-[var(--color-text-secondary)]">
+                  {isBangla
+                    ? 'শনাক্তকৃত জালিয়াতিগুলোর শতকরা হার এবং আটকে যাওয়া আর্থিক ক্ষতির পরিমাণ'
+                    : 'Breakdown of primary fraud modalities and halted financial exposure (BDT Cr)'}
+                </p>
+              </div>
+              {activeModalityIndex !== null && (
+                <button
+                  onClick={() => setActiveModalityIndex(null)}
+                  className="text-[10px] font-mono text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] px-2.5 py-1 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border-subtle)] transition-all cursor-pointer hover:bg-[var(--color-surface-raised)]/20 shrink-0"
+                  title={isBangla ? 'নির্বাচন রিসেট করুন' : 'Reset slice selection'}
+                >
+                  {isBangla ? 'রিসেট ✕' : 'Reset ✕'}
+                </button>
+              )}
             </div>
 
-            <div className="w-full h-80 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <div className="w-full sm:w-1/2 h-64 sm:h-full">
+            <div className="w-full h-80 flex flex-col sm:flex-row items-center justify-center gap-5">
+              {/* Interactive Donut Visualization with Center Telemetry HUD */}
+              <div className="relative w-full sm:w-1/2 h-64 sm:h-full flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={DHAKA_FRAUD_TYPOLOGIES}
                       cx="50%"
                       cy="50%"
-                      innerRadius={55}
+                      innerRadius={54}
                       outerRadius={85}
-                      paddingAngle={3}
+                      paddingAngle={3.5}
                       dataKey="percentage"
+                      activeIndex={activeModalityIndex !== null ? activeModalityIndex : undefined}
+                      activeShape={renderActiveShape}
+                      onMouseEnter={(_, index) => setActiveModalityIndex(index)}
+                      onMouseLeave={() => setActiveModalityIndex(null)}
+                      onClick={(_, index) => setActiveModalityIndex((prev) => (prev === index ? null : index))}
+                      isAnimationActive={true}
+                      animationDuration={800}
+                      animationEasing="ease-out"
                     >
-                      {DHAKA_FRAUD_TYPOLOGIES.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
+                      {DHAKA_FRAUD_TYPOLOGIES.map((entry, index) => {
+                        const isSelected = activeModalityIndex === index;
+                        const isAnySelected = activeModalityIndex !== null;
+                        return (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.color}
+                            stroke={isDay ? '#ffffff' : '#0f172a'}
+                            strokeWidth={2}
+                            style={{
+                              opacity: !isAnySelected || isSelected ? 1 : 0.4,
+                              filter: isSelected ? `drop-shadow(0 0 12px ${entry.color}90)` : 'none',
+                              transition: 'opacity 0.25s ease-out, filter 0.25s ease-out',
+                              cursor: 'pointer',
+                            }}
+                          />
+                        );
+                      })}
                     </Pie>
-                    <Tooltip
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const row = payload[0].payload;
-                          return (
-                            <div className="p-3 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-xl text-xs font-mono space-y-1.5 backdrop-blur-md max-w-xs">
-                              <div className="flex items-center gap-2 border-b border-[var(--color-border-subtle)] pb-1">
-                                <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: row.color }} />
-                                <span className="font-bold text-[var(--color-text-primary)]">
-                                  {isBangla ? row.nameBn : row.name}
-                                </span>
-                              </div>
-                              <div className="space-y-1 text-[11px]">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[var(--color-text-secondary)]">{isBangla ? 'অনুপাত:' : 'Share:'}</span>
-                                  <span className="font-bold text-[var(--color-text-primary)] tabular-nums">{row.percentage}%</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[var(--color-text-secondary)]">{isBangla ? 'আটককৃত মূলধন:' : 'Halted Capital:'}</span>
-                                  <span className="font-bold text-[var(--color-surface-raised)] tabular-nums">৳ {row.valueCr} Cr</span>
-                                </div>
-                              </div>
-                              <div className="text-[10px] text-[var(--color-text-tertiary)] pt-1 border-t border-[var(--color-border-subtle)] leading-tight">
-                                {isBangla ? row.descriptionBn : row.description}
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
                   </PieChart>
                 </ResponsiveContainer>
+
+                {/* Center Core HUD Telemetry Overlay (No floating tooltip collision) */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
+                  <div className="w-[102px] h-[102px] rounded-full flex flex-col items-center justify-center text-center p-1">
+                    {activeModality ? (
+                      <div className="flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-150">
+                        <span
+                          className="text-[9px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-full mb-0.5 shadow-xs whitespace-nowrap"
+                          style={{
+                            color: activeModality.color,
+                            backgroundColor: `${activeModality.color}18`,
+                            border: `1px solid ${activeModality.color}40`,
+                          }}
+                        >
+                          {activeModality.percentage}% SHARE
+                        </span>
+                        <span className="text-base font-black font-mono tracking-tight text-[var(--color-text-primary)] leading-tight">
+                          ৳{activeModality.valueCr}Cr
+                        </span>
+                        <span className="text-[9.5px] text-[var(--color-text-secondary)] font-medium max-w-[90px] truncate leading-tight">
+                          {isBangla
+                            ? activeModality.nameBn.split(' ')[0]
+                            : activeModality.name.length > 12
+                            ? activeModality.name.split(' ')[0]
+                            : activeModality.name}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-center transition-all duration-200">
+                        <span className="text-[8.5px] font-mono text-[var(--color-text-tertiary)] uppercase tracking-wider font-semibold leading-none mb-0.5">
+                          {isBangla ? 'নিরীক্ষিত ঝুঁকি' : 'AUDITED RISK'}
+                        </span>
+                        <span className="text-base font-extrabold font-mono tracking-tight text-[var(--color-text-primary)] leading-tight">
+                          ৳ 583.8Cr
+                        </span>
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-mono font-bold flex items-center gap-1 mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          {isBangla ? '৫টি ধারা' : '5 VECTORS'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {/* Custom Detailed Legend List */}
+              {/* Custom Detailed Interactive Legend List */}
               <div className="w-full sm:w-1/2 space-y-2 text-xs font-mono">
-                {DHAKA_FRAUD_TYPOLOGIES.map((typology) => (
-                  <div
-                    key={typology.name}
-                    className="p-1.5 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)]/40 flex items-center justify-between text-[11px]"
-                  >
-                    <div className="flex items-center gap-2 truncate pr-2">
-                      <span
-                        className="w-2.5 h-2.5 rounded-sm shrink-0"
-                        style={{ backgroundColor: typology.color }}
+                {DHAKA_FRAUD_TYPOLOGIES.map((typology, index) => {
+                  const isActive = activeModalityIndex === index;
+                  const isAnyActive = activeModalityIndex !== null;
+                  return (
+                    <div
+                      key={typology.name}
+                      onMouseEnter={() => setActiveModalityIndex(index)}
+                      onMouseLeave={() => setActiveModalityIndex(null)}
+                      onClick={() => setActiveModalityIndex(activeModalityIndex === index ? null : index)}
+                      className={`group/legend relative p-2.5 rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden ${
+                        isActive
+                          ? 'border-[var(--color-border-strong)] bg-[var(--color-surface-strong)] shadow-lg scale-[1.02]'
+                          : isAnyActive
+                          ? 'border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)]/30 opacity-50 hover:opacity-100'
+                          : 'border-[var(--color-border-subtle)] bg-[var(--color-surface-muted)]/50 hover:bg-[var(--color-surface-muted)]/80 hover:border-slate-400/50'
+                      }`}
+                      style={{
+                        borderColor: isActive ? typology.color : undefined,
+                        boxShadow: isActive ? `0 4px 18px ${typology.color}25, 0 0 0 1px ${typology.color}40` : undefined,
+                      }}
+                    >
+                      {/* Active Left Indicator Bar */}
+                      <div
+                        className="absolute left-0 top-0 bottom-0 w-1 transition-all duration-200"
+                        style={{
+                          backgroundColor: typology.color,
+                          opacity: isActive ? 1 : 0.4,
+                          boxShadow: isActive ? `0 0 8px ${typology.color}` : 'none',
+                        }}
                       />
-                      <span className="truncate text-[var(--color-text-primary)]">
-                        {isBangla ? typology.nameBn.split(' ')[0] : typology.name}
-                      </span>
+
+                      <div className="pl-1.5 flex items-center justify-between text-[11px]">
+                        <div className="flex items-center gap-2 truncate pr-2">
+                          <span
+                            className={`w-2.5 h-2.5 rounded-full shrink-0 transition-transform duration-200 ${
+                              isActive ? 'scale-125' : 'group-hover/legend:scale-110'
+                            }`}
+                            style={{
+                              backgroundColor: typology.color,
+                              boxShadow: isActive ? `0 0 8px ${typology.color}` : 'none',
+                            }}
+                          />
+                          <span className={`truncate font-medium transition-colors ${
+                            isActive ? 'text-[var(--color-text-primary)] font-bold' : 'text-[var(--color-text-primary)]'
+                          }`}>
+                            {isBangla ? typology.nameBn.split(' ')[0] : typology.name}
+                          </span>
+                        </div>
+                        <div className="text-right shrink-0 flex items-center gap-2 font-mono">
+                          <span
+                            className="font-bold text-[10.5px] px-1.5 py-0.5 rounded-md"
+                            style={{
+                              backgroundColor: `${typology.color}15`,
+                              color: typology.color,
+                              border: `1px solid ${typology.color}35`,
+                            }}
+                          >
+                            {typology.percentage}%
+                          </span>
+                          <span className="text-[var(--color-text-secondary)] text-[10.5px] font-semibold min-w-[50px] text-right">
+                            ৳{typology.valueCr}Cr
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Mini Percentage Fill Bar */}
+                      <div className="mt-1.5 ml-1.5 h-1 rounded-full bg-[var(--color-border-subtle)]/60 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-300"
+                          style={{
+                            width: `${typology.percentage}%`,
+                            backgroundColor: typology.color,
+                            opacity: isActive ? 1 : 0.65,
+                            boxShadow: isActive ? `0 0 6px ${typology.color}` : 'none',
+                          }}
+                        />
+                      </div>
+
+                      {/* Inline Expanded Description (Replaces clumsy overlapping tooltip) */}
+                      {isActive && (
+                        <div className="mt-2 ml-1.5 pt-1.5 border-t border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-secondary)] leading-relaxed animate-in fade-in duration-200">
+                          <span className="font-semibold text-[var(--color-text-primary)]">
+                            {isBangla ? 'আইনি সংঘাত:' : 'Modality Profile:'}{' '}
+                          </span>
+                          {isBangla ? typology.descriptionBn : typology.description}
+                        </div>
+                      )}
                     </div>
-                    <div className="text-right shrink-0">
-                      <span className="font-bold text-[var(--color-text-primary)]">
-                        {typology.percentage}%
-                      </span>
-                      <span className="text-[var(--color-text-secondary)] text-[10px] block">
-                        ৳{typology.valueCr}Cr
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] pt-3 flex items-center justify-between">
-              <span>{isBangla ? 'সর্বমোট নিরীক্ষিত মূলধন:' : 'Aggregate Capital Exposure Audited:'}</span>
-              <span className="font-bold text-[var(--color-text-primary)] font-mono">৳ 583.8 Cr ($53.5M)</span>
+            <div className="text-[11px] font-mono text-[var(--color-text-secondary)] border-t border-[var(--color-border-subtle)] pt-3 flex flex-wrap items-center justify-between gap-2">
+              {activeModality ? (
+                <div className="flex items-center gap-2 truncate pr-2 max-w-md">
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0 shadow-xs animate-pulse"
+                    style={{ backgroundColor: activeModality.color, boxShadow: `0 0 8px ${activeModality.color}` }}
+                  />
+                  <span className="font-bold text-[var(--color-text-primary)] shrink-0">
+                    {isBangla ? activeModality.nameBn.split(' ')[0] : activeModality.name}:
+                  </span>
+                  <span className="text-[var(--color-text-secondary)] truncate">
+                    {isBangla ? activeModality.descriptionBn : activeModality.description}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-[10px] text-[var(--color-text-tertiary)] flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                  {isBangla ? 'স্লাইস বা তালিকায় হোভার/ক্লিক করে বিশদ তথ্য দেখুন' : 'Hover or click any modality to inspect telemetry'}
+                </span>
+              )}
+              <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+                <span>{isBangla ? 'সর্বমোট নিরীক্ষিত মূলধন:' : 'Aggregate Capital Exposure Audited:'}</span>
+                <span className="font-bold text-[var(--color-text-primary)] font-mono">৳ 583.8 Cr ($53.5M)</span>
+              </div>
             </div>
           </div>
         </div>
