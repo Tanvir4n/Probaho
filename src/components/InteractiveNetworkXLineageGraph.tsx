@@ -366,11 +366,23 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
               <span className="text-[10px] font-mono text-[var(--color-surface-raised)] uppercase tracking-wider font-bold">
                 Novelty #1: 30,000-Parcel Directed Acyclic Graph (DAG)
               </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold flex items-center gap-1">
+              <span
+                className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold flex items-center gap-1 ${
+                  isDay
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                }`}
+              >
                 <Network className="w-3 h-3" />
                 NetworkX 3.7 Engine Active
               </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-bold">
+              <span
+                className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                  isDay
+                    ? 'bg-indigo-100 text-indigo-800 border border-indigo-300'
+                    : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                }`}
+              >
                 30,000 Records · 29,065 Edges
               </span>
             </div>
@@ -390,37 +402,69 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
 
           {/* Quick Metrics Badge Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-right shrink-0">
-            <div className="p-2.5 rounded bg-black/40 border border-white/10 font-mono">
-              <div className="text-[9.5px] text-slate-400">TOTAL NODES</div>
-              <div className="text-sm font-bold text-white">30,000</div>
-              <div className="text-[9px] text-emerald-400 font-semibold">4 Epochs (1940-2021)</div>
+            <div
+              className={`p-2.5 rounded font-mono ${
+                isDay ? 'bg-slate-100 border border-slate-200 shadow-xs' : 'bg-black/40 border border-white/10'
+              }`}
+            >
+              <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>TOTAL NODES</div>
+              <div className={`text-sm font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>30,000</div>
+              <div className={`text-[9px] font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>
+                4 Epochs (1940-2021)
+              </div>
             </div>
-            <div className="p-2.5 rounded bg-black/40 border border-white/10 font-mono">
-              <div className="text-[9.5px] text-slate-400">TOTAL EDGES</div>
-              <div className="text-sm font-bold text-emerald-400">29,065</div>
-              <div className="text-[9px] text-slate-400 font-semibold">Directed Transitions</div>
+            <div
+              className={`p-2.5 rounded font-mono ${
+                isDay ? 'bg-slate-100 border border-slate-200 shadow-xs' : 'bg-black/40 border border-white/10'
+              }`}
+            >
+              <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>TOTAL EDGES</div>
+              <div className={`text-sm font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>29,065</div>
+              <div className={`text-[9px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>
+                Directed Transitions
+              </div>
             </div>
-            <div className="p-2.5 rounded bg-black/40 border border-white/10 font-mono">
-              <div className="text-[9.5px] text-slate-400">GENEALOGIES</div>
-              <div className="text-sm font-bold text-indigo-400">3,000</div>
-              <div className="text-[9px] text-slate-400 font-semibold">Weakly Connected</div>
+            <div
+              className={`p-2.5 rounded font-mono ${
+                isDay ? 'bg-slate-100 border border-slate-200 shadow-xs' : 'bg-black/40 border border-white/10'
+              }`}
+            >
+              <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>GENEALOGIES</div>
+              <div className={`text-sm font-bold ${isDay ? 'text-indigo-700' : 'text-indigo-400'}`}>3,000</div>
+              <div className={`text-[9px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>
+                Weakly Connected
+              </div>
             </div>
-            <div className="p-2.5 rounded bg-black/40 border border-white/10 font-mono">
-              <div className="text-[9.5px] text-slate-400">DAG VALIDATION</div>
-              <div className="text-sm font-bold text-emerald-400">PASS ✓</div>
-              <div className="text-[9px] text-emerald-400 font-semibold">0 Directed Cycles</div>
+            <div
+              className={`p-2.5 rounded font-mono ${
+                isDay ? 'bg-slate-100 border border-slate-200 shadow-xs' : 'bg-black/40 border border-white/10'
+              }`}
+            >
+              <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>DAG VALIDATION</div>
+              <div className={`text-sm font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>PASS ✓</div>
+              <div className={`text-[9px] font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>
+                0 Directed Cycles
+              </div>
             </div>
           </div>
         </div>
 
         {/* View Tabs & Dataset Downloads */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-          <div className="flex items-center gap-1.5 p-1 rounded-[6px] bg-black/40 border border-white/10 text-xs font-mono">
+        <div className={`flex flex-wrap items-center justify-between gap-3 border-t pt-4 ${isDay ? 'border-slate-200' : 'border-white/10'}`}>
+          <div
+            className={`flex items-center gap-1.5 p-1 rounded-[6px] border text-xs font-mono ${
+              isDay ? 'bg-slate-100 border-slate-300' : 'bg-black/40 border-white/10'
+            }`}
+          >
             <button
               onClick={() => setViewTab('graph')}
               className={`px-3 py-1.5 rounded-[4px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewTab === 'graph'
-                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  ? isDay
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  : isDay
+                  ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -432,7 +476,11 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
               onClick={() => setViewTab('dataset')}
               className={`px-3 py-1.5 rounded-[4px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewTab === 'dataset'
-                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  ? isDay
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  : isDay
+                  ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -444,7 +492,11 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
               onClick={() => setViewTab('python')}
               className={`px-3 py-1.5 rounded-[4px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewTab === 'python'
-                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  ? isDay
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  : isDay
+                  ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -456,7 +508,11 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
               onClick={() => setViewTab('topology')}
               className={`px-3 py-1.5 rounded-[4px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewTab === 'topology'
-                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  ? isDay
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+                  : isDay
+                  ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -470,24 +526,36 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
             <a
               href="/data/probaho_novelty1_survey_lineage_30000.csv"
               download="probaho_novelty1_survey_lineage_30000.csv"
-              className="px-2.5 py-1 rounded-[4px] bg-white/10 hover:bg-white/15 border border-white/20 text-slate-200 text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer"
+              className={`px-2.5 py-1 rounded-[4px] border text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer ${
+                isDay
+                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 font-semibold'
+                  : 'bg-white/10 hover:bg-white/15 border-white/20 text-slate-200'
+              }`}
               title="Download full 30,000-parcel CSV (6.7 MB)"
             >
-              <Download className="w-3 h-3 text-emerald-400" />
+              <Download className={`w-3 h-3 ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`} />
               <span>30k Parcels CSV (6.7MB)</span>
             </a>
             <a
               href="/data/probaho_novelty1_lineage_edges.csv"
               download="probaho_novelty1_lineage_edges.csv"
-              className="px-2.5 py-1 rounded-[4px] bg-white/10 hover:bg-white/15 border border-white/20 text-slate-200 text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer"
+              className={`px-2.5 py-1 rounded-[4px] border text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer ${
+                isDay
+                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-800 font-semibold'
+                  : 'bg-white/10 hover:bg-white/15 border-white/20 text-slate-200'
+              }`}
               title="Download 29,065 edges CSV (1.96 MB)"
             >
-              <Download className="w-3 h-3 text-indigo-400" />
+              <Download className={`w-3 h-3 ${isDay ? 'text-indigo-700' : 'text-indigo-400'}`} />
               <span>29k Edges CSV</span>
             </a>
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-1.5 rounded-[4px] bg-black/40 border border-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className={`p-1.5 rounded-[4px] border transition-colors cursor-pointer ${
+                isDay
+                  ? 'bg-slate-100 border-slate-300 text-slate-700 hover:text-slate-900'
+                  : 'bg-black/40 border-white/10 text-slate-400 hover:text-white'
+              }`}
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -506,14 +574,18 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
             {/* Subgraph Selection & Recompute Toolbar */}
             <div className="glass-card p-3 rounded-[8px] border border-[var(--color-border-subtle)] flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2">
-                <label className="text-[11px] font-mono text-slate-400 font-bold flex items-center gap-1">
-                  <Filter className="w-3 h-3 text-emerald-400" />
+                <label className={`text-[11px] font-mono font-bold flex items-center gap-1 ${isDay ? 'text-slate-700' : 'text-slate-400'}`}>
+                  <Filter className={`w-3 h-3 ${isDay ? 'text-emerald-600' : 'text-emerald-400'}`} />
                   <span>{isBangla ? 'বংশতালিকা নির্বাচন:' : 'Select Lineage:'}</span>
                 </label>
                 <select
                   value={selectedLineageId}
                   onChange={(e) => setSelectedLineageId(e.target.value)}
-                  className="px-2.5 py-1 text-xs font-mono rounded-[4px] bg-[#0b1120] border border-white/20 text-white font-semibold focus:border-emerald-500 focus:outline-none cursor-pointer max-w-[280px] sm:max-w-[360px]"
+                  className={`px-2.5 py-1 text-xs font-mono rounded-[4px] border font-semibold focus:border-emerald-500 focus:outline-none cursor-pointer max-w-[280px] sm:max-w-[360px] ${
+                    isDay
+                      ? 'bg-white border-slate-300 text-slate-900 shadow-xs'
+                      : 'bg-[#0b1120] border-white/20 text-white'
+                  }`}
                 >
                   {CURATED_LINEAGES.map((l) => (
                     <option key={l.id} value={l.id}>
@@ -525,9 +597,15 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                 <span
                   className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
                     activeLineage.category === 'clean'
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      ? isDay
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                       : activeLineage.category === 'inflation'
-                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                      ? isDay
+                        ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                      : isDay
+                      ? 'bg-amber-100 text-amber-800 border border-amber-300'
                       : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                   }`}
                 >
@@ -541,7 +619,7 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                 </span>
               </div>
 
-              {/* Action Buttons: Run NetworkX & Canvas Zoom */}
+              {/* Action Buttons: Run NetworkX & Canvas Zoom (Red Box 3) */}
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleRunNetworkX}
@@ -553,18 +631,28 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                   <span>{isBangla ? 'NetworkX রান করুন' : 'Run NetworkX'}</span>
                 </button>
 
-                <div className="flex items-center gap-1 p-0.5 rounded bg-black/40 border border-white/10">
+                <div
+                  className={`flex items-center gap-1 p-0.5 rounded border ${
+                    isDay ? 'bg-slate-100 border-slate-300 shadow-xs' : 'bg-black/40 border-white/10'
+                  }`}
+                >
                   <button
                     onClick={() => setZoom((z) => Math.max(0.6, z - 0.15))}
-                    className="p-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    className={`p-1 transition-colors cursor-pointer ${
+                      isDay ? 'text-slate-700 hover:text-slate-950' : 'text-slate-400 hover:text-white'
+                    }`}
                     title="Zoom Out"
                   >
                     <ZoomOut className="w-3.5 h-3.5" />
                   </button>
-                  <span className="text-[10px] font-mono text-slate-400 px-1">{Math.round(zoom * 100)}%</span>
+                  <span className={`text-[10px] font-mono px-1 font-semibold ${isDay ? 'text-slate-800' : 'text-slate-400'}`}>
+                    {Math.round(zoom * 100)}%
+                  </span>
                   <button
                     onClick={() => setZoom((z) => Math.min(2.0, z + 0.15))}
-                    className="p-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    className={`p-1 transition-colors cursor-pointer ${
+                      isDay ? 'text-slate-700 hover:text-slate-950' : 'text-slate-400 hover:text-white'
+                    }`}
                     title="Zoom In"
                   >
                     <ZoomIn className="w-3.5 h-3.5" />
@@ -574,7 +662,11 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                       setZoom(1.0);
                       setPan({ x: 0, y: 0 });
                     }}
-                    className="px-1.5 py-0.5 text-[9px] font-mono text-slate-400 hover:text-white transition-colors cursor-pointer border-l border-white/10"
+                    className={`px-1.5 py-0.5 text-[9px] font-mono transition-colors cursor-pointer border-l ${
+                      isDay
+                        ? 'text-slate-700 hover:text-slate-950 border-slate-300 font-semibold'
+                        : 'text-slate-400 hover:text-white border-white/10'
+                    }`}
                     title="Reset Zoom & Pan"
                   >
                     Reset
@@ -584,20 +676,24 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
             </div>
 
             {/* Lineage Narrative Description Banner */}
-            <div className="p-3.5 rounded-[6px] bg-[#0c1424] border border-white/10 flex items-start justify-between gap-3 text-xs font-mono">
+            <div
+              className={`p-3.5 rounded-[6px] border flex items-start justify-between gap-3 text-xs font-mono ${
+                isDay ? 'bg-slate-50 border-slate-200 shadow-xs' : 'bg-[#0c1424] border-white/10'
+              }`}
+            >
               <div className="space-y-1">
-                <div className="text-emerald-400 font-bold flex items-center gap-1.5">
+                <div className={`font-bold flex items-center gap-1.5 ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>
                   <Info className="w-3.5 h-3.5" />
                   <span>{isBangla ? activeLineage.titleBn : activeLineage.title}</span>
                 </div>
-                <p className="text-slate-300 text-[11.5px] leading-relaxed">
+                <p className={`text-[11.5px] leading-relaxed ${isDay ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
                   {isBangla ? activeLineage.descriptionBn : activeLineage.description}
                 </p>
               </div>
-              <div className="text-right text-[10px] text-slate-400 shrink-0 space-y-0.5">
-                <div>Nodes: <span className="font-bold text-white">{activeLineage.nodes.length}</span></div>
-                <div>Edges: <span className="font-bold text-emerald-400">{activeLineage.edges.length}</span></div>
-                <div>DAG Acyclic: <span className="font-bold text-emerald-400">TRUE ✓</span></div>
+              <div className={`text-right text-[10px] shrink-0 space-y-0.5 ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>
+                <div>Nodes: <span className={`font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>{activeLineage.nodes.length}</span></div>
+                <div>Edges: <span className={`font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>{activeLineage.edges.length}</span></div>
+                <div>DAG Acyclic: <span className={`font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>TRUE ✓</span></div>
               </div>
             </div>
 
@@ -877,13 +973,21 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
             </div>
 
             {/* Live Terminal Simulation Execution Log */}
-            <div className="rounded-[8px] overflow-hidden border border-white/10 bg-[#050811] font-mono text-xs">
-              <div className="px-3.5 py-2 bg-[#0c1220] border-b border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-slate-300 font-bold text-[11px]">
+            <div
+              className={`rounded-[8px] overflow-hidden border font-mono text-xs ${
+                isDay ? 'border-slate-300 bg-slate-950 text-slate-100 shadow-sm' : 'border-white/10 bg-[#050811]'
+              }`}
+            >
+              <div
+                className={`px-3.5 py-2 border-b flex items-center justify-between ${
+                  isDay ? 'bg-slate-900 border-slate-800' : 'bg-[#0c1220] border-white/10'
+                }`}
+              >
+                <div className="flex items-center gap-2 text-slate-200 font-bold text-[11px]">
                   <Terminal className="w-3.5 h-3.5 text-emerald-400" />
                   <span>NetworkX 3.7 Execution Output (Python Simulation)</span>
                 </div>
-                <span className="text-[10px] text-slate-500">probaho_lineage_engine.py</span>
+                <span className="text-[10px] text-slate-400">probaho_lineage_engine.py</span>
               </div>
               <div className="p-3.5 space-y-1 max-h-36 overflow-y-auto text-slate-300 text-[11px] leading-relaxed">
                 {engineLogs.map((log, i) => (
@@ -908,17 +1012,23 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
           <div className="space-y-4">
             {/* Selected Parcel Dossier */}
             <div className="glass-card p-5 rounded-[8px] border border-[var(--color-border-subtle)] space-y-4">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className={`flex items-center justify-between border-b pb-3 ${isDay ? 'border-slate-200' : 'border-white/10'}`}>
                 <div className="space-y-0.5">
-                  <div className="text-[9.5px] font-mono text-emerald-400 font-bold uppercase">
+                  <div className={`text-[9.5px] font-mono font-bold uppercase tracking-wider ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>
                     PARCEL LINEAGE DOSSIER
                   </div>
-                  <h4 className="text-base font-bold text-white font-mono">{activeNode.dagNo}</h4>
+                  <h4 className={`text-base font-bold font-mono ${isDay ? 'text-slate-900' : 'text-white'}`}>
+                    {activeNode.dagNo}
+                  </h4>
                 </div>
                 <span
                   className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
                     activeNode.anomalyType === 'NONE'
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      ? isDay
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      : isDay
+                      ? 'bg-rose-100 text-rose-800 border border-rose-300'
                       : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                   }`}
                 >
@@ -926,39 +1036,70 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                 </span>
               </div>
 
-              {/* Parcel Specs Grid */}
+              {/* Parcel Specs Grid (Red Box 4) */}
               <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <div className="p-2 rounded bg-black/40 border border-white/10">
-                  <div className="text-[9.5px] text-slate-400">SURVEY EPOCH</div>
-                  <div className="font-bold text-white mt-0.5">
+                <div
+                  className={`p-2.5 rounded border ${
+                    isDay ? 'bg-slate-100 border-slate-200 shadow-xs' : 'bg-black/40 border-white/10'
+                  }`}
+                >
+                  <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>SURVEY EPOCH</div>
+                  <div className={`font-bold mt-0.5 ${isDay ? 'text-slate-900' : 'text-white'}`}>
                     {activeNode.surveyGen} ({activeNode.surveyYear})
                   </div>
                 </div>
-                <div className="p-2 rounded bg-black/40 border border-white/10">
-                  <div className="text-[9.5px] text-slate-400">PARCEL AREA</div>
-                  <div className="font-bold text-emerald-400 mt-0.5">{activeNode.areaShotok} Shotok</div>
+                <div
+                  className={`p-2.5 rounded border ${
+                    isDay ? 'bg-slate-100 border-slate-200 shadow-xs' : 'bg-black/40 border-white/10'
+                  }`}
+                >
+                  <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>PARCEL AREA</div>
+                  <div className={`font-bold mt-0.5 ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>
+                    {activeNode.areaShotok} Shotok
+                  </div>
                 </div>
-                <div className="p-2 rounded bg-black/40 border border-white/10">
-                  <div className="text-[9.5px] text-slate-400">KHATIAN NO</div>
-                  <div className="font-bold text-slate-200 mt-0.5">{activeNode.khatianNo}</div>
+                <div
+                  className={`p-2.5 rounded border ${
+                    isDay ? 'bg-slate-100 border-slate-200 shadow-xs' : 'bg-black/40 border-white/10'
+                  }`}
+                >
+                  <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>KHATIAN NO</div>
+                  <div className={`font-bold mt-0.5 ${isDay ? 'text-slate-900' : 'text-slate-200'}`}>{activeNode.khatianNo}</div>
                 </div>
-                <div className="p-2 rounded bg-black/40 border border-white/10">
-                  <div className="text-[9.5px] text-slate-400">MOUZA &amp; DIST</div>
-                  <div className="font-bold text-slate-200 mt-0.5">{activeNode.mouzaId} · {activeNode.district}</div>
+                <div
+                  className={`p-2.5 rounded border ${
+                    isDay ? 'bg-slate-100 border-slate-200 shadow-xs' : 'bg-black/40 border-white/10'
+                  }`}
+                >
+                  <div className={`text-[9.5px] font-semibold ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>MOUZA &amp; DIST</div>
+                  <div
+                    className={`font-bold mt-0.5 truncate ${isDay ? 'text-slate-900' : 'text-slate-200'}`}
+                    title={`${activeNode.mouzaId} · ${activeNode.district}`}
+                  >
+                    {activeNode.mouzaId} · {activeNode.district}
+                  </div>
                 </div>
               </div>
 
               {/* Mathematical Area Conservation Formula */}
-              <div className="p-3.5 rounded-[6px] bg-[#0c1424] border border-white/10 space-y-2 font-mono text-xs">
+              <div
+                className={`p-3.5 rounded-[6px] border space-y-2 font-mono text-xs ${
+                  isDay ? 'bg-slate-50 border-slate-200 shadow-xs' : 'bg-[#0c1424] border-white/10'
+                }`}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400 uppercase font-bold flex items-center gap-1">
-                    <Scale className="w-3.5 h-3.5 text-amber-400" />
+                  <span className={`text-[10px] uppercase font-bold flex items-center gap-1 ${isDay ? 'text-slate-700' : 'text-slate-400'}`}>
+                    <Scale className={`w-3.5 h-3.5 ${isDay ? 'text-amber-600' : 'text-amber-400'}`} />
                     Area Conservation Formula
                   </span>
                   <span
-                    className={`text-[9.5px] font-bold px-1.5 py-0.2 rounded ${
+                    className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded ${
                       activeNode.areaConservationStatus === 'PASS'
-                        ? 'bg-emerald-500/20 text-emerald-400'
+                        ? isDay
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          : 'bg-emerald-500/20 text-emerald-400'
+                        : isDay
+                        ? 'bg-rose-100 text-rose-800 border border-rose-300'
                         : 'bg-rose-500/20 text-rose-400'
                     }`}
                   >
@@ -966,24 +1107,28 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                   </span>
                 </div>
 
-                <div className="space-y-1 text-[11px] text-slate-300">
+                <div className={`space-y-1 text-[11px] ${isDay ? 'text-slate-700' : 'text-slate-300'}`}>
                   <div className="flex justify-between">
                     <span>Parent Area:</span>
-                    <span className="font-bold text-white">{activeNode.areaShotok} shotok</span>
+                    <span className={`font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>{activeNode.areaShotok} shotok</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Subdivided Children Sum:</span>
-                    <span className="font-bold text-white">
+                    <span className={`font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>
                       {activeNode.childCount > 0 ? `${activeNode.sumChildAreaShotok} shotok` : 'Terminal (BS Leaf)'}
                     </span>
                   </div>
                   {activeNode.childCount > 0 && (
-                    <div className="flex justify-between pt-1 border-t border-white/10 text-slate-400">
+                    <div className={`flex justify-between pt-1 border-t ${isDay ? 'border-slate-200 text-slate-600' : 'border-white/10 text-slate-400'}`}>
                       <span>Area Delta (Δ):</span>
                       <span
                         className={`font-bold ${
                           activeNode.sumChildAreaShotok <= activeNode.areaShotok
-                            ? 'text-emerald-400'
+                            ? isDay
+                              ? 'text-emerald-700'
+                              : 'text-emerald-400'
+                            : isDay
+                            ? 'text-rose-700 font-extrabold'
                             : 'text-rose-400 font-extrabold'
                         }`}
                       >
@@ -993,39 +1138,49 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                   )}
                 </div>
 
-                <div className="text-[9.5px] text-slate-500 pt-1">
+                <div className={`text-[9.5px] pt-1 ${isDay ? 'text-slate-600' : 'text-slate-500'}`}>
                   Enforces Rule: Σ Child Areas ≤ Parent Area (+0.05 shotok tolerance)
                 </div>
               </div>
 
               {/* Anomaly Diagnosis if any */}
               {activeNode.anomalyType !== 'NONE' && (
-                <div className="p-3 rounded-[6px] bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs space-y-1 font-mono">
-                  <div className="font-bold flex items-center gap-1 text-rose-400">
+                <div
+                  className={`p-3 rounded-[6px] border text-xs space-y-1 font-mono ${
+                    isDay ? 'bg-rose-50 border-rose-200 text-rose-900' : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+                  }`}
+                >
+                  <div className={`font-bold flex items-center gap-1 ${isDay ? 'text-rose-700' : 'text-rose-400'}`}>
                     <ShieldAlert className="w-3.5 h-3.5" />
                     <span>ANOMALY DETECTED: {activeNode.anomalyType}</span>
                   </div>
-                  <p className="text-[10.5px] text-slate-300 leading-relaxed">
+                  <p className={`text-[10.5px] leading-relaxed ${isDay ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
                     {activeNode.notes || 'Mathematical area or ancestral succession violation flagged by NetworkX DAG audit.'}
                   </p>
                 </div>
               )}
 
               {/* JomiChain Ed25519 Cryptographic Block Seal */}
-              <div className="p-3 rounded-[6px] bg-black/40 border border-white/10 text-[10px] font-mono text-slate-400 space-y-1">
-                <div className="text-emerald-400 font-bold flex items-center gap-1">
+              <div
+                className={`p-3 rounded-[6px] border text-[10px] font-mono space-y-1 ${
+                  isDay ? 'bg-slate-100 border-slate-200 text-slate-700' : 'bg-black/40 border-white/10 text-slate-400'
+                }`}
+              >
+                <div className={`font-bold flex items-center gap-1 ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>JomiChain Ledger Seal</span>
                 </div>
-                <div className="truncate">Block: 0x9f8b...{activeNode.id.slice(-6)}</div>
-                <div className="text-slate-500">Ed25519 Verified · Root Merkle Hash Validated</div>
+                <div className={`truncate ${isDay ? 'text-slate-900 font-semibold' : 'text-slate-300'}`}>
+                  Block: 0x9f8b...{activeNode.id.slice(-6)}
+                </div>
+                <div className={isDay ? 'text-slate-600' : 'text-slate-500'}>Ed25519 Verified · Root Merkle Hash Validated</div>
               </div>
             </div>
 
             {/* Quick Lineage Tree Selector Card */}
             <div className="glass-card p-4 rounded-[8px] border border-[var(--color-border-subtle)] space-y-3 font-mono text-xs">
-              <div className="font-bold text-white flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <div className={`font-bold flex items-center gap-1.5 ${isDay ? 'text-slate-900' : 'text-white'}`}>
+                <Sparkles className={`w-3.5 h-3.5 ${isDay ? 'text-emerald-600' : 'text-emerald-400'}`} />
                 <span>30,000-Parcel Lineage Subgraphs</span>
               </div>
               <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
@@ -1035,18 +1190,28 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                     onClick={() => setSelectedLineageId(l.id)}
                     className={`w-full p-2 rounded-[4px] border text-left transition-all cursor-pointer flex items-center justify-between text-[11px] ${
                       selectedLineageId === l.id
-                        ? 'bg-emerald-500/20 border-emerald-500 text-white font-bold'
+                        ? isDay
+                          ? 'bg-emerald-100/90 border-emerald-500 text-emerald-950 font-bold shadow-xs'
+                          : 'bg-emerald-500/20 border-emerald-500 text-white font-bold'
+                        : isDay
+                        ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200/80'
                         : 'bg-black/30 border-white/10 text-slate-300 hover:bg-white/5'
                     }`}
                   >
                     <div className="truncate pr-2">
-                      <div>{l.id}</div>
-                      <div className="text-[9.5px] text-slate-400 truncate">{isBangla ? l.titleBn : l.title}</div>
+                      <div className={isDay ? 'text-slate-900 font-semibold' : 'text-slate-100'}>{l.id}</div>
+                      <div className={`text-[9.5px] truncate ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>
+                        {isBangla ? l.titleBn : l.title}
+                      </div>
                     </div>
                     <span
-                      className={`text-[9px] px-1 py-0.2 rounded font-bold shrink-0 ${
+                      className={`text-[9px] px-1 py-0.5 rounded font-bold shrink-0 ${
                         l.category === 'clean'
-                          ? 'bg-emerald-500/20 text-emerald-400'
+                          ? isDay
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                            : 'bg-emerald-500/20 text-emerald-400'
+                          : isDay
+                          ? 'bg-rose-100 text-rose-800 border border-rose-300'
                           : 'bg-rose-500/20 text-rose-400'
                       }`}
                     >
@@ -1065,13 +1230,13 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
       {/* ==================================================================== */}
       {viewTab === 'dataset' && (
         <div className="glass-card p-6 rounded-[8px] border border-[var(--color-border-subtle)] space-y-5 animate-in fade-in duration-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4 ${isDay ? 'border-slate-200' : 'border-white/10'}`}>
             <div>
-              <h4 className="text-lg font-bold text-white font-mono">
+              <h4 className={`text-lg font-bold font-mono ${isDay ? 'text-slate-900' : 'text-white'}`}>
                 {isBangla ? '৩০,০০০ পার্সেল ক্যাডাস্ট্রাল ডেটাসেট অনুসন্ধান' : '30,000-Parcel Cadastral Dataset Explorer'}
               </h4>
-              <p className="text-xs text-slate-400">
-                Direct query index into <code className="text-emerald-400 font-bold">probaho_novelty1_survey_lineage_30000.csv</code> (22 attributes per row).
+              <p className={`text-xs ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>
+                Direct query index into <code className={`font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>probaho_novelty1_survey_lineage_30000.csv</code> (22 attributes per row).
               </p>
             </div>
 
@@ -1090,13 +1255,17 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
           {/* Search & Filters */}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 font-mono text-xs">
             <div className="sm:col-span-2 relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+              <Search className={`w-4 h-4 absolute left-3 top-2.5 pointer-events-none ${isDay ? 'text-slate-500' : 'text-slate-400'}`} />
               <input
                 type="text"
                 placeholder={isBangla ? 'দাগ নম্বর, খতিয়ান বা রেকর্ড আইডি দিয়ে খুঁজুন...' : 'Search by Dag No, Khatian No, Lineage ID...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-[4px] bg-black/40 border border-white/20 text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                className={`w-full pl-9 pr-4 py-2 rounded-[4px] border focus:border-emerald-500 focus:outline-none ${
+                  isDay
+                    ? 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 shadow-xs'
+                    : 'bg-black/40 border-white/20 text-white placeholder-slate-500'
+                }`}
               />
             </div>
 
@@ -1104,7 +1273,11 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
               <select
                 value={selectedGenFilter}
                 onChange={(e) => setSelectedGenFilter(e.target.value)}
-                className="w-full px-3 py-2 rounded-[4px] bg-black/40 border border-white/20 text-white focus:border-emerald-500 focus:outline-none cursor-pointer"
+                className={`w-full px-3 py-2 rounded-[4px] border focus:border-emerald-500 focus:outline-none cursor-pointer ${
+                  isDay
+                    ? 'bg-white border-slate-300 text-slate-900 shadow-xs'
+                    : 'bg-black/40 border-white/20 text-white'
+                }`}
               >
                 <option value="ALL">All Survey Epochs (CS, SA, RS, BS)</option>
                 <option value="CS">CS 1940 (British Cadastre)</option>
@@ -1118,7 +1291,11 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
               <select
                 value={selectedAnomalyFilter}
                 onChange={(e) => setSelectedAnomalyFilter(e.target.value)}
-                className="w-full px-3 py-2 rounded-[4px] bg-black/40 border border-white/20 text-white focus:border-emerald-500 focus:outline-none cursor-pointer"
+                className={`w-full px-3 py-2 rounded-[4px] border focus:border-emerald-500 focus:outline-none cursor-pointer ${
+                  isDay
+                    ? 'bg-white border-slate-300 text-slate-900 shadow-xs'
+                    : 'bg-black/40 border-white/20 text-white'
+                }`}
               >
                 <option value="ALL">All Records (Clean + Anomalies)</option>
                 <option value="CLEAN">Clean Titles Only</option>
@@ -1128,9 +1305,9 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
           </div>
 
           {/* Tabular Dataset Results */}
-          <div className="rounded-[6px] border border-white/10 overflow-hidden overflow-x-auto">
-            <table className="w-full text-left font-mono text-xs text-slate-300">
-              <thead className="bg-[#0b1220] text-slate-400 border-b border-white/10 text-[10.5px]">
+          <div className={`rounded-[6px] border overflow-hidden overflow-x-auto ${isDay ? 'border-slate-200 shadow-xs' : 'border-white/10'}`}>
+            <table className={`w-full text-left font-mono text-xs ${isDay ? 'text-slate-800' : 'text-slate-300'}`}>
+              <thead className={`border-b text-[10.5px] font-bold ${isDay ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-[#0b1220] text-slate-400 border-white/10'}`}>
                 <tr>
                   <th className="p-3">RECORD ID</th>
                   <th className="p-3">LINEAGE ID</th>
@@ -1143,25 +1320,31 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                   <th className="p-3 text-right">ACTION</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className={`divide-y ${isDay ? 'divide-slate-200' : 'divide-white/5'}`}>
                 {filteredDatasetParcels.map((p) => (
-                  <tr key={p.recordId} className="hover:bg-white/5 transition-colors">
-                    <td className="p-3 font-bold text-white">{p.recordId}</td>
-                    <td className="p-3 text-emerald-400">{p.lineageId}</td>
+                  <tr key={p.recordId} className={`transition-colors ${isDay ? 'hover:bg-slate-50' : 'hover:bg-white/5'}`}>
+                    <td className={`p-3 font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>{p.recordId}</td>
+                    <td className={`p-3 font-semibold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>{p.lineageId}</td>
                     <td className="p-3">
-                      <span className="px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px] font-bold">
+                      <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${
+                        isDay ? 'bg-slate-100 border-slate-300 text-slate-800' : 'bg-black/40 border-white/10 text-white'
+                      }`}>
                         {p.surveyGen} {p.surveyYear}
                       </span>
                     </td>
-                    <td className="p-3 font-bold text-slate-200">{p.dagNo}</td>
-                    <td className="p-3 text-slate-400">{p.khatianNo}</td>
-                    <td className="p-3 font-semibold text-emerald-400">{p.areaShotok}s</td>
-                    <td className="p-3 text-slate-400">{p.mouzaId} · {p.district}</td>
+                    <td className={`p-3 font-bold ${isDay ? 'text-slate-900' : 'text-slate-200'}`}>{p.dagNo}</td>
+                    <td className={`p-3 ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>{p.khatianNo}</td>
+                    <td className={`p-3 font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>{p.areaShotok}s</td>
+                    <td className={`p-3 ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>{p.mouzaId} · {p.district}</td>
                     <td className="p-3">
                       <span
                         className={`text-[9.5px] px-2 py-0.5 rounded font-bold ${
                           p.anomalyType === 'NONE'
-                            ? 'bg-emerald-500/20 text-emerald-400'
+                            ? isDay
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                              : 'bg-emerald-500/20 text-emerald-400'
+                            : isDay
+                            ? 'bg-rose-100 text-rose-800 border border-rose-300'
                             : 'bg-rose-500/20 text-rose-400'
                         }`}
                       >
@@ -1178,7 +1361,11 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                           setSelectedNodeId(p.recordId);
                           setViewTab('graph');
                         }}
-                        className="px-2 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-[10.5px] font-bold transition-colors cursor-pointer"
+                        className={`px-2 py-1 rounded text-[10.5px] font-bold transition-colors cursor-pointer ${
+                          isDay
+                            ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300'
+                            : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400'
+                        }`}
                       >
                         Plot in Graph →
                       </button>
@@ -1188,7 +1375,7 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
               </tbody>
             </table>
           </div>
-          <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between">
+          <div className={`text-[11px] font-mono flex items-center justify-between ${isDay ? 'text-slate-600' : 'text-slate-500'}`}>
             <span>Showing top representative results from 30,000-parcel dataset</span>
             <span>Dataset File: probaho_novelty1_survey_lineage_30000.csv</span>
           </div>
@@ -1200,14 +1387,14 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
       {/* ==================================================================== */}
       {viewTab === 'python' && (
         <div className="glass-card p-6 rounded-[8px] border border-[var(--color-border-subtle)] space-y-4 animate-in fade-in duration-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4 ${isDay ? 'border-slate-200' : 'border-white/10'}`}>
             <div>
-              <h4 className="text-lg font-bold text-white font-mono flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-emerald-400" />
+              <h4 className={`text-lg font-bold font-mono flex items-center gap-2 ${isDay ? 'text-slate-900' : 'text-white'}`}>
+                <Terminal className={`w-5 h-5 ${isDay ? 'text-emerald-600' : 'text-emerald-400'}`} />
                 <span>{isBangla ? 'বাস্তব পাইথন NetworkX এক্সিকিউটেবল কোড' : 'Production Python NetworkX Pipeline Script'}</span>
               </h4>
-              <p className="text-xs text-slate-400">
-                Run this code in Jupyter Notebook or Python terminal with <code className="text-emerald-400 font-bold">pip install networkx pandas matplotlib</code>.
+              <p className={`text-xs ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>
+                Run this code in Jupyter Notebook or Python terminal with <code className={`font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>pip install networkx pandas matplotlib</code>.
               </p>
             </div>
 
@@ -1224,13 +1411,15 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
             </button>
           </div>
 
-          <div className="rounded-[8px] overflow-hidden border border-white/10 bg-[#050811] p-4 font-mono text-xs text-slate-200 overflow-x-auto leading-relaxed">
+          <div className="rounded-[8px] overflow-hidden border border-slate-700 bg-[#050811] p-4 font-mono text-xs text-slate-200 overflow-x-auto leading-relaxed shadow-inner">
             <pre className="text-emerald-300 font-mono text-[11.5px]">{pythonScript}</pre>
           </div>
 
-          <div className="p-3.5 rounded bg-black/40 border border-white/10 text-xs font-mono text-slate-400 flex flex-wrap items-center justify-between gap-3">
-            <span>Terminal Command: <code className="text-emerald-400">python ml/generate_networkx_plot.py</code></span>
-            <span>Generates 300 DPI high-resolution figures in <code className="text-slate-300">ml/plots/</code></span>
+          <div className={`p-3.5 rounded border text-xs font-mono flex flex-wrap items-center justify-between gap-3 ${
+            isDay ? 'bg-slate-100 border-slate-200 text-slate-700' : 'bg-black/40 border-white/10 text-slate-400'
+          }`}>
+            <span>Terminal Command: <code className={isDay ? 'text-emerald-700 font-bold' : 'text-emerald-400'}>python ml/generate_networkx_plot.py</code></span>
+            <span>Generates 300 DPI high-resolution figures in <code className={isDay ? 'text-slate-900 font-semibold' : 'text-slate-300'}>ml/plots/</code></span>
           </div>
         </div>
       )}
@@ -1240,45 +1429,55 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
       {/* ==================================================================== */}
       {viewTab === 'topology' && (
         <div className="glass-card p-6 rounded-[8px] border border-[var(--color-border-subtle)] space-y-6 animate-in fade-in duration-200">
-          <div className="border-b border-white/10 pb-4">
-            <h4 className="text-lg font-bold text-white font-mono">
+          <div className={`border-b pb-4 ${isDay ? 'border-slate-200' : 'border-white/10'}`}>
+            <h4 className={`text-lg font-bold font-mono ${isDay ? 'text-slate-900' : 'text-white'}`}>
               {isBangla ? '৩০,০০০ পার্সেল গ্রাফ টপোলজি ও জালিয়াতি বিশ্লেষণ' : '30,000-Parcel Network Topology & Anomaly Analysis'}
             </h4>
-            <p className="text-xs text-slate-400">
+            <p className={`text-xs ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>
               Macro-level graph properties computed over all 4 cadastral survey generations (1940 to 2021).
             </p>
           </div>
 
           {/* Generational Distribution Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="p-4 rounded-[6px] bg-[#0c1424] border border-amber-500/30 space-y-1">
-              <div className="text-[10px] text-amber-400 font-bold uppercase">CS 1940 (ROOT SURVEY)</div>
-              <div className="text-2xl font-bold text-white">3,000</div>
-              <div className="text-slate-400 text-[10.5px]">100% In-Degree = 0 (Root Nodes)</div>
+            <div className={`p-4 rounded-[6px] border space-y-1 ${
+              isDay ? 'bg-slate-50 border-amber-500/40 shadow-xs' : 'bg-[#0c1424] border-amber-500/30'
+            }`}>
+              <div className={`text-[10px] font-bold uppercase ${isDay ? 'text-amber-800' : 'text-amber-400'}`}>CS 1940 (ROOT SURVEY)</div>
+              <div className={`text-2xl font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>3,000</div>
+              <div className={`text-[10.5px] ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>100% In-Degree = 0 (Root Nodes)</div>
             </div>
-            <div className="p-4 rounded-[6px] bg-[#0c1424] border border-cyan-500/30 space-y-1">
-              <div className="text-[10px] text-cyan-400 font-bold uppercase">SA 1962 (STATE ACQUISITION)</div>
-              <div className="text-2xl font-bold text-white">6,000</div>
-              <div className="text-slate-400 text-[10.5px]">Avg 2.0x Branching Split Ratio</div>
+            <div className={`p-4 rounded-[6px] border space-y-1 ${
+              isDay ? 'bg-slate-50 border-cyan-500/40 shadow-xs' : 'bg-[#0c1424] border-cyan-500/30'
+            }`}>
+              <div className={`text-[10px] font-bold uppercase ${isDay ? 'text-cyan-800' : 'text-cyan-400'}`}>SA 1962 (STATE ACQUISITION)</div>
+              <div className={`text-2xl font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>6,000</div>
+              <div className={`text-[10.5px] ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>Avg 2.0x Branching Split Ratio</div>
             </div>
-            <div className="p-4 rounded-[6px] bg-[#0c1424] border border-blue-500/30 space-y-1">
-              <div className="text-[10px] text-blue-400 font-bold uppercase">RS 1988 (REVISIONAL SURVEY)</div>
-              <div className="text-2xl font-bold text-white">9,000</div>
-              <div className="text-slate-400 text-[10.5px]">Avg 1.5x Branching Split Ratio</div>
+            <div className={`p-4 rounded-[6px] border space-y-1 ${
+              isDay ? 'bg-slate-50 border-blue-500/40 shadow-xs' : 'bg-[#0c1424] border-blue-500/30'
+            }`}>
+              <div className={`text-[10px] font-bold uppercase ${isDay ? 'text-blue-800' : 'text-blue-400'}`}>RS 1988 (REVISIONAL SURVEY)</div>
+              <div className={`text-2xl font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>9,000</div>
+              <div className={`text-[10.5px] ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>Avg 1.5x Branching Split Ratio</div>
             </div>
-            <div className="p-4 rounded-[6px] bg-[#0c1424] border border-emerald-500/30 space-y-1">
-              <div className="text-[10px] text-emerald-400 font-bold uppercase">BS 2021 (BANGLADESH SURVEY)</div>
-              <div className="text-2xl font-bold text-white">12,000</div>
-              <div className="text-slate-400 text-[10.5px]">Terminal Modern Digital Porchas</div>
+            <div className={`p-4 rounded-[6px] border space-y-1 ${
+              isDay ? 'bg-slate-50 border-emerald-500/40 shadow-xs' : 'bg-[#0c1424] border-emerald-500/30'
+            }`}>
+              <div className={`text-[10px] font-bold uppercase ${isDay ? 'text-emerald-800' : 'text-emerald-400'}`}>BS 2021 (BANGLADESH SURVEY)</div>
+              <div className={`text-2xl font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>12,000</div>
+              <div className={`text-[10.5px] ${isDay ? 'text-slate-600' : 'text-slate-400'}`}>Terminal Modern Digital Porchas</div>
             </div>
           </div>
 
           {/* Graph Anomaly Frequency Table */}
           <div className="space-y-3 font-mono text-xs">
-            <div className="font-bold text-white">Algorithmically Injected Cadastral Anomaly Categories:</div>
-            <div className="rounded-[6px] border border-white/10 overflow-hidden">
+            <div className={`font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>Algorithmically Injected Cadastral Anomaly Categories:</div>
+            <div className={`rounded-[6px] border overflow-hidden ${isDay ? 'border-slate-200 shadow-xs' : 'border-white/10'}`}>
               <table className="w-full text-left">
-                <thead className="bg-[#0b1220] text-slate-400 text-[10.5px] border-b border-white/10">
+                <thead className={`text-[10.5px] font-bold border-b ${
+                  isDay ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-[#0b1220] text-slate-400 border-white/10'
+                }`}>
                   <tr>
                     <th className="p-3">ANOMALY CATEGORY</th>
                     <th className="p-3">NETWORKX DETECTION METHOD</th>
@@ -1287,34 +1486,36 @@ sub_fraud = audit_lineage("${CURATED_LINEAGES[1].id}")
                     <th className="p-3">SEVERITY</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-[11px] text-slate-300">
-                  <tr>
-                    <td className="p-3 font-bold text-emerald-400">NONE (Clean Succession)</td>
+                <tbody className={`divide-y text-[11px] ${
+                  isDay ? 'divide-slate-200 text-slate-800' : 'divide-white/5 text-slate-300'
+                }`}>
+                  <tr className={isDay ? 'hover:bg-slate-50' : 'hover:bg-white/5'}>
+                    <td className={`p-3 font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>NONE (Clean Succession)</td>
                     <td className="p-3">Area Conservation (Σ Children ≤ Parent) &amp; Valid Ancestry</td>
-                    <td className="p-3 font-bold text-white">29,399</td>
+                    <td className={`p-3 font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>29,399</td>
                     <td className="p-3">98.00%</td>
-                    <td className="p-3"><span className="text-emerald-400">PASSED ✓</span></td>
+                    <td className="p-3"><span className={`font-bold ${isDay ? 'text-emerald-700' : 'text-emerald-400'}`}>PASSED ✓</span></td>
                   </tr>
-                  <tr>
-                    <td className="p-3 font-bold text-rose-400">AREA_INFLATION</td>
+                  <tr className={isDay ? 'hover:bg-slate-50' : 'hover:bg-white/5'}>
+                    <td className={`p-3 font-bold ${isDay ? 'text-rose-700' : 'text-rose-400'}`}>AREA_INFLATION</td>
                     <td className="p-3">Mathematical Area Delta (&gt; +0.05 shotok illegal expansion)</td>
-                    <td className="p-3 font-bold text-white">319</td>
+                    <td className={`p-3 font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>319</td>
                     <td className="p-3">1.06%</td>
-                    <td className="p-3"><span className="text-rose-400 font-bold">CRITICAL FRAUD</span></td>
+                    <td className="p-3"><span className={`font-bold ${isDay ? 'text-rose-700' : 'text-rose-400'}`}>CRITICAL FRAUD</span></td>
                   </tr>
-                  <tr>
-                    <td className="p-3 font-bold text-amber-400">MISSING_ANCESTOR</td>
+                  <tr className={isDay ? 'hover:bg-slate-50' : 'hover:bg-white/5'}>
+                    <td className={`p-3 font-bold ${isDay ? 'text-amber-700' : 'text-amber-400'}`}>MISSING_ANCESTOR</td>
                     <td className="p-3">In-Degree Analysis (Direct jump CS to RS without SA parent)</td>
-                    <td className="p-3 font-bold text-white">167</td>
+                    <td className={`p-3 font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>167</td>
                     <td className="p-3">0.56%</td>
-                    <td className="p-3"><span className="text-amber-400 font-bold">MUTATION BYPASS</span></td>
+                    <td className="p-3"><span className={`font-bold ${isDay ? 'text-amber-700' : 'text-amber-400'}`}>MUTATION BYPASS</span></td>
                   </tr>
-                  <tr>
-                    <td className="p-3 font-bold text-purple-400">DUPLICATE_DAG_DISJOINT</td>
+                  <tr className={isDay ? 'hover:bg-slate-50' : 'hover:bg-white/5'}>
+                    <td className={`p-3 font-bold ${isDay ? 'text-purple-700' : 'text-purple-400'}`}>DUPLICATE_DAG_DISJOINT</td>
                     <td className="p-3">Weakly Connected Components (Dag collision in disjoint trees)</td>
-                    <td className="p-3 font-bold text-white">115</td>
+                    <td className={`p-3 font-bold ${isDay ? 'text-slate-900' : 'text-white'}`}>115</td>
                     <td className="p-3">0.38%</td>
-                    <td className="p-3"><span className="text-purple-400 font-bold">COLLISION RISK</span></td>
+                    <td className="p-3"><span className={`font-bold ${isDay ? 'text-purple-700' : 'text-purple-400'}`}>COLLISION RISK</span></td>
                   </tr>
                 </tbody>
               </table>
