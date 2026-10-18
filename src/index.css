@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="night"], .dark, .dark *));
+
 :root {
   /* Brand Typography */
   --font-family-primary: "Hind Siliguri", Paperlogy, "Plus Jakarta Sans", Inter, "Inter Fallback", -apple-system, sans-serif;

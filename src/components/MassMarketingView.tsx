@@ -587,24 +587,24 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                {/* Feature List: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                {/* Feature List: High-Contrast Cyber Tech Palette */}
                 <div className="space-y-2.5 text-xs font-mono">
-                  {/* Feature 1: Survey Epoch DAG */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex items-center gap-2.5 shadow-xs">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#4c4637] dark:bg-[#d3c9ba] shrink-0 shadow-[0_0_8px_rgba(76,70,55,0.4)] dark:shadow-[0_0_8px_rgba(211,201,186,0.6)]" />
-                    <span className="text-[#332e24] dark:text-[#ede7de] font-bold">{t.suite.tool1.f1}</span>
+                  {/* Feature 1: Survey Epoch DAG (Sky Blue) */}
+                  <div className="p-3.5 rounded-xl bg-sky-50/95 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-500/40 hover:border-sky-400 transition-all flex items-center gap-2.5 shadow-xs">
+                    <span className="w-2.5 h-2.5 rounded-full bg-sky-600 dark:bg-sky-400 shrink-0 shadow-[0_0_8px_rgba(2,132,199,0.6)]" />
+                    <span className="text-sky-950 dark:text-sky-100 font-bold">{t.suite.tool1.f1}</span>
                   </div>
 
-                  {/* Feature 2: Double-Sale Collision Branch */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex items-center gap-2.5 shadow-xs">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#4c4637] dark:bg-[#d3c9ba] shrink-0 shadow-[0_0_8px_rgba(76,70,55,0.4)] dark:shadow-[0_0_8px_rgba(211,201,186,0.6)]" />
-                    <span className="text-[#332e24] dark:text-[#ede7de] font-bold">{t.suite.tool1.f2}</span>
+                  {/* Feature 2: Double-Sale Collision Branch (Emerald) */}
+                  <div className="p-3.5 rounded-xl bg-emerald-50/95 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center gap-2.5 shadow-xs">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 dark:bg-emerald-400 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                    <span className="text-emerald-950 dark:text-emerald-100 font-bold">{t.suite.tool1.f2}</span>
                   </div>
 
-                  {/* Feature 3: Synchronized D3 GIS Vector Map */}
-                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex items-center gap-2.5 shadow-xs text-white">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#d3c9ba] shrink-0 shadow-[0_0_8px_rgba(211,201,186,0.6)]" />
-                    <span className="text-[#ede7de] font-bold">{t.suite.tool1.f3}</span>
+                  {/* Feature 3: Synchronized D3 GIS Vector Map (Midnight Vault) */}
+                  <div className="p-3.5 rounded-xl bg-slate-900 dark:bg-slate-950 border-2 border-slate-700 dark:border-emerald-500/40 hover:border-emerald-400/60 transition-all flex items-center gap-2.5 shadow-xs text-white">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse" />
+                    <span className="text-slate-100 font-bold">{t.suite.tool1.f3}</span>
                   </div>
                 </div>
               </div>
@@ -650,40 +650,40 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                {/* Practical Interactive Legal & Evidence Intelligence Deck: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                {/* Practical Interactive Legal & Evidence Intelligence Deck */}
                 <div className="space-y-2.5 text-xs font-mono">
-                  {/* Feature 1: Deterministic Legal Rules Engine */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
+                  {/* Feature 1: Deterministic Legal Rules Engine (Sky Blue) */}
+                  <div className="p-3.5 rounded-xl bg-sky-50/95 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-500/40 hover:border-sky-400 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
-                        <Scale className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-sky-950 dark:text-sky-100">
+                        <Scale className="w-4 h-4 text-sky-700 dark:text-sky-400 shrink-0" />
                         <span>{isBangla ? 'আইনি বিধি ইঞ্জিন (নিশ্চিত কোড)' : 'Deterministic Legal Rules AST'}</span>
                       </div>
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-xs">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-sky-200/80 dark:bg-sky-900/60 text-sky-950 dark:text-sky-200 border border-sky-300 dark:border-sky-600 font-bold shadow-xs">
                         42 {isBangla ? 'ধারা' : 'Rules'}
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 text-[10.5px]">
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-sky-300/80 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold shadow-xs">
                         TP Act §53A
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-sky-300/80 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold shadow-xs">
                         SAT Act §89
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-sky-300/80 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold shadow-xs">
                         Reg Act §17
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-sky-300/80 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold shadow-xs">
                         Penal §420
                       </span>
                     </div>
                   </div>
 
-                  {/* Feature 2: Verifiable Evidence Dossier */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
+                  {/* Feature 2: Verifiable Evidence Dossier (Emerald) */}
+                  <div className="p-3.5 rounded-xl bg-emerald-50/95 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-500/40 hover:border-emerald-400 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
-                        <FileCheck2 className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-emerald-950 dark:text-emerald-100">
+                        <FileCheck2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                         <span>{isBangla ? 'সততা হ্যাশযুক্ত প্রামাণ্য ডসিয়ার' : 'Verifiable Evidence Dossier'}</span>
                       </div>
                       <button
@@ -695,26 +695,26 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                         }}
                         className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isHashVerified
-                            ? 'bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] shadow-xs'
-                            : 'bg-white/90 dark:bg-black/40 hover:bg-white text-[#332e24] dark:text-[#ede7de] border border-[#4c4637]/30 dark:border-[#d3c9ba]/30 shadow-xs'
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-xs'
                         }`}
                         title={isBangla ? 'ক্রিপ্টোগ্রাফিক হ্যাশ যাচাই করুন' : 'Verify Cryptographic Hash on Ledger'}
                       >
-                        <CheckCircle className="w-3 h-3 text-[#4c4637] dark:text-[#d3c9ba]" />
+                        <CheckCircle className="w-3 h-3 text-white" />
                         <span>{isHashVerified ? (isBangla ? 'যাচাইকৃত ✓' : 'VERIFIED ✓') : (isBangla ? 'যাচাই' : 'Verify')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] font-mono bg-white/90 dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-[#4c4637]/20 dark:border-[#d3c9ba]/20 text-[#332e24] dark:text-[#ede7de]">
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-white dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-emerald-300/80 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200">
                       <span className="truncate font-semibold">SHA256: 9f8a3c42e81b...7b94</span>
-                      <span className="text-[#4c4637] dark:text-[#d3c9ba] font-bold shrink-0 ml-1">256-bit</span>
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold shrink-0 ml-1">256-bit</span>
                     </div>
                   </div>
 
-                  {/* Feature 3: Counterfactual What-If Risk Analysis Simulator */}
-                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex flex-col gap-2 shadow-xs text-white">
+                  {/* Feature 3: Counterfactual What-If Risk Analysis Simulator (Midnight Vault) */}
+                  <div className="p-3.5 rounded-xl bg-slate-900 dark:bg-slate-950 border-2 border-slate-700 dark:border-emerald-500/40 hover:border-emerald-400/60 transition-all flex flex-col gap-2 shadow-xs text-white">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#ede7de]">
-                        <SlidersHorizontal className="w-4 h-4 text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-white">
+                        <SlidersHorizontal className="w-4 h-4 text-emerald-400 shrink-0" />
                         <span>{isBangla ? 'কাউন্টারফ্যাকচুয়াল ঝুঁকি বিশ্লেষণ' : 'Counterfactual What-If Engine'}</span>
                       </div>
                       <button
@@ -724,18 +724,18 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                         }}
                         className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isWhatIfSimulated
-                            ? 'bg-[#d3c9ba] text-[#4c4637] shadow-xs'
-                            : 'bg-white/20 hover:bg-white/30 text-[#ede7de] border border-white/30 shadow-xs'
+                            ? 'bg-emerald-500 text-slate-950 font-bold shadow-xs'
+                            : 'bg-white/10 hover:bg-white/20 text-emerald-300 border border-emerald-500/30 shadow-xs'
                         }`}
                         title={isBangla ? 'গেজে প্রতিকার পরীক্ষা করুন' : 'Run What-If Test in Gauge'}
                       >
-                        <RotateCcw className={`w-3 h-3 ${isWhatIfSimulated ? 'rotate-180 text-[#4c4637]' : 'text-[#d3c9ba]'} transition-transform`} />
+                        <RotateCcw className={`w-3 h-3 ${isWhatIfSimulated ? 'rotate-180 text-slate-950' : 'text-emerald-400'} transition-transform`} />
                         <span>{isWhatIfSimulated ? (isBangla ? 'সিমুলেশন চলছে' : 'Active Test') : (isBangla ? 'পরীক্ষা করুন' : 'Run Test')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-[#d3c9ba] font-medium">
+                    <div className="flex items-center justify-between text-[11px] text-slate-200 font-medium font-mono bg-black/60 px-2.5 py-1.5 rounded-lg border border-white/15">
                       <span>{isBangla ? 'প্রতিকার প্রভাব (Causal Δ):' : 'Causal Remedy Estimate:'}</span>
-                      <span className="text-white font-bold font-mono">ΔRisk = -76 pts (p &lt; 0.001)</span>
+                      <span className="text-emerald-400 font-bold">ΔRisk = -76 pts (p &lt; 0.001)</span>
                     </div>
                   </div>
                 </div>
@@ -785,35 +785,35 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                {/* Practical Interactive Cross-Verification & ViT Intelligence Deck: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                {/* Practical Interactive Cross-Verification & ViT Intelligence Deck */}
                 <div className="space-y-2.5 text-xs font-mono">
-                  {/* Feature 1: Multi-Document Cross-Verification */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
+                  {/* Feature 1: Multi-Document Cross-Verification (Sky Blue) */}
+                  <div className="p-3.5 rounded-xl bg-sky-50/95 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-500/40 hover:border-sky-400 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
-                        <FileText className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-sky-950 dark:text-sky-100">
+                        <FileText className="w-4 h-4 text-sky-700 dark:text-sky-400 shrink-0" />
                         <span>{isBangla ? 'বহু-নথি ক্রস-যাচাই (দলিল বনাম খতিয়ান)' : 'Multi-Document Cross-Verification'}</span>
                       </div>
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-xs">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-sky-200/80 dark:bg-sky-900/60 text-sky-950 dark:text-sky-200 border border-sky-300 dark:border-sky-600 font-bold shadow-xs">
                         {isBangla ? 'আইন ↔ ভূমি' : 'Law ↔ Land'}
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 text-[10.5px]">
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-sky-300/80 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold shadow-xs">
                         Deed #912 (Sub-Reg)
                       </span>
-                      <span className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">≠</span>
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="text-sky-700 dark:text-sky-400 font-bold">≠</span>
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-sky-300/80 dark:border-sky-700 text-sky-950 dark:text-sky-200 font-bold shadow-xs">
                         Khatian #1042 (AC Land)
                       </span>
                     </div>
                   </div>
 
-                  {/* Feature 2: Bangla OCR Vision Transformer & Bounding-Box Tagger */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
+                  {/* Feature 2: Bangla OCR Vision Transformer & Bounding-Box Tagger (Emerald) */}
+                  <div className="p-3.5 rounded-xl bg-emerald-50/95 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-500/40 hover:border-emerald-400 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
-                        <Scan className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-emerald-950 dark:text-emerald-100">
+                        <Scan className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                         <span>{isBangla ? 'বাংলা ওসিআর ভিশন ট্রান্সফরমার (ViT)' : 'Bangla OCR ViT Entity Tagger'}</span>
                       </div>
                       <button
@@ -825,25 +825,25 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                         }}
                         className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isViTVerified
-                            ? 'bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] shadow-xs'
-                            : 'bg-white/90 dark:bg-black/40 hover:bg-white text-[#332e24] dark:text-[#ede7de] border border-[#4c4637]/30 dark:border-[#d3c9ba]/30 shadow-xs'
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-xs'
                         }`}
                       >
-                        <CheckCircle className="w-3 h-3 text-[#4c4637] dark:text-[#d3c9ba]" />
+                        <CheckCircle className="w-3 h-3 text-white" />
                         <span>{isViTVerified ? (isBangla ? 'টোকেন সক্রিয় ✓' : 'TOKENS ON ✓') : (isBangla ? 'টোকেন পরীক্ষা' : 'Tokens')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-[#332e24] dark:text-[#ede7de] font-medium">
-                      <span>{isBangla ? 'সমর্থিত ফন্ট ও লিপি:' : 'Supported Models:'}</span>
-                      <span className="text-[#4c4637] dark:text-[#d3c9ba] font-mono font-bold">SutonnyMJ · Nikosh · Handwritten</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-white dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-emerald-300/80 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200">
+                      <span className="font-sans font-bold text-emerald-950 dark:text-emerald-300">{isBangla ? 'সমর্থিত ফন্ট ও লিপি:' : 'Supported Models:'}</span>
+                      <span className="text-emerald-800 dark:text-emerald-300 font-bold">SutonnyMJ · Nikosh · Handwritten</span>
                     </div>
                   </div>
 
-                  {/* Feature 3: Discrepancy Evidence Dossier & Conflict Resolution */}
-                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex flex-col gap-2 shadow-xs text-white">
+                  {/* Feature 3: Discrepancy Evidence Dossier & Conflict Resolution (Midnight Vault) */}
+                  <div className="p-3.5 rounded-xl bg-slate-900 dark:bg-slate-950 border-2 border-slate-700 dark:border-emerald-500/40 hover:border-emerald-400/60 transition-all flex flex-col gap-2 shadow-xs text-white">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#ede7de]">
-                        <Scale className="w-4 h-4 text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-white">
+                        <Scale className="w-4 h-4 text-emerald-400 shrink-0" />
                         <span>{isBangla ? 'আইনি অসঙ্গতি ও ধারা উদ্ধৃতি ডসিয়ার' : 'Legal Contradiction AST Dossier'}</span>
                       </div>
                       <button
@@ -854,15 +854,15 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                           setToastMessage(isBangla ? '✓ অসঙ্গতি অডিট ডসিয়ার ক্লিপবোর্ডে কপি সম্পন্ন' : '✓ Contradiction Audit Dossier Copied to Clipboard');
                           setTimeout(() => setToastMessage(null), 3500);
                         }}
-                        className="text-[10.5px] px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/30 text-[#ede7de] border border-white/30 transition-colors flex items-center gap-1.5 cursor-pointer font-bold shadow-xs"
+                        className="text-[10.5px] px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-emerald-300 border border-emerald-500/30 transition-colors flex items-center gap-1.5 cursor-pointer font-bold shadow-xs"
                         title={isBangla ? 'আইনি প্রমাণ কপি' : 'Copy Evidence JSON'}
                       >
-                        <Copy className="w-3 h-3 text-[#d3c9ba]" />
+                        <Copy className="w-3 h-3 text-emerald-400" />
                         <span>{isBangla ? 'কপি' : 'Copy'}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] font-mono bg-black/35 px-2.5 py-1.5 rounded-lg border border-white/15 text-[#ede7de]">
-                      <span className="text-[#d3c9ba] font-bold truncate">Reg Act §22A · Dag Contradiction</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-black/60 px-2.5 py-1.5 rounded-lg border border-white/15 text-slate-200">
+                      <span className="text-emerald-400 font-bold truncate">Reg Act §22A · Dag Contradiction</span>
                       <span className="text-white font-bold shrink-0 ml-1">EVIDENCE LOGGED</span>
                     </div>
                   </div>
@@ -915,40 +915,40 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                   }}
                 />
 
-                {/* Practical Interactive Stress-Test & Attack Intelligence Deck: Warm Stone (#d3c9ba) & Earth Bronze (#4c4637) */}
+                {/* Practical Interactive Stress-Test & Attack Intelligence Deck */}
                 <div className="space-y-2.5 text-xs font-mono">
-                  {/* Feature 1: Synthetic Attack Vector Testbench */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
+                  {/* Feature 1: Synthetic Attack Vector Testbench (Sky Blue) */}
+                  <div className="p-3.5 rounded-xl bg-sky-50/95 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-500/40 hover:border-sky-400 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
-                        <Zap className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-sky-950 dark:text-sky-100">
+                        <Zap className="w-4 h-4 text-sky-700 dark:text-sky-400 shrink-0" />
                         <span>{isBangla ? 'সিন্থেটিক আক্রমণ ইনজেকশন টেস্টবেঞ্চ' : 'Synthetic Attack Vector Testbench'}</span>
                       </div>
-                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-xs">
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-sky-200/80 dark:bg-sky-900/60 text-sky-950 dark:text-sky-200 border border-sky-300 dark:border-sky-600 font-bold shadow-xs">
                         4 {isBangla ? 'ভেক্টর' : 'Vectors'}
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5 text-[10.5px]">
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 font-bold shadow-xs">
                         Double-Sale
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 font-bold shadow-xs">
                         Forged Seal
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-teal-300 dark:border-teal-800 text-teal-800 dark:text-teal-300 font-bold shadow-xs">
                         Boundary Warp
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-white/90 dark:bg-black/30 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 text-[#332e24] dark:text-[#ede7de] font-semibold shadow-xs">
+                      <span className="px-2 py-0.5 rounded-md bg-white dark:bg-black/50 border border-purple-300 dark:border-purple-800 text-purple-800 dark:text-purple-300 font-bold shadow-xs">
                         Ghost Warish
                       </span>
                     </div>
                   </div>
 
-                  {/* Feature 2: Monte Carlo Resilience & Precision Metrics */}
-                  <div className="p-3.5 rounded-xl bg-[#d3c9ba]/55 dark:bg-[#4c4637]/35 border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 hover:border-[#4c4637]/50 transition-all flex flex-col gap-2 shadow-xs">
+                  {/* Feature 2: Monte Carlo Resilience & Precision Metrics (Emerald) */}
+                  <div className="p-3.5 rounded-xl bg-emerald-50/95 dark:bg-emerald-950/40 border-2 border-emerald-200 dark:border-emerald-500/40 hover:border-emerald-400 transition-all flex flex-col gap-2 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#332e24] dark:text-[#ede7de]">
-                        <Activity className="w-4 h-4 text-[#4c4637] dark:text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-emerald-950 dark:text-emerald-100">
+                        <Activity className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                         <span>{isBangla ? 'শনাক্তকরণ হার ও প্রেসিশন-রিকল বেঞ্চমার্ক' : 'Detection & Precision Benchmark'}</span>
                       </div>
                       <button
@@ -963,26 +963,26 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                         }}
                         className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isMonteCarloRunning
-                            ? 'bg-[#4c4637] text-[#d3c9ba] dark:bg-[#d3c9ba] dark:text-[#4c4637] shadow-xs'
-                            : 'bg-white/90 dark:bg-black/40 hover:bg-white text-[#332e24] dark:text-[#ede7de] border border-[#4c4637]/30 dark:border-[#d3c9ba]/30 shadow-xs'
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-xs'
                         }`}
                       >
-                        <RotateCcw className={`w-3 h-3 ${isMonteCarloRunning ? 'animate-spin text-[#d3c9ba] dark:text-[#4c4637]' : 'text-[#4c4637] dark:text-[#d3c9ba]'}`} />
+                        <RotateCcw className={`w-3 h-3 ${isMonteCarloRunning ? 'animate-spin text-white' : 'text-white'}`} />
                         <span>{isMonteCarloRunning ? (isBangla ? 'বেঞ্চমার্কিং...' : 'Testing...') : (isBangla ? '১০k রান' : 'Run 10k')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] font-mono bg-white/90 dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-[#4c4637]/20 dark:border-[#d3c9ba]/20 text-[#332e24] dark:text-[#ede7de]">
-                      <span>Catch: <strong className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">99.8%</strong></span>
-                      <span>Latency: <strong className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">12ms</strong></span>
-                      <span>FP Rate: <strong className="text-[#4c4637] dark:text-[#d3c9ba] font-bold">&lt;0.02%</strong></span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-white dark:bg-black/50 px-2.5 py-1.5 rounded-lg border border-emerald-300/80 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200">
+                      <span>Catch: <strong className="text-emerald-700 dark:text-emerald-400 font-bold">99.8%</strong></span>
+                      <span>Latency: <strong className="text-emerald-700 dark:text-emerald-400 font-bold">12ms</strong></span>
+                      <span>FP Rate: <strong className="text-emerald-700 dark:text-emerald-400 font-bold">&lt;0.02%</strong></span>
                     </div>
                   </div>
 
-                  {/* Feature 3: Automated Registry WAF & Consensus Rules */}
-                  <div className="p-3.5 rounded-xl bg-[#4c4637] dark:bg-[#4c4637]/85 border border-[#383327] dark:border-[#d3c9ba]/30 hover:border-[#d3c9ba]/50 transition-all flex flex-col gap-2 shadow-xs text-white">
+                  {/* Feature 3: Automated Registry WAF & Consensus Rules (Midnight Vault) */}
+                  <div className="p-3.5 rounded-xl bg-slate-900 dark:bg-slate-950 border-2 border-slate-700 dark:border-emerald-500/40 hover:border-emerald-400/60 transition-all flex flex-col gap-2 shadow-xs text-white">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 font-bold text-[#ede7de]">
-                        <ShieldCheck className="w-4 h-4 text-[#d3c9ba] shrink-0" />
+                      <div className="flex items-center gap-2 font-bold text-white">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                         <span>{isBangla ? 'ভূমি রেজিস্ট্রি নিরবচ্ছিন্ন প্রতিরক্ষা ও WAF' : 'Registry Hardening & WAF Rules'}</span>
                       </div>
                       <button
@@ -994,16 +994,16 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
                         }}
                         className={`text-[10.5px] px-2.5 py-0.5 rounded-full transition-all cursor-pointer flex items-center gap-1.5 font-bold ${
                           isWafVerified
-                            ? 'bg-[#d3c9ba] text-[#4c4637] shadow-xs'
-                            : 'bg-white/20 hover:bg-white/30 text-[#ede7de] border border-white/30 shadow-xs'
+                            ? 'bg-emerald-500 text-slate-950 font-bold shadow-xs'
+                            : 'bg-white/10 hover:bg-white/20 text-emerald-300 border border-emerald-500/30 shadow-xs'
                         }`}
                       >
-                        <CheckCircle className={`w-3 h-3 ${isWafVerified ? 'text-[#4c4637]' : 'text-[#d3c9ba]'}`} />
+                        <CheckCircle className={`w-3 h-3 ${isWafVerified ? 'text-slate-950' : 'text-emerald-400'}`} />
                         <span>{isWafVerified ? (isBangla ? 'নিয়ম কার্যকর ✓' : 'ACTIVE ✓') : (isBangla ? 'নিয়ম পরীক্ষা' : 'Verify')}</span>
                       </button>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] font-mono bg-black/35 px-2.5 py-1.5 rounded-lg border border-white/15 text-[#ede7de]">
-                      <span className="truncate font-semibold text-[#d3c9ba]">Policy: 72H_SOFT_LOCK_ON_COLLISION</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono bg-black/60 px-2.5 py-1.5 rounded-lg border border-white/15 text-slate-200">
+                      <span className="truncate font-semibold text-emerald-400">Policy: 72H_SOFT_LOCK_ON_COLLISION</span>
                       <span className="text-white font-bold shrink-0 ml-1">7/7 Nodes</span>
                     </div>
                   </div>

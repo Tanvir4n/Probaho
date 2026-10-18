@@ -503,7 +503,7 @@ export const JomiChainSection: React.FC = () => {
         {/* ==================================================================== */}
         {/* INTERACTIVE NAVIGATION TABS: Premium Glassmorphic Dock */}
         {/* ==================================================================== */}
-        <div className="p-1.5 rounded-2xl border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 bg-[#d3c9ba]/50 dark:bg-[#4c4637]/40 backdrop-blur-2xl flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-md">
+        <div className="p-1.5 rounded-2xl border border-slate-200/90 dark:border-white/10 bg-white/80 dark:bg-zinc-950/90 backdrop-blur-2xl flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-xl shadow-black/5 dark:shadow-black/40">
           {[
             { id: 'story', label: isBangla ? '🎬 ৫ মিনিটের লাইভ ডেমো' : '🎬 5-Minute Live Story', badge: 'DEMO' },
             { id: 'dhakamap', label: isBangla ? '🗺️ ঢাকা ক্যাডাস্ট্রাল ম্যাপ' : '🗺️ Dhaka Cadastral Map', badge: 'D3.js' },
@@ -518,15 +518,15 @@ export const JomiChainSection: React.FC = () => {
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-3.5 py-2 rounded-xl text-xs font-mono transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === tab.id
-                  ? 'bg-[#4c4637] dark:bg-[#d3c9ba] text-[#d3c9ba] dark:text-[#4c4637] font-bold shadow-md shadow-[#4c4637]/30 dark:shadow-[#d3c9ba]/20'
-                  : 'text-[#332e24] dark:text-[#ede7de] hover:bg-white/70 dark:hover:bg-white/10 font-semibold'
+                  ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white font-bold shadow-md shadow-emerald-500/30'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-semibold'
               }`}
             >
               <span>{tab.label}</span>
               <span className={`text-[9.5px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
                 activeTab === tab.id 
-                  ? 'bg-white/20 text-[#ede7de] dark:bg-black/20 dark:text-[#332e24]' 
-                  : 'bg-white/90 dark:bg-black/40 text-[#4c4637] dark:text-[#d3c9ba] border border-[#4c4637]/25 dark:border-[#d3c9ba]/25 shadow-xs'
+                  ? 'bg-white/25 text-white' 
+                  : 'bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-white/10 shadow-xs'
               }`}>
                 {tab.badge}
               </span>
