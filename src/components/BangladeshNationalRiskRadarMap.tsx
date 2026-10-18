@@ -17,6 +17,7 @@ import {
   BAY_OF_BENGAL_FEATURES,
   NATIONAL_HUBS,
   NEIGHBOR_REGIONS,
+  NEIGHBOR_CITIES,
   NationalHub,
   DivisionProfile,
   BangladeshDistrict,
@@ -475,62 +476,60 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
 
           {/* 
             ====================================================================
-            1. BAY OF BENGAL OCEAN WATER SURFACE & COASTAL LANDMASSES
+            0. CONTINENTAL SUBCONTINENT LANDMASS BASE (India, Myanmar, surrounding terrain)
+            Provides natural, continuous geographic ground around Bangladesh without artificial cutouts
             ====================================================================
           */}
-          {/* Base Ocean Water covering the Southern Marine Basin */}
           <rect
             x="-2000"
-            y={dimensions.height * 0.55}
+            y="-2000"
             width="6000"
-            height="3000"
-            fill={mapThemeMode === 'administrative' ? 'url(#oceanGradientAdmin)' : 'url(#oceanGradientRadar)'}
-            className="pointer-events-none"
-          />
-          <rect
-            x="-2000"
-            y={dimensions.height * 0.55}
-            width="6000"
-            height="3000"
-            fill="url(#wavePattern)"
+            height="6000"
+            fill={
+              mapThemeMode === 'administrative'
+                ? isDay
+                  ? '#f1f5f9'
+                  : '#0b1626'
+                : isDay
+                ? '#e9eff6'
+                : '#070d18'
+            }
             className="pointer-events-none"
           />
 
-          {/* West Bengal & Indian Sundarbans Landmass (Preserves authentic West Bengal land without ocean bleeding) */}
+          {/* 
+            ====================================================================
+            1. AUTHENTIC CONTIGUOUS BAY OF BENGAL OCEAN BASIN SURFACE
+            Continuous marine basin extending south of the authentic
+            West Bengal/Odisha, Bangladesh Sundarbans, and Myanmar coastlines.
+            ====================================================================
+          */}
           {(() => {
             const lineGen = d3
               .line<[number, number]>()
               .x((d) => projection(d)![0])
               .y((d) => projection(d)![1]);
-            const d = lineGen(BAY_OF_BENGAL_FEATURES.coastalLandmasses.westBengalCoast);
-            if (!d) return null;
+            const oceanD = lineGen(BAY_OF_BENGAL_FEATURES.oceanPolygon);
+            if (!oceanD) return null;
             return (
-              <path
-                d={`${d} Z`}
-                fill={isDay ? '#f8fafc' : '#070d19'}
-                stroke={isDay ? '#cbd5e1' : '#1e293b'}
-                strokeWidth="1.2"
-                className="pointer-events-none select-none opacity-90"
-              />
-            );
-          })()}
-
-          {/* Myanmar / Rakhine Coast Landmass (Preserves authentic Myanmar land without ocean bleeding) */}
-          {(() => {
-            const lineGen = d3
-              .line<[number, number]>()
-              .x((d) => projection(d)![0])
-              .y((d) => projection(d)![1]);
-            const d = lineGen(BAY_OF_BENGAL_FEATURES.coastalLandmasses.myanmarCoast);
-            if (!d) return null;
-            return (
-              <path
-                d={`${d} Z`}
-                fill={isDay ? '#f8fafc' : '#070d19'}
-                stroke={isDay ? '#cbd5e1' : '#1e293b'}
-                strokeWidth="1.2"
-                className="pointer-events-none select-none opacity-90"
-              />
+              <g className="ocean-basin-surface pointer-events-none select-none">
+                <path
+                  d={`${oceanD} Z`}
+                  fill={mapThemeMode === 'administrative' ? 'url(#oceanGradientAdmin)' : 'url(#oceanGradientRadar)'}
+                />
+                <path
+                  d={`${oceanD} Z`}
+                  fill="url(#wavePattern)"
+                />
+                {/* Coastal Tide Shoreline Margin */}
+                <path
+                  d={oceanD}
+                  fill="none"
+                  stroke={isDay ? '#38bdf8' : '#0284c7'}
+                  strokeWidth="1.6"
+                  strokeOpacity={isDay ? '0.75' : '0.55'}
+                />
+              </g>
             );
           })()}
 
@@ -608,7 +607,8 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
             ====================================================================
           */}
           {showNeighbors && (
-            <g className="neighbor-labels pointer-events-none select-none">
+            <g className="neighbor-layer pointer-events-none select-none">
+              {/* Regional Country & State Territory Labels */}
               {NEIGHBOR_REGIONS.map((reg) => {
                 const pt = projection(reg.coords as [number, number]);
                 if (!pt) return null;
@@ -620,12 +620,57 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                       fontSize={mapThemeMode === 'administrative' ? '12.5' : '11'}
                       fontFamily={mapThemeMode === 'administrative' ? 'serif, sans-serif' : 'monospace'}
                       fontWeight="800"
-                      letterSpacing={mapThemeMode === 'administrative' ? '1.5' : '2'}
-                      stroke={isDay ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.85)'}
-                      strokeWidth="2.5"
+                      letterSpacing={mapThemeMode === 'administrative' ? '2.0' : '2.5'}
+                      stroke={isDay ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.88)'}
+                      strokeWidth="2.8"
                       paintOrder="stroke"
                     >
                       {isBangla ? reg.nameBn : `${reg.name} (${reg.sub})`}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Geographical Reference Hubs & Cities in Neighboring Lands (Fills border areas with authentic geography) */}
+              {NEIGHBOR_CITIES.map((city) => {
+                const pt = projection(city.coords);
+                if (!pt) return null;
+                const isMetropolis = city.type === 'metropolis';
+                const isWestBengal = city.id === 'kolkata' || city.id === 'digha' || city.id === 'murshidabad' || city.id === 'malda';
+                const labelLeft = city.id === 'kolkata' || city.id === 'digha';
+
+                return (
+                  <g key={city.id} transform={`translate(${pt[0]}, ${pt[1]})`} className="transition-opacity duration-200">
+                    {/* Landmark Marker Dot */}
+                    <circle
+                      r={isMetropolis ? 3.2 : 2.2}
+                      fill={isDay ? '#64748b' : '#94a3b8'}
+                      stroke={isDay ? '#ffffff' : '#0b1626'}
+                      strokeWidth="1.2"
+                    />
+                    {isMetropolis && (
+                      <circle
+                        r="6.0"
+                        fill="none"
+                        stroke={isDay ? 'rgba(100, 116, 139, 0.40)' : 'rgba(148, 163, 184, 0.40)'}
+                        strokeWidth="0.8"
+                        strokeDasharray="2 2"
+                      />
+                    )}
+                    {/* Landmark Label */}
+                    <text
+                      x={labelLeft ? -7 : 7}
+                      y="3.5"
+                      textAnchor={labelLeft ? 'end' : 'start'}
+                      fill={mapThemeMode === 'administrative' ? (isDay ? '#475569' : '#94a3b8') : isDay ? '#64748b' : '#64748b'}
+                      fontSize={isMetropolis ? '10' : '8.5'}
+                      fontFamily="sans-serif"
+                      fontWeight={isMetropolis ? '700' : '500'}
+                      stroke={isDay ? 'rgba(255, 255, 255, 0.92)' : 'rgba(11, 22, 38, 0.92)'}
+                      strokeWidth="2.2"
+                      paintOrder="stroke"
+                    >
+                      {isBangla ? city.nameBn : city.name}
                     </text>
                   </g>
                 );
@@ -961,11 +1006,11 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
               {(() => {
                 const titlePt = projection(BAY_OF_BENGAL_FEATURES.grandTitle.center);
                 const tx = titlePt ? titlePt[0] : dimensions.width * 0.50;
-                const ty = titlePt ? titlePt[1] : dimensions.height - 35;
+                const ty = titlePt ? Math.min(titlePt[1], dimensions.height - 48) : dimensions.height - 48;
 
                 return (
                   <g className="grand-ocean-title" transform={`translate(${tx}, ${ty})`}>
-                    {/* Primary Bengali Header */}
+                    {/* Primary Bengali / English Header */}
                     <text
                       x="0"
                       y="0"
@@ -977,14 +1022,14 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                             : '#7dd3fc'
                           : '#38bdf8'
                       }
-                      fontSize={mapThemeMode === 'administrative' ? '26' : '22'}
+                      fontSize={mapThemeMode === 'administrative' ? '28' : '23'}
                       fontFamily="serif, sans-serif"
                       fontWeight="900"
-                      letterSpacing={mapThemeMode === 'administrative' ? '20' : '15'}
-                      stroke={isDay ? 'rgba(255,255,255,0.9)' : 'rgba(2,11,22,0.9)'}
-                      strokeWidth={mapThemeMode === 'administrative' ? '3.5' : '2.5'}
+                      letterSpacing={mapThemeMode === 'administrative' ? '18' : '14'}
+                      stroke={isDay ? 'rgba(255,255,255,0.95)' : 'rgba(2,11,22,0.95)'}
+                      strokeWidth={mapThemeMode === 'administrative' ? '4.0' : '3.0'}
                       paintOrder="stroke"
-                      filter="drop-shadow(0 2px 5px rgba(0,0,0,0.25))"
+                      filter="drop-shadow(0 2px 6px rgba(0,0,0,0.22))"
                     >
                       {isBangla ? BAY_OF_BENGAL_FEATURES.grandTitle.nameBn : BAY_OF_BENGAL_FEATURES.grandTitle.nameEn}
                     </text>
@@ -992,16 +1037,15 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                     {/* Secondary English Header */}
                     <text
                       x="0"
-                      y="18"
+                      y="19"
                       textAnchor="middle"
                       fill={isDay ? '#0284c7' : '#38bdf8'}
-                      fontSize="10"
+                      fontSize="11"
                       fontFamily="serif, sans-serif"
                       fontWeight="800"
                       letterSpacing="8"
-                      opacity="0.9"
-                      stroke={isDay ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)'}
-                      strokeWidth="2"
+                      stroke={isDay ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.9)'}
+                      strokeWidth="2.5"
                       paintOrder="stroke"
                     >
                       BAY OF BENGAL
@@ -1010,16 +1054,15 @@ export const BangladeshNationalRiskRadarMap: React.FC<BangladeshNationalRiskRada
                     {/* Oceanographic Metadata / Subtitle */}
                     <text
                       x="0"
-                      y="30"
+                      y="32"
                       textAnchor="middle"
                       fill={isDay ? '#075985' : '#94a3b8'}
-                      fontSize="7.5"
-                      fontFamily="serif, sans-serif"
-                      fontWeight="600"
-                      letterSpacing="2"
-                      opacity="0.8"
-                      stroke={isDay ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'}
-                      strokeWidth="1.5"
+                      fontSize="8.5"
+                      fontFamily="sans-serif"
+                      fontWeight="700"
+                      letterSpacing="1.5"
+                      stroke={isDay ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.85)'}
+                      strokeWidth="2.0"
                       paintOrder="stroke"
                     >
                       {isBangla

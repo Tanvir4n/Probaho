@@ -747,18 +747,49 @@ export const BANGLADESH_RIVERS = [
  */
 export const BAY_OF_BENGAL_FEATURES = {
   // Grand Ocean Title Metadata
+  // Grand Ocean Title Metadata (Positioned prominently in the visible open sea of Bay of Bengal)
   grandTitle: {
     nameBn: 'ব ঙ্গো প সা গ র',
     nameEn: 'BAY OF BENGAL',
-    center: [90.30, 20.85] as [number, number],
+    center: [90.25, 21.38] as [number, number],
     subtextBn: 'উত্তর ভারত মহাসাগর • আন্তর্জাতিক সমুদ্রসীমা (ITLOS ও PCA ট্রাইব্যুনাল রায়ে নির্ধারিত)',
     subtextEn: 'Northern Indian Ocean • Sovereign Maritime Boundary (ITLOS & PCA Delimited)',
   },
 
-  // Coastlines of neighboring land (to prevent ocean leaking into India and Myanmar land)
+  // Full contiguous Bay of Bengal marine basin surface (spans uninterrupted from West Bengal/Odisha to Myanmar)
+  oceanPolygon: [
+    [84.00, 18.00],
+    [84.00, 21.55], // West edge (Odisha coast)
+    [86.50, 21.55], // Chandipur / Balasore
+    [87.50, 21.62], // Digha / Mandarmani coast
+    [88.00, 21.64], // Contai / Haldia approach
+    [88.35, 21.62], // Sagar Island / Hooghly estuary
+    [88.85, 21.60], // Indian Sundarbans coast
+    [89.15, 21.65], // Raimangal estuary (border with Bangladesh)
+    // Under Bangladesh delta coast (covered cleanly by Bangladesh division polygons on top):
+    [89.55, 21.70], // Dublar Char south
+    [90.12, 21.78], // Kuakata / Rabnabad channel
+    [90.70, 21.82], // Bhola south
+    [91.30, 21.90], // Hatiya south
+    [91.80, 21.70], // Sandwip channel / Chittagong coast
+    [91.95, 21.45], // Cox's Bazar coast
+    [92.15, 20.85], // Inani / Teknaf coast
+    [92.36, 20.70], // Naf River mouth (border with Myanmar)
+    // Myanmar / Rakhine coast heading south-east:
+    [92.50, 20.35], // Mayu estuary
+    [92.80, 20.15], // Sittwe / Akyab coast
+    [93.20, 19.80], // Kyaukpyu / Hunter's Bay
+    [93.60, 19.30], // Ramree Island
+    [94.00, 18.80], // Cheduba / Rakhine south
+    [96.00, 18.80], // East edge
+    [96.00, 18.00], // South-east corner
+    [84.00, 18.00], // South-west corner
+  ] as [number, number][],
+
+  // Coastlines of neighboring land (preserved for compatibility)
   coastalLandmasses: {
     westBengalCoast: [
-      [87.00, 26.50],
+      [84.00, 26.50],
       [88.20, 26.50],
       [88.20, 24.50],
       [88.00, 23.50],
@@ -767,17 +798,17 @@ export const BAY_OF_BENGAL_FEATURES = {
       [89.15, 21.65], // Raimangal estuary border with Bangladesh
       [88.85, 21.60], // Indian Sundarbans coast
       [88.35, 21.62], // Sagar Island / Hooghly mouth
-      [87.50, 21.65], // Digha / Mandarmani coast
-      [87.00, 21.65],
-      [87.00, 26.50],
+      [87.50, 21.62], // Digha / Mandarmani coast
+      [84.00, 21.55],
+      [84.00, 26.50],
     ] as [number, number][],
     myanmarCoast: [
       [92.36, 20.70], // Naf River mouth border with Bangladesh
       [92.45, 21.15],
       [92.65, 21.50],
       [92.70, 21.90],
-      [93.50, 22.00],
-      [93.50, 19.50],
+      [94.00, 22.00],
+      [94.00, 19.50],
       [93.00, 19.50],
       [92.70, 20.00],
       [92.50, 20.35],
@@ -1040,10 +1071,44 @@ export const BAY_OF_BENGAL_FEATURES = {
  * Neighboring Country & Border Labels matching the authentic administrative atlas
  */
 export const NEIGHBOR_REGIONS = [
-  { name: 'INDIA', nameBn: 'মে ঘাল য় (ভারত)', sub: 'Meghalaya', coords: [90.5, 25.55], align: 'center' },
-  { name: 'INDIA', nameBn: 'প শ্চি ম ব ঙ্গ (ভারত)', sub: 'West Bengal', coords: [88.1, 23.8], align: 'right' },
-  { name: 'INDIA', nameBn: 'ত্রি পু রা (ভারত)', sub: 'Tripura', coords: [91.75, 23.5], align: 'left' },
-  { name: 'INDIA', nameBn: 'আ সাম (ভারত)', sub: 'Assam', coords: [92.6, 24.8], align: 'left' },
-  { name: 'INDIA', nameBn: 'মি জো রাম (ভারত)', sub: 'Mizoram', coords: [92.8, 22.9], align: 'left' },
-  { name: 'MYANMAR', nameBn: 'মায়ানমার (বার্মা)', sub: 'Burma', coords: [92.65, 21.1], align: 'left' },
+  { name: 'INDIA', nameBn: 'মে ঘাল য় (ভারত)', sub: 'Meghalaya', coords: [90.50, 25.55], align: 'center' },
+  { name: 'INDIA', nameBn: 'প শ্চি ম ব ঙ্গ (ভারত)', sub: 'West Bengal', coords: [88.10, 23.50], align: 'center' },
+  { name: 'INDIA', nameBn: 'ত্রি পু রা (ভারত)', sub: 'Tripura', coords: [91.75, 23.55], align: 'left' },
+  { name: 'INDIA', nameBn: 'আ সাম (ভারত)', sub: 'Assam', coords: [92.65, 24.85], align: 'left' },
+  { name: 'INDIA', nameBn: 'মি জো রাম (ভারত)', sub: 'Mizoram', coords: [92.85, 22.95], align: 'left' },
+  { name: 'MYANMAR', nameBn: 'মায়ানমার (রাখাইন)', sub: 'Myanmar (Rakhine)', coords: [92.75, 20.85], align: 'left' },
+];
+
+export interface NeighborCity {
+  id: string;
+  name: string;
+  nameBn: string;
+  coords: [number, number];
+  type: 'metropolis' | 'hub' | 'city' | 'coastal';
+}
+
+/**
+ * Key geographical reference landmarks in neighboring lands
+ * Fills the empty border territories authentically without touching Bangladesh borders
+ */
+export const NEIGHBOR_CITIES: NeighborCity[] = [
+  // West Bengal (India) — fills the western corridor naturally
+  { id: 'kolkata', name: 'Kolkata', nameBn: 'কলকাতা', coords: [88.3639, 22.5726], type: 'metropolis' },
+  { id: 'siliguri', name: 'Siliguri', nameBn: 'শিলিগুড়ি', coords: [88.4312, 26.7271], type: 'hub' },
+  { id: 'murshidabad', name: 'Murshidabad', nameBn: 'মুর্শিদাবাদ', coords: [88.2679, 24.1759], type: 'city' },
+  { id: 'malda', name: 'Malda', nameBn: 'মালদা', coords: [88.1411, 25.0108], type: 'city' },
+  { id: 'digha', name: 'Digha', nameBn: 'দিঘা', coords: [87.52, 21.62], type: 'coastal' },
+
+  // Meghalaya & Assam (India)
+  { id: 'shillong', name: 'Shillong', nameBn: 'শিলং', coords: [91.8933, 25.5788], type: 'metropolis' },
+  { id: 'guwahati', name: 'Guwahati', nameBn: 'গুয়াহাটি', coords: [91.7362, 26.1445], type: 'metropolis' },
+  { id: 'silchar', name: 'Silchar', nameBn: 'শিলচর', coords: [92.7976, 24.8333], type: 'city' },
+
+  // Tripura & Mizoram (India)
+  { id: 'agartala', name: 'Agartala', nameBn: 'আগরতলা', coords: [91.2868, 23.8315], type: 'metropolis' },
+  { id: 'aizawl', name: 'Aizawl', nameBn: 'আইজল', coords: [92.7176, 23.7307], type: 'metropolis' },
+
+  // Myanmar
+  { id: 'sittwe', name: 'Sittwe (Akyab)', nameBn: 'সিত্তে', coords: [92.8963, 20.1462], type: 'coastal' },
+  { id: 'maungdaw', name: 'Maungdaw', nameBn: 'মংডু', coords: [92.3700, 20.8200], type: 'city' },
 ];
