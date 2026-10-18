@@ -11,11 +11,13 @@
 [![Track Focus](https://img.shields.io/badge/Track-P3:_Catch_Fraud_&_Double--Selling-emerald)](https://github.com/Tanvir4n/Probaho)
 [![Supporting Layers](https://img.shields.io/badge/Supporting-P2_(Verification)_&_P4_(Mutation)-10b981)](https://github.com/Tanvir4n/Probaho)
 [![Data Compliance](https://img.shields.io/badge/Data-100%25_Synthetic_&_Non--PII-purple)](#-rulebook-compliance--synthetic-data-guarantee)
+[![Dataset](https://img.shields.io/badge/Dataset-30%2C000_Synthetic_Parcels-blue)](#-machine-learning--explainable-ai-novelty-1-engine)
+[![ML Pipeline](https://img.shields.io/badge/ML-XGBoost_%7C_SHAP_%7C_NetworkX_%7C_Isolation_Forest-emerald)](#-machine-learning--explainable-ai-novelty-1-engine)
 [![Cryptographic Validation](https://img.shields.io/badge/Ledger-SHA--256_%7C_Ed25519_%7C_Merkle_Roots-black)](#novelty-2-hash-chained-land-ledger-no-heavy-blockchain)
 
 **Probaho** is an intelligent land fraud detection, evidence intelligence, and verification platform for Bangladesh land records. Built around **JomiChain**, it turns fragmented cadastral records into a tamper-evident **Plot Passport**—linking historical survey generations, deed chains, mutations, and mortgage encumbrances into an auditable cryptographic timeline.
 
-[Live Demo](#-quick-start--local-setup) • [Five Novelties](#-five-technical-novelties) • [Visual Workflows](#-system-workflows--visualizations) • [5-Minute Live Story](#-5-minute-live-story-demo-protocol) • [Architecture](#-system-architecture) • [Rulebook Compliance](#-rulebook-compliance--synthetic-data-guarantee)
+[Live Demo](#-quick-start--local-setup) • [Five Novelties](#-five-technical-novelties) • [ML & XAI Engine](#-machine-learning--explainable-ai-novelty-1-engine) • [Visual Workflows](#-system-workflows--visualizations) • [5-Minute Live Story](#-5-minute-live-story-demo-protocol) • [Architecture](#-system-architecture) • [Rulebook Compliance](#-rulebook-compliance--synthetic-data-guarantee)
 
 ---
 
@@ -40,12 +42,17 @@ Because no single office has real-time visibility into the complete parcel lifec
 
 ## 🌟 Five Technical Novelties
 
-### Novelty 1. Survey-Lineage Graph (CS → SA → RS → BS)
-Most solutions treat each land record or khatian in isolation. Probaho models a plot’s multi-decade history as a **directed topological lineage graph**:
-* Tracks plot partitions, splits, and merges across all four survey generations (**CS 1940 → SA 1962 → RS 1988 → BS 2021**).
-* Enforces mathematical area conservation: 
-  $$\sum \text{Area}(\text{Children}) \le \text{Area}(\text{Parent})$$
-* Automatically flags impossible lineages—such as a child parcel whose area exceeds its ancestor khatian or a dag number that appears simultaneously in two disjoint family genealogies.
+### Novelty 1. Survey-Lineage Graph & Machine Learning Risk Engine (CS → SA → RS → BS)
+Most solutions treat each land record or khatian in isolation. Probaho models a plot’s multi-decade history as a **directed topological lineage graph** validated by graph algorithms and machine learning:
+* **Four Historical Survey Generations:** Tracks partitions, splits, merges, and continuations across **CS 1940 → SA 1962 → RS 1988 → BS 2021** across a **30,000-parcel synthetic engineering dataset** with **29,065 directed lineage edges**.
+* **Mathematical Area Conservation Enforced:** 
+  $$\sum \text{Area}(\text{Children}) \le \text{Area}(\text{Parent}) + \epsilon$$
+* **Dual Machine Learning Validation:**
+  1. **NetworkX Topological Engine:** Validates DAG acyclicity, computes parent-child deficits, and identifies orphaned or missing ancestral lineages.
+  2. **XGBoost Supervised Risk Classifier:** Achieves **0.9909 ROC-AUC**, **0.8514 PR-AUC**, and **99.15% accuracy** on lineage-grouped held-out test data.
+  3. **Isolation Forest Unsupervised Outlier Detector:** Surfaces structural anomalies without pre-existing labels.
+* **Game-Theoretic SHAP Explainability:** Decomposes risk predictions into exact Shapley values ($f(x) = \mathbb{E}[f(x)] + \sum \phi_i$) providing transparent, court-admissible audit trails.
+* **Automated Anomaly Detection:** Flags area inflation, missing ancestral lineages, and disjoint duplicate dag collisions across genealogical trees.
 
 ### Novelty 2. Hash-Chained Land Ledger (No Heavy Blockchain)
 Avoids the cost, latency, and environmental overhead of proof-of-work blockchains while delivering enterprise-grade cryptographic verification:
@@ -69,7 +76,10 @@ Land records in Bangladesh suffer from Unicode variations, Arabic/Bangla spellin
 
 ### Novelty 5. Explainable Risk Score & Citizen “Trust Report”
 Land officers and judges cannot rely on uninterpretable "black box" AI outputs:
-* Every parcel receives an auditable **0–100 Risk Score** with explicit legal rule justifications (e.g., *"RS Khatian area 12.0 shotok vs BS Khatian 18.2 shotok (+51.6% unexplained inflation)"* or *"Active mortgage lien under Agrani Bank not released"*).
+* **Game-Theoretic SHAP Decomposition:** Every parcel risk assessment is mathematically decomposed into individual positive risk drivers and protective mitigators:
+  $$f(x) = \mathbb{E}[f(x)] + \sum_{i=1}^{M} \phi_i$$
+* **Transparent Legal Reasoning:** Every feature impact ($\phi_i$) is tied to explicit statutory citations (e.g., *State Acquisition and Tenancy Act 1950 § 89*, *Transfer of Property Act 1882 § 53A*, *Registration Act 1908 § 17*).
+* Every parcel receives an auditable **0–100 Risk Score** with explicit legal justifications (e.g., *"RS Khatian area 12.0 shotok vs BS Khatian 18.2 shotok (+51.6% unexplained inflation)"* or *"Active mortgage lien under Agrani Bank not released"*).
 * Generates a citizen-friendly **Plot Trust Report** accompanied by a tamper-evident **QR Code** printed on deeds, enabling buyers to verify parcel authenticity on any smartphone.
 
 ---
@@ -256,6 +266,189 @@ flowchart LR
 
 ---
 
+### 6. Novelty 1: Survey-Lineage Machine Learning & SHAP Pipeline
+```mermaid
+flowchart TD
+    subgraph DATA["1. 30,000 Synthetic Parcel Records"]
+        CSV1["Parcel CSV (30,000 Rows)<br/>CS 1940 · SA 1962 · RS 1988 · BS 2021"]
+        CSV2["Lineage Edge CSV (29,065 Edges)<br/>Parent-Child Splits, Merges & Continuity"]
+    end
+
+    subgraph GRAPH["2. NetworkX Graph Validation Engine"]
+        DAG["Directed Acyclic Graph (DAG) Construction"]
+        AC["Mathematical Area Conservation Check<br/>(Σ Child Areas ≤ Parent Area + 0.01)"]
+        DIS["Disjoint Dag Collision Detector"]
+        ORP["Disconnected Ancestor / Orphan Checker"]
+    end
+
+    subgraph FE["3. Feature Engineering (Zero Data Leakage)"]
+        F1["Area Ratios & Deficits<br/>(Child Area ÷ Parent Area, Inflation %)"]
+        F2["Topological Graph Metrics<br/>(In/Out Degree, Lineage Depth, Sibling Counts)"]
+        F3["Genealogical Conflict Signals<br/>(Foreign Family Mismatch, Disjoint Collisions)"]
+    end
+
+    subgraph MODELS["4. Dual Machine Learning Models"]
+        XGB["XGBoost Supervised Classifier<br/>• Lineage-grouped split (Zero leakage)<br/>• Scale-pos imbalance weighting<br/>• ROC-AUC: 0.9909 | PR-AUC: 0.8514 | F1: 0.7714"]
+        ISO["Isolation Forest Unsupervised<br/>• High-dimensional spatial outliers<br/>• Unlabeled anomaly candidate scoring"]
+    end
+
+    subgraph XAI["5. SHAP Explainability Engine"]
+        BEE["Global Beeswarm Summary Plot<br/>(Macro feature directionality)"]
+        BAR["Feature Importance Ranking<br/>(Area ratio, siblings, parent excess)"]
+        WAT["Individual Parcel Waterfall Plot<br/>(f(x) = E[f(x)] + Σ φᵢ)"]
+    end
+
+    subgraph UI["6. Probaho Officer Dashboard"]
+        DASH["Investigator Evidence Dossier<br/>• Plain-language legal statute citations<br/>• Visual lineage DAG with highlighted anomaly nodes<br/>• 0-100 Explainable Risk Score Breakdown"]
+    end
+
+    CSV1 & CSV2 --> DAG
+    DAG --> AC & DIS & ORP
+    AC & DIS & ORP --> FE
+    F1 & F2 & F3 --> XGB & ISO
+    XGB --> XAI
+    XAI --> BEE & BAR & WAT
+    BEE & BAR & WAT --> DASH
+
+    classDef green fill:#142419,stroke:#22c55e,stroke-width:2px,color:#ffffff;
+    classDef blue fill:#0c1d2e,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
+    classDef amber fill:#2d1f05,stroke:#f59e0b,stroke-width:2px,color:#ffffff;
+    class CSV1,CSV2,DAG,AC,DIS,ORP green;
+    class XGB,ISO,BEE,BAR,WAT blue;
+    class DASH amber;
+```
+
+---
+
+### 7. SHAP Game-Theoretic Risk Attribution Architecture
+```mermaid
+flowchart LR
+    subgraph INPUT["Parcel Features"]
+        X1["Area Inflation Ratio (+32%)"]
+        X2["Sibling Count (4 Children)"]
+        X3["Parent Child Excess (1.03x)"]
+        X4["Survey Generation (SA 1962)"]
+    end
+
+    subgraph DECOMP["SHAP Kernel / TreeExplainer"]
+        BASE["Base Value: E[f(x)] = 0.56"]
+        P1["φ₁: +2.02 (High Sibling Density)"]
+        P2["φ₂: +0.70 (Parent Excess Deficit)"]
+        P3["φ₃: +0.26 (Survey Generation Gap)"]
+        N1["φ₄: -3.46 (Protective Area Ratio)"]
+    end
+
+    subgraph RESULT["Court-Admissible Explanation"]
+        RISK["Model Output: f(x) = E[f(x)] + Σ φᵢ<br/>Final Fraud Risk Score: 88/100 (HIGH RISK)"]
+    end
+
+    INPUT --> DECOMP
+    BASE & P1 & P2 & P3 & N1 --> RISK
+
+    classDef feat fill:#0c1d2e,stroke:#38bdf8,stroke-width:1.5px,color:#ffffff;
+    classDef shap fill:#142419,stroke:#22c55e,stroke-width:1.5px,color:#ffffff;
+    classDef res fill:#2e0c0f,stroke:#ef4444,stroke-width:2px,color:#ffffff;
+    class X1,X2,X3,X4 feat;
+    class BASE,P1,P2,P3,N1 shap;
+    class RISK res;
+```
+
+---
+
+---
+
+## 🤖 Machine Learning & Explainable AI (Novelty 1 Engine)
+
+Probaho's **Novelty 1** is powered by a production-grade Machine Learning engine trained on an extensive synthetic cadastral dataset designed specifically for historical lineage validation and boundary fraud detection.
+
+### 1. Synthetic Dataset Architecture & Lineage Generation
+* **Total Parcel Records:** **30,000** synthetic cadastral nodes across four historical survey generations.
+* **Lineage Edges:** **29,065** directed parent–child splits, merges, and continuity transitions.
+* **100% Synthetic Data Guarantee:** Fully generated algorithmically with zero PII, real citizen names, or real land titles.
+
+| Survey Generation | Year | Record Count | Structural Role |
+|:---|:---:|:---:|:---|
+| **CS (Cadastral Survey)** | 1940 | 3,000 | Lineage root ancestral parcels |
+| **SA (State Acquisition Survey)** | 1962 | 6,000 | Primary post-zamindari land splits and continuations |
+| **RS (Revisional Survey)** | 1988 | 9,000 | Mid-century sub-divisions and agricultural-to-urban plots |
+| **BS (City / Bangladesh Survey)** | 2021 | 12,000 | Modern urban leaf parcels and high-density subdivisions |
+
+#### Injected Anomaly Test Coverage:
+| Anomaly Category | Records | Verification Challenge |
+|:---|:---:|:---|
+| **`AREA_INFLATION`** | 319 | Downstream parcel area artificially expanded exceeding parent khatian without partition deed |
+| **`MISSING_ANCESTOR`** | 167 | Post-CS survey parcel lacking ancestral record reference (`transition_type: ORPHAN`) |
+| **`DUPLICATE_DAG_DISJOINT_GENEALOGY`** | 115 | Same dag number injected across unrelated genealogical trees |
+| **`NONE` (Normal Verified)** | 29,399 | Clean, continuous lineage satisfying mathematical area conservation |
+
+---
+
+### 2. Feature Engineering (Zero Data Leakage)
+To prevent misleading validation scores, models are trained **strictly without label-derived columns** (`anomaly_type`, `area_conservation_status`, `outgoing_area_check`, `lineage_status`). Instead, 22 mathematical and graph-topological features are engineered from raw graph traversal:
+
+1. **`area_ratio`:** Ratio of child parcel area to cumulative parent area.
+2. **`area_diff`:** Absolute shotok variance between parent and child generations.
+3. **`inflation_pct`:** Percentage increase of child area relative to parent allocation.
+4. **`parent_child_excess`:** Volume of boundary conservation deficit on outgoing parent edges.
+5. **`parent_child_excess_ratio`:** Proportion of children area sum relative to ancestral plot size.
+6. **`in_degree` / `out_degree`:** Direct incoming parents (merges) and outgoing children (splits).
+7. **`sibling_count`:** Number of sibling parcels created from the same parental partition.
+8. **`is_orphan`:** Flag for non-CS parcels missing parent references.
+9. **`dag_fam_count`:** Number of distinct family genealogies claiming the same dag number.
+10. **`dag_disjoint_conflict`:** Binary indicator of multi-family dag collision.
+11. **`is_foreign_genealogy`:** Cross-lineage genealogical partition conflict.
+12. **`survey_gen_code` & `survey_year`:** Generational temporal encodings.
+
+---
+
+### 3. Quantitative Model Benchmarks
+
+Models are evaluated on a **held-out test set of 7,535 parcels** partitioned via **`GroupShuffleSplit` by `lineage_id`** (preventing related parcels from leaking between train and test sets):
+
+| Evaluation Metric | XGBoost (Supervised Risk Classifier) | Isolation Forest (Unsupervised Baseline) |
+|:---|:---:|:---:|
+| **ROC-AUC Score** | **0.9909** | 0.8124 |
+| **PR-AUC Score** | **0.8514** | 0.1840 |
+| **Overall Accuracy** | **99.15%** | 97.45% |
+| **Recall (Fraud Class)** | **83.72%** | 42.64% |
+| **Precision (Fraud Class)** | **71.52%** | 18.25% |
+| **F1-Score (Fraud Class)** | **0.7714** | 0.2558 |
+| **Optimal Decision Threshold** | **0.70** | Contamination 0.02 |
+
+#### Confusion Matrix (7,535 Held-Out Test Parcels):
+```
+                       PREDICTED NORMAL    PREDICTED ANOMALY
+ACTUAL NORMAL (0)           7,363                 43          (99.42% Specificity)
+ACTUAL ANOMALY (1)             21                108          (83.72% Sensitivity)
+```
+
+---
+
+### 4. Explainable AI (XAI) with SHAP
+
+Probaho integrates **TreeSHAP** (`shap.TreeExplainer`) to provide court-admissible, transparent explanations:
+
+* **SHAP Beeswarm Summary (`ml/plots/shap_summary_beeswarm.png`):** Shows global distribution of feature impacts across the entire cadastral callset. High `area_ratio`, large `parent_child_excess`, and `is_orphan` push predictions decisively into the high-risk fraud zone.
+* **Feature Importance Ranking (`ml/plots/shap_feature_importance_bar.png`):** Identifies `area_ratio`, `sibling_count`, `parent_child_excess_ratio`, and `area_diff` as the top 4 mathematical predictors of cadastral fraud.
+* **Individual Parcel Waterfall (`ml/plots/shap_waterfall_anomaly.png`):** Reconstructs the exact reasoning for individual flagged parcels (e.g., Parcel `PL-1962-000081`), showing how each topological signal shifted the base risk expectation $\mathbb{E}[f(x)]$.
+* **ROC & PR Curves (`ml/plots/roc_pr_curves.png`):** High-resolution performance curves demonstrating high recall under severe class imbalance.
+
+---
+
+### 5. Running the ML Pipeline Locally
+```bash
+# 1. Install ML dependencies
+python -m pip install xgboost shap networkx scikit-learn pandas numpy matplotlib seaborn joblib
+
+# 2. Execute full training, validation & plot generation
+python ml/train_lineage_models.py
+
+# 3. Launch interactive Jupyter Notebook
+jupyter notebook ml/probaho_novelty1_ml_pipeline.ipynb
+```
+
+---
+
 ## 🎬 5-Minute Live Story Demo Protocol
 
 Probaho includes an interactive **Live Story Controller** built directly into the UI for track presentations:
@@ -315,6 +508,13 @@ Probaho includes an interactive **Live Story Controller** built directly into th
 
 ## 💻 Tech Stack
 
+* **Machine Learning & Graph Analytics:**
+  * **Python 3.10+** (Core ML runtime)
+  * **XGBoost 3.4.1** (Supervised gradient boosted risk classification)
+  * **SHAP 0.52.0** (Game-theoretic SHapley Additive exPlanations for XAI)
+  * **NetworkX 3.7** (Directed Acyclic Graph topology & mathematical area conservation)
+  * **Scikit-Learn 1.9.1** (Isolation Forest, GroupShuffleSplit & precision-recall metrics)
+  * **Pandas 3.0 & NumPy 2.5** (High-performance cadastral tabular feature engineering)
 * **Frontend:** React 19, TypeScript, Vite, Tailwind CSS (Design Tokens System), Lucide React
 * **Motion & Graphics:** Motion (Framer Motion), Custom Architectural SVG Rendering Engine
 * **Cryptography:** SHA-256 Digesting, Ed25519 Digital Signature Schemas, Merkle Tree Proofs
@@ -370,25 +570,47 @@ npm run build
 
 ```
 Probaho/
-├── hero.svg                            # Architectural Cadastral Hero SVG Artwork
-├── README.md                           # Documentation, Workflows & Rulebook Specs
+├── hero.svg                                    # Architectural Cadastral Hero SVG Artwork
+├── README.md                                   # Documentation, Workflows & Rulebook Specs
+├── probaho_novelty1_survey_lineage_30000.csv   # 30,000-Row Synthetic Survey-Lineage Dataset
+├── probaho_novelty1_lineage_edges.csv          # 29,065 Normalized Parent-Child Graph Edges
+├── probaho_novelty1_data_dictionary.md         # Lineage Data Dictionary & Validation Guide
+├── ml/                                         # Novelty 1 Machine Learning & XAI Suite
+│   ├── README.md                               # ML Architecture & Benchmark Documentation
+│   ├── train_lineage_models.py                 # Production Training & Evaluation Script
+│   ├── probaho_novelty1_ml_pipeline.ipynb      # Interactive Step-by-Step Jupyter Notebook
+│   ├── models/
+│   │   ├── probaho_xgboost_lineage.json        # Trained XGBoost Risk Classifier
+│   │   ├── probaho_xgboost_multiclass.json     # Trained Multi-Class Anomaly Model
+│   │   ├── probaho_isolation_forest.joblib     # Trained Isolation Forest Detector
+│   │   ├── evaluation_metrics.json             # ROC-AUC (0.9909), PR-AUC (0.8514) Benchmarks
+│   │   └── sample_shap_waterfall.json          # Precomputed SHAP Waterfall Payload
+│   └── plots/
+│       ├── shap_summary_beeswarm.png           # Global Feature Impact Beeswarm Plot
+│       ├── shap_feature_importance_bar.png     # Feature Importance Ranking Bar Chart
+│       ├── shap_waterfall_anomaly.png          # Individual Parcel Waterfall Attribution
+│       ├── roc_pr_curves.png                   # High-Resolution ROC & PR Curves
+│       └── confusion_matrix.png                # Confusion Matrix Heatmap
 ├── src/
 │   ├── components/
-│   │   ├── JomiChainSection.tsx        # Plot Passport, 5 Novelties & Live Story Demo
-│   │   ├── ProbahoHeroSvg.tsx          # In-App Cadastral Hero SVG Component
-│   │   ├── ProbahoLogo.tsx             # Precision Brandmark & Fluid Flow Monogram
-│   │   ├── MassGlassSidebar.tsx        # Viewport-Fixed Glassmorphic Telemetry Dock
-│   │   ├── PageTransitionEffect.tsx    # Luminous Progress Runner & Shutter Beam Wipe
-│   │   ├── MassMarketingView.tsx       # Main Platform Viewport & Suite Integrator
-│   │   ├── MassPricingSection.tsx      # Tiered Institutional Access Plans
-│   │   └── ArchitecturalBackground.tsx # Cadastral Grid & Coordinate Canvas
+│   │   ├── JomiChainSection.tsx                # Plot Passport, 5 Novelties & Live Story Demo
+│   │   ├── ShapXaiExplainer.tsx                # Interactive SHAP XAI Waterfall & Tornado Studio
+│   │   ├── RiskAnalyticsDashboard.tsx          # Real-Time Cadastral Risk Telemetry Dashboard
+│   │   ├── ProbahoHeroSvg.tsx                  # In-App Cadastral Hero SVG Component
+│   │   ├── ProbahoLogo.tsx                     # Precision Brandmark & Fluid Flow Monogram
+│   │   ├── MassGlassSidebar.tsx                # Viewport-Fixed Glassmorphic Telemetry Dock
+│   │   ├── PageTransitionEffect.tsx            # Luminous Progress Runner & Shutter Beam Wipe
+│   │   ├── MassMarketingView.tsx               # Main Platform Viewport & Suite Integrator
+│   │   ├── MassPricingSection.tsx              # Tiered Institutional Access Plans
+│   │   └── ArchitecturalBackground.tsx         # Cadastral Grid & Coordinate Canvas
 │   ├── data/
-│   │   └── tokens.ts                   # Design Tokens, Plot Datasets & Tool Schemas
+│   │   └── tokens.ts                           # Design Tokens, Plot Datasets & Tool Schemas
 │   ├── context/
-│   │   └── ThemeContext.tsx            # Day/Night Architectural Color Mode Context
-│   ├── App.tsx                         # Root Application Scaffold
-│   └── index.css                       # Global Design System Tokens & Glassmorphism
-└── vite.config.ts                      # Vite Configuration & Dev Server Rules
+│   │   ├── ThemeContext.tsx                    # Day/Night Architectural Color Mode Context
+│   │   └── LanguageContext.tsx                 # Bilingual EN ⇄ বাংলা Context Provider
+│   ├── App.tsx                                 # Root Application Scaffold
+│   └── index.css                               # Global Design System Tokens & Glassmorphism
+└── vite.config.ts                              # Vite Configuration & Dev Server Rules
 ```
 
 ---

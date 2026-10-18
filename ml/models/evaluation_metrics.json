@@ -1,0 +1,54 @@
+{
+  "model_name": "Probaho XGBoost Lineage Risk Engine",
+  "dataset_size": 30000,
+  "survey_generations": [
+    "CS 1940",
+    "SA 1962",
+    "RS 1988",
+    "BS 2021"
+  ],
+  "train_samples": 22465,
+  "test_samples": 7535,
+  "optimal_threshold": 0.7,
+  "roc_auc": 0.9909,
+  "pr_auc": 0.8514,
+  "precision_anomaly": 0.7152,
+  "recall_anomaly": 0.8372,
+  "f1_anomaly": 0.7714,
+  "accuracy": 0.9915,
+  "confusion_matrix": [
+    [
+      7363,
+      43
+    ],
+    [
+      21,
+      108
+    ]
+  ],
+  "isolation_forest_f1": 0.0541,
+  "feature_names": [
+    "survey_gen_code",
+    "survey_year",
+    "parcel_area_shotok",
+    "in_degree",
+    "out_degree",
+    "parent_total_area",
+    "child_total_area",
+    "area_diff",
+    "area_ratio",
+    "inflation_pct",
+    "parent_child_excess",
+    "parent_child_excess_ratio",
+    "sibling_count",
+    "child_deficit",
+    "child_ratio",
+    "is_orphan",
+    "dag_fam_count",
+    "dag_mouza_count",
+    "dag_disjoint_conflict",
+    "is_foreign_genealogy",
+    "is_merge",
+    "is_split"
+  ]
+}

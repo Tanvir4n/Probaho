@@ -1,0 +1,56 @@
+{
+  "record_id": "PL-1962-000081",
+  "lineage_id": "LIN-000053",
+  "base_value": 0.5621,
+  "model_output_risk": -2.9764,
+  "top_risk_drivers": [
+    {
+      "feature": "area_ratio",
+      "value": 0.2980899806921702,
+      "shap_value": -3.4551,
+      "risk_direction": "PROTECTIVE"
+    },
+    {
+      "feature": "sibling_count",
+      "value": 4.0,
+      "shap_value": 2.0249,
+      "risk_direction": "INCREASES_RISK"
+    },
+    {
+      "feature": "area_diff",
+      "value": -29.409999999999997,
+      "shap_value": -0.9953,
+      "risk_direction": "PROTECTIVE"
+    },
+    {
+      "feature": "child_ratio",
+      "value": 0.9367418995844708,
+      "shap_value": -0.784,
+      "risk_direction": "PROTECTIVE"
+    },
+    {
+      "feature": "is_foreign_genealogy",
+      "value": 0.0,
+      "shap_value": -0.7003,
+      "risk_direction": "PROTECTIVE"
+    },
+    {
+      "feature": "parent_child_excess_ratio",
+      "value": 1.0307851293910992,
+      "shap_value": 0.6969,
+      "risk_direction": "INCREASES_RISK"
+    },
+    {
+      "feature": "survey_gen_code",
+      "value": 1.0,
+      "shap_value": 0.2632,
+      "risk_direction": "INCREASES_RISK"
+    },
+    {
+      "feature": "parcel_area_shotok",
+      "value": 12.49,
+      "shap_value": -0.1721,
+      "risk_direction": "PROTECTIVE"
+    }
+  ]
+}
