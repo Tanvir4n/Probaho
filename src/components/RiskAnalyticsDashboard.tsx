@@ -155,9 +155,18 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
   const barChartData = useMemo(() => {
     return [...DHAKA_RISK_ZONES]
       .sort((a, b) => b.riskScore - a.riskScore)
-      .map((z) => ({
+      .map((z, idx) => ({
         id: z.id,
+        rank: idx + 1,
         name: isBangla ? z.nameBn : z.name,
+        nameEn: z.name,
+        nameBn: z.nameBn,
+        subRegistry: z.subRegistry,
+        subRegistryBn: z.subRegistryBn,
+        primaryVector: z.primaryVector,
+        primaryVectorBn: z.primaryVectorBn,
+        hotspotMouzas: z.hotspotMouzas,
+        hotspotMouzasBn: z.hotspotMouzasBn,
         shortName: isBangla
           ? z.nameBn.split(' ')[0]
           : z.name.split(' ')[0].replace(/[\(\),]/g, ''),
@@ -888,20 +897,101 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                     width={85}
                   />
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: tooltipBg,
-                      borderColor: tooltipBorder,
-                      borderRadius: 4,
-                      fontSize: 12,
-                      fontFamily: 'monospace',
-                    }}
-                    cursor={{ fill: isDay ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)' }}
-                    formatter={(value: any, name: any, item: any) => {
-                      const zone = item.payload;
-                      return [
-                        `${value}/100 [${zone.level}] · ${zone.dags} Disputed Dags · ৳ ${zone.preventedCr} Cr blocked`,
-                        isBangla ? 'ঝুঁকি স্কোর' : 'Fraud Risk Score',
-                      ];
+                    cursor={{ fill: isDay ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const zone = payload[0].payload;
+                        return (
+                          <div className="p-3.5 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-2xl text-xs font-mono space-y-2 backdrop-blur-md max-w-xs">
+                            <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-1.5">
+                              <div>
+                                <span className="font-bold text-[var(--color-text-primary)] text-sm">
+                                  {isBangla ? zone.nameBn : zone.nameEn}
+                                </span>
+                                <span className="text-[10px] text-[var(--color-text-tertiary)] block">
+                                  {isBangla ? `ঢাকা মেট্রো স্থান: #${zone.rank}` : `Dhaka Metro Rank #${zone.rank}`}
+                                </span>
+                              </div>
+                              <span
+                                className="text-[10px] font-bold px-2 py-0.5 rounded border"
+                                style={{
+                                  backgroundColor: `${getRiskColor(zone.level)}18`,
+                                  borderColor: `${getRiskColor(zone.level)}40`,
+                                  color: getRiskColor(zone.level),
+                                }}
+                              >
+                                {zone.level}
+                              </span>
+                            </div>
+
+                            {/* Risk Score Progress Bar */}
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? 'জালিয়াতি ঝুঁকি সূচক:' : 'Fraud Risk Score:'}
+                                </span>
+                                <span
+                                  className="font-bold tabular-nums text-sm"
+                                  style={{ color: getRiskColor(zone.level) }}
+                                >
+                                  {zone.riskScore} <span className="text-[10px] text-[var(--color-text-tertiary)] font-normal">/ 100</span>
+                                </span>
+                              </div>
+                              <div className="w-full h-1.5 bg-[var(--color-surface-muted)] rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-300"
+                                  style={{
+                                    width: `${zone.riskScore}%`,
+                                    backgroundColor: getRiskColor(zone.level),
+                                  }}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Detailed Telemetry Stats */}
+                            <div className="pt-1.5 border-t border-[var(--color-border-subtle)] space-y-1 text-[11px]">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? 'বিবাদযুক্ত সক্রিয় দাগ:' : 'Active Disputed Dags:'}
+                                </span>
+                                <span className="font-bold text-[var(--color-text-primary)] tabular-nums">
+                                  {zone.dags}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? 'সক্রিয় সফট-লক:' : 'Cadastral Soft-Locks:'}
+                                </span>
+                                <span className="font-bold text-amber-500 tabular-nums flex items-center gap-1">
+                                  <Lock className="w-3 h-3 inline" />
+                                  <span>{zone.locks}</span>
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? 'আটককৃত আর্থিক ক্ষতি:' : 'Halted Capital:'}
+                                </span>
+                                <span className="font-bold text-[var(--color-surface-raised)] tabular-nums">
+                                  ৳ {zone.preventedCr} Cr
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Primary Vector & Click Instruction */}
+                            <div className="pt-1.5 border-t border-[var(--color-border-subtle)] space-y-1 text-[10px]">
+                              <div className="text-[var(--color-text-secondary)] truncate">
+                                <strong className="text-[var(--color-text-primary)] font-normal">Vector: </strong>
+                                {isBangla ? zone.primaryVectorBn : zone.primaryVector}
+                              </div>
+                              <div className="text-[var(--color-surface-raised)] flex items-center gap-1 font-semibold pt-0.5">
+                                <span>{isBangla ? 'ক্লিক করে এই অঞ্চলের ট্রেন্ড দেখুন' : 'Click bar to focus zone trends'}</span>
+                                <ChevronRight className="w-3 h-3" />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
                   />
                   <Bar
@@ -1058,14 +1148,20 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                     tickLine={false}
                   />
                   <Tooltip
+                    cursor={{ stroke: isDay ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.35)', strokeWidth: 1.5, strokeDasharray: '3 3' }}
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const point = payload[0].payload as TrendDataPoint;
+                        const zoneScore = point.zoneRiskIndex ?? point.overallRiskIndex;
+                        const diffVsMetro = Math.round((zoneScore - point.overallRiskIndex) * 10) / 10;
+                        const scoreColor = getRiskColor(selectedZone.riskLevel);
+
                         return (
-                          <div className="p-3 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-2xl text-xs font-mono space-y-2 backdrop-blur-md max-w-xs">
+                          <div className="p-3.5 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-2xl text-xs font-mono space-y-2.5 backdrop-blur-md max-w-xs">
+                            {/* Header: Date & Operating Status */}
                             <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-1.5">
                               <div>
-                                <span className="font-bold text-[var(--color-text-primary)]">
+                                <span className="font-bold text-[var(--color-text-primary)] text-sm">
                                   {isBangla ? point.periodBn : point.period}
                                 </span>
                                 {point.isoDate && (
@@ -1075,70 +1171,104 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                                 )}
                               </div>
                               <span
-                                className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                                className={`text-[9px] px-2 py-0.5 rounded font-bold border ${
                                   point.isWeekend
-                                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                    : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                    ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                                    : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                                 }`}
                               >
-                                {point.isWeekend ? 'HOLIDAY' : 'OPEN'}
+                                {point.isWeekend ? 'HOLIDAY / AI AUDIT' : 'COUNTERS ACTIVE'}
                               </span>
                             </div>
 
-                            <div className="text-[10px] text-[var(--color-text-secondary)] leading-tight">
-                              {isBangla ? point.registryStatusBn : point.registryStatus}
+                            {/* Core Risk Score Breakdown */}
+                            <div className="space-y-1.5">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? selectedZone.nameBn : selectedZone.name} {isBangla ? 'ঝুঁকি স্কোর:' : 'Risk Score:'}
+                                </span>
+                                <span
+                                  className="font-bold tabular-nums text-sm"
+                                  style={{ color: scoreColor }}
+                                >
+                                  {zoneScore} <span className="text-[10px] text-[var(--color-text-tertiary)] font-normal">/ 100</span>
+                                </span>
+                              </div>
+
+                              {/* Visual Score Meter */}
+                              <div className="w-full h-1.5 bg-[var(--color-surface-muted)] rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-300"
+                                  style={{
+                                    width: `${zoneScore}%`,
+                                    backgroundColor: scoreColor,
+                                  }}
+                                />
+                              </div>
+
+                              {/* Citywide Benchmark Comparison */}
+                              <div className="flex items-center justify-between text-[10px] text-[var(--color-text-secondary)] pt-0.5">
+                                <span>{isBangla ? 'ঢাকা মেট্রো সার্বিক গড়:' : 'Dhaka City Baseline:'}</span>
+                                <span className="font-semibold text-emerald-400 tabular-nums">
+                                  {point.overallRiskIndex} / 100
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between text-[10px] text-[var(--color-text-tertiary)]">
+                                <span>{isBangla ? 'মেট্রো গড় হতে ব্যবধান:' : 'Variance vs Metro:'}</span>
+                                <span
+                                  className={`font-semibold tabular-nums ${
+                                    diffVsMetro > 0 ? 'text-red-400' : 'text-emerald-400'
+                                  }`}
+                                >
+                                  {diffVsMetro > 0 ? `+${diffVsMetro}` : diffVsMetro} pts{' '}
+                                  <span className="font-normal text-[9px]">
+                                    ({diffVsMetro > 0 ? (isBangla ? 'উচ্চতর ঝুঁকি' : 'higher risk') : (isBangla ? 'নিরাপদ' : 'lower risk')})
+                                  </span>
+                                </span>
+                              </div>
                             </div>
 
-                            <div className="pt-1 border-t border-[var(--color-border-subtle)] space-y-1">
-                              {trendMetric === 'index' && (
-                                <>
-                                  <div className="flex items-center justify-between gap-3">
-                                    <span className="text-[var(--color-text-secondary)]">
-                                      {isBangla ? selectedZone.nameBn : selectedZone.name}:
-                                    </span>
-                                    <span
-                                      className="font-bold tabular-nums"
-                                      style={{ color: getRiskColor(selectedZone.riskLevel) }}
-                                    >
-                                      {point.zoneRiskIndex} / 100
-                                    </span>
-                                  </div>
-                                  {compareWithMetro && (
-                                    <div className="flex items-center justify-between gap-3">
-                                      <span className="text-[var(--color-text-secondary)]">
-                                        {isBangla ? 'ঢাকা মেট্রো গড়:' : 'Dhaka Metro Avg:'}
-                                      </span>
-                                      <span className="font-bold text-emerald-400 tabular-nums">
-                                        {point.overallRiskIndex} / 100
-                                      </span>
-                                    </div>
-                                  )}
-                                </>
-                              )}
+                            {/* Daily Incident Telemetry */}
+                            <div className="pt-2 border-t border-[var(--color-border-subtle)] space-y-1 text-[11px]">
+                              <div className="flex items-center justify-between text-red-400">
+                                <span>{isBangla ? 'দ্বৈত দলিল সম্পাদন চেষ্টা:' : 'Double-Sale Alerts:'}</span>
+                                <span className="font-bold tabular-nums">{point.doubleSaleIncidents}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-amber-400">
+                                <span>{isBangla ? 'নামজারি রেকর্ড টেম্পারিং:' : 'Mutation Alterations:'}</span>
+                                <span className="font-bold tabular-nums">{point.mutationTamperingCount}</span>
+                              </div>
+                              <div className="flex items-center justify-between text-orange-400">
+                                <span>{isBangla ? 'ওয়ারিশ সনদ গোপন/বিরোধ:' : 'Warisan Disputes:'}</span>
+                                <span className="font-bold tabular-nums">{point.warisanDisputes}</span>
+                              </div>
+                            </div>
 
-                              {trendMetric === 'incidents' && (
-                                <>
-                                  <div className="flex items-center justify-between gap-3 text-red-400">
-                                    <span>{isBangla ? 'দ্বৈত দলিল চেষ্টা:' : 'Double-Sale Alerts:'}</span>
-                                    <span className="font-bold tabular-nums">{point.doubleSaleIncidents}</span>
-                                  </div>
-                                  <div className="flex items-center justify-between gap-3 text-amber-400">
-                                    <span>{isBangla ? 'নামজারি টেম্পারিং:' : 'Mutation Alterations:'}</span>
-                                    <span className="font-bold tabular-nums">{point.mutationTamperingCount}</span>
-                                  </div>
-                                  <div className="flex items-center justify-between gap-3 text-orange-400">
-                                    <span>{isBangla ? 'ওয়ারিশ বিরোধ:' : 'Warisan Disputes:'}</span>
-                                    <span className="font-bold tabular-nums">{point.warisanDisputes}</span>
-                                  </div>
-                                </>
-                              )}
-
-                              {trendMetric === 'financial' && (
-                                <div className="flex items-center justify-between gap-3 text-blue-400">
-                                  <span>{isBangla ? 'আটককৃত মূলধন:' : 'Halted Capital:'}</span>
-                                  <span className="font-bold tabular-nums">৳ {point.preventedVolumeCr} Cr</span>
+                            {/* Financial Protection & Locks */}
+                            <div className="pt-2 border-t border-[var(--color-border-subtle)] space-y-1 text-[11px]">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? 'প্রতিরোধকৃত মূলধন মূল্য:' : 'Halted Transaction Value:'}
+                                </span>
+                                <span className="font-bold text-blue-400 tabular-nums">
+                                  ৳ {point.preventedVolumeCr} Cr
+                                </span>
+                              </div>
+                              {point.activeLocksCount && (
+                                <div className="flex items-center justify-between text-[10px] text-amber-400">
+                                  <span className="flex items-center gap-1">
+                                    <Lock className="w-3 h-3 inline" />
+                                    <span>{isBangla ? 'মোতায়েনকৃত সফট-লক:' : 'Active Soft-Locks:'}</span>
+                                  </span>
+                                  <span className="font-bold tabular-nums">{point.activeLocksCount} Dags</span>
                                 </div>
                               )}
+                            </div>
+
+                            {/* Operational Status Subtext */}
+                            <div className="pt-1.5 border-t border-[var(--color-border-subtle)] text-[10px] text-[var(--color-text-tertiary)] leading-tight">
+                              {isBangla ? point.registryStatusBn : point.registryStatus}
                             </div>
                           </div>
                         );
@@ -1157,9 +1287,16 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                         dataKey="zoneRiskIndex"
                         name={isBangla ? `${selectedZone.nameBn} ঝুঁকি সূচক` : `${selectedZone.name} Risk Score`}
                         stroke={getRiskColor(selectedZone.riskLevel)}
-                        strokeWidth={2}
+                        strokeWidth={2.5}
                         fillOpacity={1}
                         fill="url(#colorZoneRisk)"
+                        activeDot={{
+                          r: 7,
+                          stroke: '#ffffff',
+                          strokeWidth: 2,
+                          fill: getRiskColor(selectedZone.riskLevel),
+                        }}
+                        dot={trendData.length <= 16 ? { r: 3.5, stroke: '#ffffff', strokeWidth: 1, fill: getRiskColor(selectedZone.riskLevel) } : false}
                       />
                       {compareWithMetro && (
                         <Area
@@ -1171,6 +1308,12 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                           strokeWidth={1.5}
                           fillOpacity={0.1}
                           fill="url(#colorMetroRisk)"
+                          activeDot={{
+                            r: 5,
+                            stroke: '#ffffff',
+                            strokeWidth: 1.5,
+                            fill: '#22c55e',
+                          }}
                         />
                       )}
                     </>
@@ -1186,6 +1329,12 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                         strokeWidth={2}
                         fillOpacity={1}
                         fill="url(#colorDouble)"
+                        activeDot={{
+                          r: 6,
+                          stroke: '#ffffff',
+                          strokeWidth: 2,
+                          fill: '#ef4444',
+                        }}
                       />
                       <Area
                         type="monotone"
@@ -1195,6 +1344,12 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                         strokeWidth={2}
                         fillOpacity={1}
                         fill="url(#colorMutation)"
+                        activeDot={{
+                          r: 6,
+                          stroke: '#ffffff',
+                          strokeWidth: 2,
+                          fill: '#eab308',
+                        }}
                       />
                       <Area
                         type="monotone"
@@ -1204,6 +1359,12 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                         strokeWidth={1.5}
                         fillOpacity={0.5}
                         fill="url(#colorWarisan)"
+                        activeDot={{
+                          r: 5,
+                          stroke: '#ffffff',
+                          strokeWidth: 1.5,
+                          fill: '#f97316',
+                        }}
                       />
                     </>
                   )}
@@ -1217,6 +1378,12 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                       strokeWidth={2}
                       fillOpacity={0.3}
                       fill="#3b82f6"
+                      activeDot={{
+                        r: 6,
+                        stroke: '#ffffff',
+                        strokeWidth: 2,
+                        fill: '#3b82f6',
+                      }}
                     />
                   )}
                 </AreaChart>
@@ -1291,12 +1458,45 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                     tick={{ fill: tickColor, fontSize: 9 }}
                   />
                   <Tooltip
-                    contentStyle={{
-                      backgroundColor: tooltipBg,
-                      borderColor: tooltipBorder,
-                      borderRadius: 4,
-                      fontSize: 11,
-                      fontFamily: 'monospace',
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const dataPoint = payload[0].payload;
+                        const zoneVal = dataPoint.zone;
+                        const metroVal = dataPoint.metroAvg;
+                        const diff = Math.round((zoneVal - metroVal) * 10) / 10;
+                        return (
+                          <div className="p-3 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-xl text-xs font-mono space-y-1.5 backdrop-blur-md">
+                            <div className="font-bold text-[var(--color-text-primary)] border-b border-[var(--color-border-subtle)] pb-1">
+                              {dataPoint.subject}
+                            </div>
+                            <div className="space-y-1 text-[11px]">
+                              <div className="flex items-center justify-between gap-4">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? selectedZone.nameBn : selectedZone.name}:
+                                </span>
+                                <span className="font-bold tabular-nums" style={{ color: getRiskColor(selectedZone.riskLevel) }}>
+                                  {zoneVal} / 100
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between gap-4">
+                                <span className="text-[var(--color-text-secondary)]">
+                                  {isBangla ? 'ঢাকা মেট্রো গড়:' : 'Dhaka Metro Avg:'}
+                                </span>
+                                <span className="font-bold text-emerald-400 tabular-nums">
+                                  {metroVal} / 100
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between gap-4 text-[10px] pt-1 border-t border-[var(--color-border-subtle)]">
+                                <span className="text-[var(--color-text-tertiary)]">{isBangla ? 'তারতম্য:' : 'Variance:'}</span>
+                                <span className={`font-semibold tabular-nums ${diff > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+                                  {diff > 0 ? `+${diff}` : diff} pts ({diff > 0 ? (isBangla ? 'উচ্চতর ঝুঁকি' : 'higher risk') : (isBangla ? 'নিম্নতর ঝুঁকি' : 'lower risk')})
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
                   />
                   <Radar
@@ -1364,19 +1564,34 @@ export const RiskAnalyticsDashboard: React.FC<RiskAnalyticsDashboardProps> = ({
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{
-                        backgroundColor: tooltipBg,
-                        borderColor: tooltipBorder,
-                        borderRadius: 4,
-                        fontSize: 11,
-                        fontFamily: 'monospace',
-                      }}
-                      formatter={(value: any, name: any, item: any) => {
-                        const row = item.payload;
-                        return [
-                          `${value}% (৳ ${row.valueCr} Cr exposure)`,
-                          isBangla ? row.nameBn : row.name,
-                        ];
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const row = payload[0].payload;
+                          return (
+                            <div className="p-3 rounded border border-[var(--color-border-subtle)] bg-[var(--color-surface-strong)]/95 shadow-xl text-xs font-mono space-y-1.5 backdrop-blur-md max-w-xs">
+                              <div className="flex items-center gap-2 border-b border-[var(--color-border-subtle)] pb-1">
+                                <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{ backgroundColor: row.color }} />
+                                <span className="font-bold text-[var(--color-text-primary)]">
+                                  {isBangla ? row.nameBn : row.name}
+                                </span>
+                              </div>
+                              <div className="space-y-1 text-[11px]">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[var(--color-text-secondary)]">{isBangla ? 'অনুপাত:' : 'Share:'}</span>
+                                  <span className="font-bold text-[var(--color-text-primary)] tabular-nums">{row.percentage}%</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[var(--color-text-secondary)]">{isBangla ? 'আটককৃত মূলধন:' : 'Halted Capital:'}</span>
+                                  <span className="font-bold text-[var(--color-surface-raised)] tabular-nums">৳ {row.valueCr} Cr</span>
+                                </div>
+                              </div>
+                              <div className="text-[10px] text-[var(--color-text-tertiary)] pt-1 border-t border-[var(--color-border-subtle)] leading-tight">
+                                {isBangla ? row.descriptionBn : row.description}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
                       }}
                     />
                   </PieChart>
