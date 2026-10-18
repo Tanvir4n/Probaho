@@ -16,7 +16,7 @@
  * Includes the 5-Minute Live Story Demo Controller.
  */
 
-import React, { useState, useId } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ShieldCheck,
@@ -373,6 +373,36 @@ export const JomiChainSection: React.FC = () => {
   const [isNetworkXModalOpen, setIsNetworkXModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Listen for hash navigation (#networkx, #networkx-graph, #lineage) or custom tab events
+  useEffect(() => {
+    const handleHashOrEvent = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#lineage' || hash === '#networkx' || hash === '#networkx-graph') {
+        setActiveTab('lineage');
+        setLineageViewMode('networkx');
+      }
+    };
+
+    handleHashOrEvent();
+
+    const handleCustomTab = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail === 'lineage') {
+        setActiveTab('lineage');
+        setLineageViewMode('networkx');
+      } else if (customEvent.detail) {
+        setActiveTab(customEvent.detail as any);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashOrEvent);
+    window.addEventListener('switch-jomichain-tab', handleCustomTab);
+    return () => {
+      window.removeEventListener('hashchange', handleHashOrEvent);
+      window.removeEventListener('switch-jomichain-tab', handleCustomTab);
+    };
+  }, []);
+
   const activePlot = SAMPLE_PLOTS.find((p) => p.id === selectedPlotId) || SAMPLE_PLOTS[0];
 
   // Live simulation actions
@@ -468,7 +498,7 @@ export const JomiChainSection: React.FC = () => {
           {[
             { id: 'story', label: isBangla ? '🎬 ৫ মিনিটের লাইভ ডেমো' : '🎬 5-Minute Live Story', badge: 'DEMO' },
             { id: 'dhakamap', label: isBangla ? '🗺️ ঢাকা ক্যাডাস্ট্রাল ম্যাপ' : '🗺️ Dhaka Cadastral Map', badge: 'D3.js' },
-            { id: 'lineage', label: isBangla ? '১. জরিপ-ধারাবাহিকতা গ্রাফ' : '1. Survey-Lineage Graph', badge: 'CS→BS' },
+            { id: 'lineage', label: isBangla ? '১. NetworkX জরিপ গ্রাফ' : '1. NetworkX Lineage Graph', badge: '30k DAG' },
             { id: 'ledger', label: isBangla ? '২. হ্যাশ-চেইন্ড লেজার' : '2. Hash-Chained Ledger', badge: 'Ed25519' },
             { id: 'lock', label: isBangla ? '৩. দ্বৈত-বিক্রয় সফট লক' : '3. Double-Sale Lock', badge: 'Real-Time' },
             { id: 'fuzzy', label: isBangla ? '৪. বাংলা ফাজি ম্যাচ' : '4. Bangla Fuzzy Match', badge: 'OCR/NLP' },
@@ -870,7 +900,7 @@ export const JomiChainSection: React.FC = () => {
         {/* TAB 2: SURVEY-LINEAGE GRAPH (CS → SA → RS → BS) WITH NETWORKX VISUALIZER */}
         {/* ==================================================================== */}
         {activeTab === 'lineage' && (
-          <div className="space-y-6 animate-in fade-in duration-300">
+          <div id="networkx-graph" className="space-y-6 animate-in fade-in duration-300">
             <div className="glass-card p-6 rounded-[8px] border border-[var(--color-border-subtle)] space-y-5">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>

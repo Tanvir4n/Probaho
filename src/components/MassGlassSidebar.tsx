@@ -25,7 +25,8 @@ import {
   Pause,
   ShieldCheck,
   FileCode2,
-  Activity
+  Activity,
+  Network
 } from 'lucide-react';
 
 interface MassGlassSidebarProps {
@@ -386,6 +387,19 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
             >
               <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
               <span>JomiChain Plot Passport</span>
+            </button>
+
+            <button
+              onClick={() => {
+                const el = document.getElementById('jomichain');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                window.dispatchEvent(new CustomEvent('switch-jomichain-tab', { detail: 'lineage' }));
+                setIsExpanded(false);
+              }}
+              className="w-full py-1.5 px-3 rounded-[3px] font-mono text-[10.5px] text-emerald-400 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 flex items-center justify-center gap-1.5 transition-colors cursor-pointer font-bold"
+            >
+              <Network className="w-3.5 h-3.5 text-emerald-400" />
+              <span>NetworkX 30k Lineage DAG</span>
             </button>
 
             <button

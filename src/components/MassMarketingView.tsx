@@ -58,6 +58,7 @@ import {
   Moon,
   Scale,
   Hash,
+  Network,
   FileCheck2,
   SlidersHorizontal,
   RotateCcw,
@@ -255,6 +256,22 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
             >
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>{t.nav.jomichain}</span>
+            </a>
+            <a
+              href="#networkx-graph"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById('jomichain');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                  window.dispatchEvent(new CustomEvent('switch-jomichain-tab', { detail: 'lineage' }));
+                }
+              }}
+              className="text-emerald-400 hover:text-emerald-300 transition-colors uppercase font-bold flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 shadow-sm"
+              title="30,000-Parcel NetworkX Cadastral Lineage Graph (CS -> SA -> RS -> BS)"
+            >
+              <Network className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{isBangla ? 'NetworkX গ্রাফ' : 'NetworkX Graph'}</span>
             </a>
             <a href="#projects" className="hover:text-[var(--color-text-primary)] transition-colors uppercase font-medium">
               {t.cases.tabAll}
