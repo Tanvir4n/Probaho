@@ -1,0 +1,20 @@
+{
+  "graph_type": "NetworkX Directed Acyclic Graph (DiGraph)",
+  "total_nodes": 30000,
+  "total_edges": 29065,
+  "is_directed_acyclic_graph": true,
+  "lineage_trees_count": 1129,
+  "generations": {
+    "BS": 12000,
+    "RS": 9000,
+    "SA": 6000,
+    "CS": 3000
+  },
+  "anomalies_injected": {
+    "NONE": 29399,
+    "AREA_INFLATION": 319,
+    "MISSING_ANCESTOR": 167,
+    "DUPLICATE_DAG_DISJOINT_GENEALOGY": 115
+  },
+  "density": 3.2e-05
+}

@@ -428,6 +428,7 @@ ACTUAL ANOMALY (1)             21                108          (83.72% Sensitivit
 
 Probaho integrates **TreeSHAP** (`shap.TreeExplainer`) to provide court-admissible, transparent explanations:
 
+* **NetworkX Cadastral Lineage Graph (`ml/plots/networkx_lineage_graph.png`):** High-resolution topological rendering of dual NetworkX subgraphs contrasting a mathematically clean 4-generation partition tree (CS $\rightarrow$ SA $\rightarrow$ RS $\rightarrow$ BS) against an anomalous lineage featuring boundary area inflation and orphaned ancestor nodes.
 * **SHAP Beeswarm Summary (`ml/plots/shap_summary_beeswarm.png`):** Shows global distribution of feature impacts across the entire cadastral callset. High `area_ratio`, large `parent_child_excess`, and `is_orphan` push predictions decisively into the high-risk fraud zone.
 * **Feature Importance Ranking (`ml/plots/shap_feature_importance_bar.png`):** Identifies `area_ratio`, `sibling_count`, `parent_child_excess_ratio`, and `area_diff` as the top 4 mathematical predictors of cadastral fraud.
 * **Individual Parcel Waterfall (`ml/plots/shap_waterfall_anomaly.png`):** Reconstructs the exact reasoning for individual flagged parcels (e.g., Parcel `PL-1962-000081`), showing how each topological signal shifted the base risk expectation $\mathbb{E}[f(x)]$.

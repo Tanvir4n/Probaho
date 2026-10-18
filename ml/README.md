@@ -103,6 +103,27 @@ ACTUAL ANOMALY (1)             21                108          (83.72% Sensitivit
 
 ---
 
+## 🕸️ NetworkX Cadastral Lineage Graph (`ml/plots/networkx_lineage_graph.png`)
+
+Probaho models Bangladesh's multi-decade survey succession as a **NetworkX Directed Acyclic Graph (DiGraph)** (`nx.DiGraph()`) with **30,000 nodes** and **29,065 directed edges** grouped into **1,129 genealogical trees**:
+
+```
+NetworkX Graph Topology (ml/models/networkx_graph_summary.json):
+• Total Cadastral Nodes: 30,000 (CS 1940: 3,000 | SA 1962: 6,000 | RS 1988: 9,000 | BS 2021: 12,000)
+• Total Directed Edges:  29,065 (Parent -> Child splits, merges & continuations)
+• Acyclicity Check:      nx.is_directed_acyclic_graph(G) = True (Zero cyclic loops)
+• Connected Trees:       1,129 independent cadastral genealogies
+```
+
+### High-Resolution NetworkX Graph Plot (`ml/plots/networkx_lineage_graph.png`):
+The visual graph plot compares two representative NetworkX subgraphs:
+1. **Left Panel — Verified Clean Lineage (`LIN-000001`):** A 4-generation tree showing CS 1940 root (`CS-08359`, 69.1 shotok) partitioned into SA 1962 (3 splits) $\rightarrow$ RS 1988 (5 subdivisions) $\rightarrow$ BS 2021 (8 leaf parcels), strictly satisfying mathematical area conservation ($\sum \text{Child Areas} \le \text{Parent Area}$).
+2. **Right Panel — Fraud Lineage with Injected Anomalies (`LIN-000053`):** 
+   - **`AREA_INFLATION`:** Node `PL-1962-000081` highlighted in glowing red where outgoing partition children exceed parental acreage.
+   - **`MISSING_ANCESTOR`:** Node `PL-1988-007300` highlighted in amber showing a disconnected orphan parcel lacking an ancestral parent edge.
+
+---
+
 ## 🔬 Explainable AI (XAI) with SHAP
 
 In legal and land title investigations, "black box" machine learning models are unacceptable. Probaho deploys **TreeSHAP** to decompose every risk prediction into exact additive attribution values:
