@@ -116,6 +116,11 @@ NetworkX Graph Topology (ml/models/networkx_graph_summary.json):
 ```
 
 ### High-Resolution NetworkX Graph Plot (`ml/plots/networkx_lineage_graph.png`):
+
+<p align="center">
+  <img src="./plots/networkx_lineage_graph.png" alt="NetworkX Cadastral Lineage Graph (CS 1940 -> SA 1962 -> RS 1988 -> BS 2021)" width="100%" />
+</p>
+
 The visual graph plot compares two representative NetworkX subgraphs:
 1. **Left Panel — Verified Clean Lineage (`LIN-000001`):** A 4-generation tree showing CS 1940 root (`CS-08359`, 69.1 shotok) partitioned into SA 1962 (3 splits) $\rightarrow$ RS 1988 (5 subdivisions) $\rightarrow$ BS 2021 (8 leaf parcels), strictly satisfying mathematical area conservation ($\sum \text{Child Areas} \le \text{Parent Area}$).
 2. **Right Panel — Fraud Lineage with Injected Anomalies (`LIN-000053`):** 
@@ -131,9 +136,20 @@ In legal and land title investigations, "black box" machine learning models are 
 $$f(x) = \mathbb{E}[f(x)] + \sum_{i=1}^{M} \phi_i$$
 
 ### 1. Global Beeswarm Summary Plot (`ml/plots/shap_summary_beeswarm.png`)
+
+<p align="center">
+  <img src="./plots/shap_summary_beeswarm.png" alt="SHAP Beeswarm Summary Plot" width="90%" />
+</p>
+
 Visualizes how feature values scale and influence predictions across thousands of parcels. High `area_ratio`, large `parent_child_excess`, and `is_orphan` consistently pull predictions towards the high-risk fraud zone.
 
-### 2. Feature Importance Ranking (`ml/plots/shap_feature_importance_bar.png`)
+### 2. Feature Importance Ranking (`ml/plots/shap_feature_importance_bar.png`) & Individual Waterfall Attribution (`ml/plots/shap_waterfall_anomaly.png`)
+
+<p align="center">
+  <img src="./plots/shap_feature_importance_bar.png" alt="SHAP Feature Importance Bar Chart" width="48%" />
+  <img src="./plots/shap_waterfall_anomaly.png" alt="SHAP Individual Parcel Waterfall Plot" width="48%" />
+</p>
+
 Ranks the top mathematical features driving land risk:
 1. `area_ratio` (Child parcel area relative to parent allocation)
 2. `sibling_count` (Multi-child partition density)
@@ -142,8 +158,12 @@ Ranks the top mathematical features driving land risk:
 5. `is_foreign_genealogy` (Disjoint family partition conflict)
 6. `is_orphan` (Missing ancestor indicator)
 
-### 3. Individual Parcel Waterfall Attribution (`ml/plots/shap_waterfall_anomaly.png`)
-Provides a complete audit trail for a single investigated parcel (e.g., `PL-1962-000081`), showing how each topological signal pushed the base expectation value towards a high-risk or protective classification.
+### 3. ROC, Precision-Recall & Confusion Matrix Curves
+
+<p align="center">
+  <img src="./plots/roc_pr_curves.png" alt="ROC and Precision-Recall Curves" width="58%" />
+  <img src="./plots/confusion_matrix.png" alt="Confusion Matrix Heatmap" width="38%" />
+</p>
 
 ---
 

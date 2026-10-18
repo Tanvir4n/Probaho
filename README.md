@@ -381,9 +381,37 @@ Probaho's **Novelty 1** is powered by a production-grade Machine Learning engine
 | **`DUPLICATE_DAG_DISJOINT_GENEALOGY`** | 115 | Same dag number injected across unrelated genealogical trees |
 | **`NONE` (Normal Verified)** | 29,399 | Clean, continuous lineage satisfying mathematical area conservation |
 
+### 2. NetworkX Cadastral Lineage Graph Visualization
+
+<p align="center">
+  <img src="./ml/plots/networkx_lineage_graph.png" alt="Probaho NetworkX Cadastral Lineage Graph (CS 1940 -> SA 1962 -> RS 1988 -> BS 2021)" width="100%" />
+</p>
+
+#### 📌 Executive Topological Overview
+Probaho's **Novelty 1** transforms 100+ years of cadastral records into a mathematical **Directed Acyclic Graph (DAG)** evaluated by **NetworkX 3.7**:
+
+| Metric | Measured Value | Significance |
+|:---|:---:|:---|
+| **Total Cadastral Nodes** | **30,000** | 3,000 CS 1940 · 6,000 SA 1962 · 9,000 RS 1988 · 12,000 BS 2021 |
+| **Directed Lineage Edges** | **29,065** | Directed parent $\rightarrow$ child splits, merges, and continuations |
+| **Lineage Trees / Genealogies** | **1,129** | Independent ancestral subgraphs spanning all 4 survey generations |
+| **DAG Acyclicity Check** | **`True`** | `nx.is_directed_acyclic_graph(G)` verified (zero circular mutations) |
+| **Area Conservation Math** | $\sum \text{Child Areas} \le \text{Parent Area} + 0.01$ | Prevents fraudulent land boundary expansions |
+
+#### 🔍 Subgraph Breakdown in the Visualization:
+* **Left Panel — Verified Clean Lineage (`LIN-000001`):** 
+  - **CS 1940 Root:** Parcel `PL-1940-000001` (Dag `CS-08359`, **69.11 shotok**).
+  - **SA 1962 Partition:** Split into 3 legal child parcels (`SA-89687`, `SA-30814`, `SA-87761`).
+  - **RS 1988 Subdivisions:** Subdivided into 5 revisional plots (`RS-02864`, `RS-09293`, `RS-97845`, `RS-85991`, `RS-51180`).
+  - **BS 2021 Leaf Plots:** Final 8 city survey parcels.
+  - **Mathematical Verification:** Sum of child areas at every branch matches parent acreage with **0.00% variance** (`[PASSED ✓]`).
+* **Right Panel — Fraud Lineage with Injected Anomalies (`LIN-000053`):** 
+  - **🚨 `AREA_INFLATION` (Node `PL-1962-000081`):** Flagged in glowing red. Outgoing children area sum exceeds the CS 1940 parental khatian without a supporting partition deed.
+  - **⚠️ `MISSING_ANCESTOR` (Node `PL-1988-007300`):** Flagged in amber. Disconnected orphan parcel lacking a valid historical parent reference.
+
 ---
 
-### 2. Feature Engineering (Zero Data Leakage)
+### 3. Feature Engineering (Zero Data Leakage)
 To prevent misleading validation scores, models are trained **strictly without label-derived columns** (`anomaly_type`, `area_conservation_status`, `outgoing_area_check`, `lineage_status`). Instead, 22 mathematical and graph-topological features are engineered from raw graph traversal:
 
 1. **`area_ratio`:** Ratio of child parcel area to cumulative parent area.
@@ -401,7 +429,7 @@ To prevent misleading validation scores, models are trained **strictly without l
 
 ---
 
-### 3. Quantitative Model Benchmarks
+### 4. Quantitative Model Benchmarks
 
 Models are evaluated on a **held-out test set of 7,535 parcels** partitioned via **`GroupShuffleSplit` by `lineage_id`** (preventing related parcels from leaking between train and test sets):
 
@@ -424,15 +452,37 @@ ACTUAL ANOMALY (1)             21                108          (83.72% Sensitivit
 
 ---
 
-### 4. Explainable AI (XAI) with SHAP
+### 5. Explainable AI (XAI) with SHAP
 
-Probaho integrates **TreeSHAP** (`shap.TreeExplainer`) to provide court-admissible, transparent explanations:
+In legal and land title investigations, "black box" machine learning models are unacceptable. Probaho deploys **TreeSHAP** (`shap.TreeExplainer`) to mathematically decompose every parcel risk prediction into exact additive attribution values:
 
-* **NetworkX Cadastral Lineage Graph (`ml/plots/networkx_lineage_graph.png`):** High-resolution topological rendering of dual NetworkX subgraphs contrasting a mathematically clean 4-generation partition tree (CS $\rightarrow$ SA $\rightarrow$ RS $\rightarrow$ BS) against an anomalous lineage featuring boundary area inflation and orphaned ancestor nodes.
-* **SHAP Beeswarm Summary (`ml/plots/shap_summary_beeswarm.png`):** Shows global distribution of feature impacts across the entire cadastral callset. High `area_ratio`, large `parent_child_excess`, and `is_orphan` push predictions decisively into the high-risk fraud zone.
-* **Feature Importance Ranking (`ml/plots/shap_feature_importance_bar.png`):** Identifies `area_ratio`, `sibling_count`, `parent_child_excess_ratio`, and `area_diff` as the top 4 mathematical predictors of cadastral fraud.
-* **Individual Parcel Waterfall (`ml/plots/shap_waterfall_anomaly.png`):** Reconstructs the exact reasoning for individual flagged parcels (e.g., Parcel `PL-1962-000081`), showing how each topological signal shifted the base risk expectation $\mathbb{E}[f(x)]$.
-* **ROC & PR Curves (`ml/plots/roc_pr_curves.png`):** High-resolution performance curves demonstrating high recall under severe class imbalance.
+$$f(x) = \mathbb{E}[f(x)] + \sum_{i=1}^{M} \phi_i$$
+
+#### A. Global Feature Impact (SHAP Beeswarm Summary Plot)
+<p align="center">
+  <img src="./ml/plots/shap_summary_beeswarm.png" alt="SHAP Beeswarm Summary Plot" width="90%" />
+</p>
+
+* High `area_ratio` (child area exceeding parent), large `parent_child_excess`, and `is_orphan` push predictions decisively into the high-risk fraud zone.
+* Sibling density and area deficits provide critical secondary signals for structural partition integrity.
+
+#### B. Feature Importance & Individual Parcel Waterfall Attribution
+<p align="center">
+  <img src="./ml/plots/shap_feature_importance_bar.png" alt="SHAP Feature Importance Bar Chart" width="48%" />
+  <img src="./ml/plots/shap_waterfall_anomaly.png" alt="SHAP Individual Parcel Waterfall Plot" width="48%" />
+</p>
+
+* **Feature Importance Ranking (Left):** Identifies `area_ratio`, `sibling_count`, `parent_child_excess_ratio`, and `area_diff` as the top mathematical predictors of cadastral fraud.
+* **Individual Waterfall Attribution (Right):** Reconstructs the exact reasoning for individual flagged parcels (e.g., Parcel `PL-1962-000081`), showing how each topological signal pushed the base expectation value $\mathbb{E}[f(x)] = 0.56$ towards a final high-risk score.
+
+#### C. ROC, Precision-Recall & Confusion Matrix Curves
+<p align="center">
+  <img src="./ml/plots/roc_pr_curves.png" alt="ROC and Precision-Recall Curves" width="58%" />
+  <img src="./ml/plots/confusion_matrix.png" alt="Confusion Matrix Heatmap" width="38%" />
+</p>
+
+* **ROC-AUC (0.9909) & PR-AUC (0.8514):** Demonstrates superior sensitivity and specificity even under severe 1.7% anomaly class imbalance.
+* **Confusion Matrix:** Correctly flags 108 out of 129 anomalies on the held-out test set with 99.42% specificity on clean parcels.
 
 ---
 
