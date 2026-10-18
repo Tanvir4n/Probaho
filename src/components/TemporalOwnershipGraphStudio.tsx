@@ -52,6 +52,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { DhakaD3CadastralMap } from './DhakaD3CadastralMap';
+import { InteractiveNetworkXLineageGraph } from './InteractiveNetworkXLineageGraph';
 import {
   ALL_TEMPORAL_PARCELS,
   TemporalParcelRecord,
@@ -1517,16 +1518,16 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-6"
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-2 sm:p-4 md:p-6"
           >
             <motion.div
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="glass-panel rounded-[10px] max-w-5xl w-full max-h-[94vh] flex flex-col shadow-2xl overflow-hidden font-mono text-xs border border-emerald-500/30 bg-[#090e17]"
+              className="glass-panel rounded-[10px] max-w-7xl w-full max-h-[96vh] flex flex-col shadow-2xl overflow-hidden font-mono text-xs border border-emerald-500/30 bg-[#090e17]"
             >
               {/* Header */}
-              <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#0f172a]/90 backdrop-blur">
+              <div className="p-3.5 px-5 border-b border-white/10 flex items-center justify-between bg-[#0f172a]/90 backdrop-blur">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
                     <Network className="w-4 h-4" />
@@ -1534,17 +1535,12 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm text-white">
-                        {isBangla ? 'NetworkX ৩০,০০০ পার্সেল জরিপ গ্রাফ (CS → SA → RS → BS)' : 'NetworkX 30,000-Parcel Survey-Lineage Graph (CS → SA → RS → BS)'}
+                        {isBangla ? 'NetworkX ৩০,০০০ পার্সেল লাইভ গ্রাফ ইঞ্জিন ও ডেটাসেট' : 'NetworkX 30k Lineage Graph Engine & Dataset'}
                       </span>
                       <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">
-                        NetworkX 3.7 DiGraph
+                        Interactive Live Engine
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      {isBangla
-                        ? 'ম্যাক্রো জরিপ-ধারাবাহিকতা: ৪টি খতিয়ান কালপর্ব, ২৯,০৬৫ এজ ও ২,১৪৩টি বিচ্ছিন্ন বংশতালিকা।'
-                        : 'Macro survey lineage: 4 cadastral survey epochs, 29,065 edges & 2,143 disjoint genealogies.'}
-                    </p>
                   </div>
                 </div>
                 <button
@@ -1555,110 +1551,9 @@ export const TemporalOwnershipGraphStudio: React.FC<TemporalOwnershipGraphStudio
                 </button>
               </div>
 
-              {/* Body */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-[#070b12]">
-                {/* Notice pill explaining the difference between Studio and NetworkX */}
-                <div className="p-3.5 rounded-[6px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 text-xs flex items-start gap-3">
-                  <Info className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <div className="font-bold text-emerald-300">
-                      {isBangla ? 'স্টুডিও ভিউ বনাম NetworkX গ্রাফের পার্থক্য:' : 'Studio Timeline vs. NetworkX 30k Graph:'}
-                    </div>
-                    <p className="text-slate-300 text-[11px] leading-relaxed">
-                      {isBangla
-                        ? 'স্টুডিওতে আপনি একটি নির্দিষ্ট দাগের (যেমন দাগ ১০৪২ ধানমন্ডি) মাইক্রো টাইমলাইন দেখছেন। কিন্তু মূল ব্যাকএন্ডে Python NetworkX 3.7 এর মাধ্যমে ৩০,০০০ পার্সেল ও ২৯,০৬৫ এজের সমন্বয়ে তৈরি হয়েছে সম্পূর্ণ ক্যাডাস্ট্রাল জরিপ-ধারাবাহিকতা ডাইরেক্টেড অ্যাসাইক্লিক গ্রাফ (DAG)।'
-                        : 'The studio timeline displays the micro-level history of an individual plot (e.g. Dag 1042 Dhanmondi). The full cadastral lineage engine runs on Python NetworkX 3.7 with 30,000 synthetic parcels and 29,065 edges enforcing multi-generational area conservation.'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Graph Image Display Container */}
-                <div className="rounded-[8px] overflow-hidden border border-white/10 bg-[#0b1120] relative shadow-2xl">
-                  <div className="p-2 sm:p-4 flex items-center justify-center min-h-[380px] max-h-[580px] overflow-auto">
-                    <img
-                      src="/ml/plots/networkx_lineage_graph.png"
-                      alt="NetworkX 30,000 Parcel Cadastral Lineage Graph"
-                      className="w-full h-auto object-contain max-h-[540px] rounded"
-                    />
-                  </div>
-                  <div className="p-3 bg-[#0f172a] border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-slate-400">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1.5 text-emerald-400">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-                        Clean Subgraph (LIN-000001)
-                      </span>
-                      <span className="flex items-center gap-1.5 text-rose-400">
-                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
-                        Fraud Subgraph (LIN-000053)
-                      </span>
-                    </div>
-                    <span className="text-slate-400">
-                      300 DPI Publication Quality &middot; <code className="text-emerald-400">ml/plots/networkx_lineage_graph.png</code>
-                    </span>
-                  </div>
-                </div>
-
-                {/* Macro Topology Metrics Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px] font-mono">
-                  <div className="p-3 rounded-[6px] bg-[#0d1524] border border-white/10">
-                    <div className="text-slate-400 text-[10px]">TOTAL PARCELS (NODES)</div>
-                    <div className="text-lg font-bold text-white mt-0.5">30,000</div>
-                    <div className="text-slate-500 text-[9.5px]">CS 4k → SA 6k → RS 9k → BS 11k</div>
-                  </div>
-                  <div className="p-3 rounded-[6px] bg-[#0d1524] border border-white/10">
-                    <div className="text-slate-400 text-[10px]">TRANSITIONS (EDGES)</div>
-                    <div className="text-lg font-bold text-emerald-400 mt-0.5">29,065</div>
-                    <div className="text-slate-500 text-[9.5px]">1:1, 1:Many &amp; Many:1 Splits</div>
-                  </div>
-                  <div className="p-3 rounded-[6px] bg-[#0d1524] border border-white/10">
-                    <div className="text-slate-400 text-[10px]">DISJOINT GENEALOGIES</div>
-                    <div className="text-lg font-bold text-indigo-400 mt-0.5">2,143</div>
-                    <div className="text-slate-500 text-[9.5px]">Weakly Connected Trees</div>
-                  </div>
-                  <div className="p-3 rounded-[6px] bg-[#0d1524] border border-white/10">
-                    <div className="text-slate-400 text-[10px]">DIRECTED ACYCLIC (DAG)</div>
-                    <div className="text-lg font-bold text-emerald-400 mt-0.5">100% VALID</div>
-                    <div className="text-slate-500 text-[9.5px]">Cycles = 0 (Validated)</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer Actions */}
-              <div className="p-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 bg-[#0f172a]">
-                <a
-                  href="/ml/plots/networkx_lineage_graph.png"
-                  download="probaho_networkx_lineage_graph.png"
-                  className="px-3.5 py-1.5 rounded-[4px] bg-white/10 hover:bg-white/15 border border-white/20 text-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer font-bold text-xs"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>{isBangla ? '৩০০ ডিপিআই ছবি ডাউনলোড' : 'Download 300 DPI Plot'}</span>
-                </a>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setIsNetworkXModalOpen(false);
-                      if (onClose) onClose();
-                      setTimeout(() => {
-                        const el = document.getElementById('jomichain');
-                        if (el) {
-                          el.scrollIntoView({ behavior: 'smooth' });
-                          window.dispatchEvent(new CustomEvent('switch-jomichain-tab', { detail: 'lineage' }));
-                        }
-                      }, 200);
-                    }}
-                    className="px-4 py-1.5 rounded-[4px] bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all flex items-center gap-1.5 cursor-pointer text-xs shadow-md"
-                  >
-                    <span>{isBangla ? 'ওয়েবসাইটে ইন্টারেক্টিভ সেকশন দেখুন' : 'Open in Interactive JomiChain Section'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => setIsNetworkXModalOpen(false)}
-                    className="px-3 py-1.5 rounded-[4px] bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-colors cursor-pointer text-xs"
-                  >
-                    {isBangla ? 'বন্ধ করুন' : 'Close'}
-                  </button>
-                </div>
+              {/* Scrollable Modal Body containing InteractiveNetworkXLineageGraph */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#070b12]">
+                <InteractiveNetworkXLineageGraph />
               </div>
             </motion.div>
           </motion.div>
