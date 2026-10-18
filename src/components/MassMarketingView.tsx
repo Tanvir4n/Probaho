@@ -196,7 +196,7 @@ export const MassMarketingView: React.FC<MassMarketingViewProps> = ({
         HERO SECTION WITH CONTINUOUS BACKGROUND MAP ROTATOR + BLACK/WHITE LAYER:
         ====================================================================
       */}
-      <div className="relative min-h-screen flex flex-col justify-between overflow-hidden">
+      <div id="hero" className="relative min-h-screen flex flex-col justify-between overflow-hidden">
         {/* Architectural Background: Stack of absolute divs with animate-mass-blueprint & adaptive light/dark overlay */}
         <ArchitecturalBackground
           currentMapIndex={currentMapIndex}

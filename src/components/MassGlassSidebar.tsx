@@ -4,7 +4,9 @@
  * MassLabs Architectural Glassmorphic Sidebar & Tool Dock
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useLanguage } from '../context/LanguageContext';
 import { MASSLABS_TOOLS, URBAN_MAP_DATASETS, MassLabTool } from '../data/tokens';
 import { ProbahoLogo } from './ProbahoLogo';
 import {
@@ -40,6 +42,7 @@ interface MassGlassSidebarProps {
   onTogglePause?: () => void;
   blueprintSpeed?: number;
   onSpeedChange?: (speed: number) => void;
+  isFirstPage?: boolean;
 }
 
 export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
@@ -56,16 +59,129 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
   onTogglePause,
   blueprintSpeed = 1.0,
   onSpeedChange,
+  isFirstPage: propIsFirstPage,
 }) => {
+  const { isBangla } = useLanguage();
+  const [internalIsFirstPage, setInternalIsFirstPage] = useState(true);
+  const [isManuallyOpen, setIsManuallyOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Active state: use prop if explicitly controlled, otherwise track scroll
+  const isFirstPage = propIsFirstPage !== undefined ? propIsFirstPage : internalIsFirstPage;
+
+  // Track scroll position: 1st page (Hero) vs 2nd page and beyond (Section 02+ tools)
+  useEffect(() => {
+    let ticking = false;
+
+    const checkScrollPosition = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const toolsEl = document.getElementById('tools');
+          if (toolsEl) {
+            const rect = toolsEl.getBoundingClientRect();
+            // In first page when Section 02 top has not reached upper half of viewport
+            // and scrollY has not passed Section 02 boundary
+            const inFirst = rect.top > (window.innerHeight * 0.52) && window.scrollY < (toolsEl.offsetTop - 200);
+            setInternalIsFirstPage(inFirst);
+          } else {
+            setInternalIsFirstPage(window.scrollY < 380);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', checkScrollPosition, { passive: true });
+    window.addEventListener('resize', checkScrollPosition, { passive: true });
+    checkScrollPosition();
+
+    return () => {
+      window.removeEventListener('scroll', checkScrollPosition);
+      window.removeEventListener('resize', checkScrollPosition);
+    };
+  }, []);
+
+  // Sync drawer and manual states when crossing section boundary
+  useEffect(() => {
+    if (!isFirstPage) {
+      // Tucked into right edge on later sections
+      setIsExpanded(false);
+      setIsManuallyOpen(false);
+    } else {
+      // Returned to 1st page: reset manual override so dock naturally rests in place
+      setIsManuallyOpen(false);
+    }
+  }, [isFirstPage]);
+
+  const isVisible = isFirstPage || isManuallyOpen;
   const activeTool = MASSLABS_TOOLS.find((t) => t.id === activeToolId) || MASSLABS_TOOLS[0];
   const activeMap = URBAN_MAP_DATASETS[currentMapIndex];
 
   return (
-    <aside
-      aria-label="Glassmorphic Architectural Sidebar & Tool Suite"
-      className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex items-center select-none"
-    >
+    <>
+      {/* 
+        ========================================================================
+        MICRO PEEK HANDLE AT RIGHT VIEWPORT EDGE
+        Appears with sleek spring animation when dock tucks into right edge
+        ========================================================================
+      */}
+      <AnimatePresence>
+        {!isVisible && (
+          <motion.button
+            key="sidebar-peek-tab"
+            initial={{ x: 45, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 45, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 340, damping: 26 }}
+            onClick={() => setIsManuallyOpen(true)}
+            className={`fixed right-0 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-2 py-3 px-1.5 sm:px-2 rounded-l-[8px] border-l border-t border-b backdrop-blur-2xl backdrop-saturate-200 transition-all shadow-2xl cursor-pointer group select-none ${
+              isDay
+                ? 'bg-white/85 hover:bg-white border-white/90 shadow-[0_12px_36px_rgba(0,0,0,0.12)] text-[#111113]'
+                : 'bg-[#0c0e12]/85 hover:bg-[#14181c] border-white/20 shadow-[0_16px_45px_rgba(0,0,0,0.75)] text-[#eceae6]'
+            }`}
+            style={{
+              backgroundImage: isDay
+                ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 240, 0.85) 100%)'
+                : 'linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%)',
+            }}
+            title={isBangla ? 'টুলস ডক প্রদর্শন করুন' : 'Show Probaho Tools Dock'}
+            aria-label={isBangla ? 'টুলস ডক প্রদর্শন করুন' : 'Show Probaho Tools Dock'}
+          >
+            <div className="flex items-center text-[var(--color-surface-raised)] group-hover:-translate-x-0.5 transition-transform">
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </div>
+            <ProbahoLogo className="w-3.5 h-3.5 text-[var(--color-surface-raised)]" />
+            <span className="text-[9px] font-mono font-bold tracking-widest [writing-mode:vertical-rl] rotate-180 text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors">
+              {isBangla ? 'টুলস' : 'TOOLS'}
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-surface-raised)] animate-pulse" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* 
+        ========================================================================
+        MAIN FLOATING GLASSMORPHIC SIDEBAR DOCK
+        Animates horizontally: slides into right on 2nd page, slides out on 1st page
+        ========================================================================
+      */}
+      <motion.aside
+        aria-label="Glassmorphic Architectural Sidebar & Tool Suite"
+        initial={false}
+        animate={{
+          x: isVisible ? 0 : 'calc(100% + 48px)',
+          opacity: isVisible ? 1 : 0,
+          pointerEvents: isVisible ? 'auto' : 'none',
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 300,
+          damping: 30,
+          mass: 0.85,
+        }}
+        className="fixed right-3 sm:right-6 top-1/2 -translate-y-1/2 z-50 flex items-center select-none will-change-transform"
+      >
       {/* 
         ========================================================================
         EXPANDED GLASSMORPHIC SIDEBAR DRAWER PANEL
@@ -328,6 +444,21 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
           }`}
         />
 
+        {/* Quick Tuck / Collapse Button when manually opened on Section 02+ */}
+        {!isFirstPage && isManuallyOpen && (
+          <button
+            onClick={() => {
+              setIsExpanded(false);
+              setIsManuallyOpen(false);
+            }}
+            className="w-[60px] h-4.5 flex items-center justify-center gap-1 rounded-[3px] text-[8px] font-mono tracking-wider bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/30 transition-all cursor-pointer mb-0.5"
+            title={isBangla ? 'ডক বন্ধ করে পাশে লুকান' : 'Tuck dock into right edge'}
+          >
+            <span>{isBangla ? 'লুকান' : 'TUCK'}</span>
+            <ChevronRight className="w-2.5 h-2.5" />
+          </button>
+        )}
+
         {/* Top Mini Expand Drawer Button */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
@@ -551,6 +682,7 @@ export const MassGlassSidebar: React.FC<MassGlassSidebarProps> = ({
           </div>
         </div>
       </div>
-    </aside>
-  );
+    </motion.aside>
+  </>
+);
 };
